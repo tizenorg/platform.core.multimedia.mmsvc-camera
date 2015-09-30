@@ -112,7 +112,6 @@ int mmsvc_camera_ipc_import_tbm(mmsvc_camera_transport_info_s *transport_info)
 	return TRUE;
 
 IMPORT_FAIL:
-MAPPING_FAIL:
 	return FALSE;
 }
 
