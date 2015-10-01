@@ -88,13 +88,13 @@ cp LICENSE.APLv2 %{buildroot}%{_datadir}/license/%{name}
 %files
 %manifest mmsvc-camera.manifest
 %{_libdir}/libmmsvc-camera.so*
-%{_libdir}/libmused-camera.so*
+%{_libdir}/libmuse-camera.so*
 %{_datadir}/license/%{name}
 
 %files devel
 %{_includedir}/media/mmsvc_camera.h
-%{_includedir}/media/mused_camera.h
+%{_includedir}/media/muse_camera.h
 %{_includedir}/media/mmsvc_camera_internal.h
-%{_includedir}/media/mused_camera_msg.h
+%{_includedir}/media/muse_camera_msg.h
 %{_libdir}/pkgconfig/*.pc
 %{_libdir}/libmmsvc-camera.so

@@ -25,18 +25,18 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <glib.h>
-#include "mmsvc_core.h"
-#include "mmsvc_core_workqueue.h"
-#include "mused_camera.h"
+#include "muse_core.h"
+#include "muse_core_workqueue.h"
+#include "muse_camera.h"
 #include "mm_types.h"
 #include "mm_debug.h"
 
 #ifdef LOG_TAG
 #undef LOG_TAG
 #endif
-#define LOG_TAG "MMSVC_CAMERA_IPC"
+#define LOG_TAG "MUSE_CAMERA_IPC"
 
-bool mmsvc_camera_ipc_make_tbm(mmsvc_camera_transport_info_s *transport_info)
+bool muse_camera_ipc_make_tbm(muse_camera_transport_info_s *transport_info)
 {
 	if(transport_info == NULL) {
 		LOGE("transport_info is NULL!");
@@ -75,18 +75,18 @@ bool mmsvc_camera_ipc_make_tbm(mmsvc_camera_transport_info_s *transport_info)
 	return TRUE;
 }
 
-int mmsvc_camera_ipc_export_tbm(mmsvc_camera_transport_info_s transport_info)
+int muse_camera_ipc_export_tbm(muse_camera_transport_info_s transport_info)
 {
-	LOGD("mmsvc_camera_ipc_export_tbm_bo!");
+	LOGD("muse_camera_ipc_export_tbm_bo!");
 	return tbm_bo_export(transport_info.bo);
 }
 
 
-bool mmsvc_camera_ipc_init_tbm(mmsvc_camera_transport_info_s *transport_info)
+bool muse_camera_ipc_init_tbm(muse_camera_transport_info_s *transport_info)
 {
 	int drm_fd = -1;
 
-	LOGE("mmsvc_camera_ipc_import_tbm enter!!");
+	LOGE("muse_camera_ipc_import_tbm enter!!");
 
 	transport_info->bufmgr = tbm_bufmgr_init(drm_fd);
 	if (transport_info->bufmgr == NULL) {
@@ -96,9 +96,9 @@ bool mmsvc_camera_ipc_init_tbm(mmsvc_camera_transport_info_s *transport_info)
 	return TRUE;
 }
 
-int mmsvc_camera_ipc_import_tbm(mmsvc_camera_transport_info_s *transport_info)
+int muse_camera_ipc_import_tbm(muse_camera_transport_info_s *transport_info)
 {
-	LOGD("mmsvc_camera_ipc_import_tbm enter!!");
+	LOGD("muse_camera_ipc_import_tbm enter!!");
 
 	transport_info->bo = tbm_bo_import(transport_info->bufmgr, transport_info->tbm_key);
 	if (transport_info->bo == NULL) {
@@ -115,7 +115,7 @@ IMPORT_FAIL:
 	return FALSE;
 }
 
-void mmsvc_camera_unref_tbm(mmsvc_camera_transport_info_s *transport_info)
+void muse_camera_unref_tbm(muse_camera_transport_info_s *transport_info)
 {
 	LOGD("Enter");
 	if (transport_info->bo) {
