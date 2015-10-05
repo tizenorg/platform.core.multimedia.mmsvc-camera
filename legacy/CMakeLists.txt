@@ -66,4 +66,3 @@ INSTALL(
 SET(PC_NAME ${fw_name})
 SET(PC_REQUIRED ${pc_dependents})
 SET(PC_LDFLAGS -l${fw_name})
-SET(PC_CFLAGS -I\${includedir}/media)

@@ -1,21 +1,7 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
-SET(Services
-        "application"
-        "base"
-        "content"
-        "location"
-        "media"
-        "messaging"
-        "network"
-        "social"
-        "telephony"
-        "system"
-   )
-
 # project
 SET(prefix "/usr")
-SET(version "0.0.1")
 SET(maintainer "Jeongmo Yang<jm80.yang>, Hyuntae Kim<ht1211.kim@samsung.com>, Sejong Park<sejong123.park@samsung.com>")
 SET(description "A Camera library in Tizen Native API")
 SET(service "mmsvc")
@@ -26,7 +12,6 @@ PROJECT(${fw_name})
 
 SET(CMAKE_INSTALL_PREFIX ${prefix})
 SET(PREFIX ${CMAKE_INSTALL_PREFIX})
-SET(VERSION ${version})
 
 SET(INC_DIR legacy/include)
 INCLUDE_DIRECTORIES(${INC_DIR})
@@ -38,7 +23,6 @@ IF("${ARCH}" STREQUAL "arm")
 ENDIF("${ARCH}" STREQUAL "arm")
 
 ADD_DEFINITIONS("-DPREFIX=\"${CMAKE_INSTALL_PREFIX}\"")
-ADD_DEFINITIONS("-DTIZEN_DEBUG")
 
 CONFIGURE_FILE(
     ${fw_name}.pc.in
