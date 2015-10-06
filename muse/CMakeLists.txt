@@ -3,8 +3,8 @@ SET(service "muse")
 SET(submodule "camera")
 
 SET(dependents "dlog glib-2.0 mused mm-common libtbm")
-SET(pc_dependents "dlog mm-common mused")
 SET(fw_name "${service}-${submodule}")
+
 PROJECT(${fw_name})
 
 SET(CMAKE_INSTALL_PREFIX /usr)
@@ -13,15 +13,13 @@ SET(PREFIX ${CMAKE_INSTALL_PREFIX})
 SET(INC_DIR include)
 INCLUDE_DIRECTORIES(${INC_DIR})
 
-
-
 INCLUDE(FindPkgConfig)
 pkg_check_modules(${fw_name} REQUIRED ${dependents})
 FOREACH(flag ${${fw_name}_CFLAGS})
     SET(EXTRA_CFLAGS "${EXTRA_CFLAGS} ${flag}")
 ENDFOREACH(flag)
 
-SET(CMAKE_C_FLAGS "-I./include ${CMAKE_C_FLAGS} ${EXTRA_CFLAGS} -fPIC -Wall -Wextra -Wno-array-bounds -Wno-empty-body -Wno-ignored-qualifiers -Wno-unused-parameter -Wshadow -Wwrite-strings -Wswitch-default -Wno-unused-but-set-parameter -Wno-unused-but-set-variable")
+SET(CMAKE_C_FLAGS "-I./include -I../legacy/include ${CMAKE_C_FLAGS} ${EXTRA_CFLAGS} -fPIC -Wall -Wextra -Wno-array-bounds -Wno-empty-body -Wno-ignored-qualifiers -Wno-unused-parameter -Wshadow -Wwrite-strings -Wswitch-default -Wno-unused-but-set-parameter -Wno-unused-but-set-variable")
 SET(CMAKE_C_FLAGS_DEBUG "-O0 -g")
 
 IF("${ARCH}" STREQUAL "arm")
@@ -43,7 +41,6 @@ SET(CMAKE_EXE_LINKER_FLAGS "-Wl,--as-needed -Wl,--rpath=${LIB_INSTALL_DIR}")
 aux_source_directory(src MUSED_SOURCES)
 ADD_LIBRARY(${fw_name} SHARED ${MUSED_SOURCES})
 
-
 TARGET_LINK_LIBRARIES(${fw_name} legacy-camera ${${fw_name}_LDFLAGS})
 
 SET_TARGET_PROPERTIES(${fw_name}
@@ -61,7 +58,3 @@ INSTALL(
         PATTERN "${INC_DIR}/*.h"
         )
 
-SET(PC_NAME ${fw_name})
-SET(PC_REQUIRED ${pc_dependents})
-SET(PC_LDFLAGS -l${fw_name})
-SET(PC_CFLAGS -I\${includedir}/media)
