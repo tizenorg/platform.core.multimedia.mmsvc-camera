@@ -5,7 +5,6 @@ SET(submodule "camera")
 
 # for package file
 SET(dependents "dlog audio-session-mgr mm-camcorder capi-base-common capi-media-tool gstreamer-1.0 libtbm evas ecore elementary vconf")
-SET(pc_dependents "mm-camcorder capi-base-common capi-media-tool gstreamer-1.0 libtbm evas ecore elementary")
 
 SET(fw_name "${service}-${submodule}")
 
@@ -63,6 +62,3 @@ INSTALL(
         PATTERN "${INC_DIR}/*.h"
         )
 
-SET(PC_NAME ${fw_name})
-SET(PC_REQUIRED ${pc_dependents})
-SET(PC_LDFLAGS -l${fw_name})
