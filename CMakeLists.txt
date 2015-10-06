@@ -10,6 +10,9 @@ SET(fw_name "${service}-${submodule}")
 
 PROJECT(${fw_name})
 
+SET(dependents "dlog glib-2.0 mused mm-common libtbm")
+SET(pc_dependents "dlog mm-common mused")
+
 SET(CMAKE_INSTALL_PREFIX ${prefix})
 SET(PREFIX ${CMAKE_INSTALL_PREFIX})
 
@@ -23,6 +26,10 @@ IF("${ARCH}" STREQUAL "arm")
 ENDIF("${ARCH}" STREQUAL "arm")
 
 ADD_DEFINITIONS("-DPREFIX=\"${CMAKE_INSTALL_PREFIX}\"")
+
+SET(PC_NAME ${fw_name})
+SET(PC_REQUIRED ${pc_dependents})
+SET(PC_LDFLAGS -lmuse-camera)
 
 CONFIGURE_FILE(
     ${fw_name}.pc.in

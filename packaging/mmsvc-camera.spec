@@ -4,7 +4,7 @@
 Name:       mmsvc-camera
 Summary:    A Camera library in Tizen C API
 Version:    0.2.4
-Release:    0
+Release:    1
 Group:      Multimedia/API
 License:    Apache-2.0
 Source0:    %{name}-%{version}.tar.gz
