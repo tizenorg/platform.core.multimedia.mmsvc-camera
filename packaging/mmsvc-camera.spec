@@ -2,10 +2,10 @@
 %bcond_with x
 
 Name:       mmsvc-camera
-Summary:    A Camera library in Tizen C API
+Summary:    A Camera module for muse server
 Version:    0.2.4
-Release:    0
-Group:      Multimedia/API
+Release:    1
+Group:      Multimedia/Libraries
 License:    Apache-2.0
 Source0:    %{name}-%{version}.tar.gz
 BuildRequires:  cmake
@@ -33,20 +33,18 @@ Requires(postun): /sbin/ldconfig
 
 
 %description
-A Camera library in Tizen C API.
+A Camera module for muse server and native camera API.
 
 
 %package devel
-Summary:  A Camera library in Tizen C API (Development)
+Summary:  A Camera module for muse server (Development)
 Requires: %{name} = %{version}-%{release}
 Requires: pkgconfig(libtbm)
 Requires: pkgconfig(capi-media-tool)
 
 
 %description devel
-A Camera library in Tizen C API.
-
-Development related files.
+Development related files of a Camera module for muse server.
 
 
 %prep
@@ -90,10 +88,9 @@ cp LICENSE.APLv2 %{buildroot}%{_datadir}/license/%{name}
 %{_libdir}/liblegacy-camera.so*
 %{_libdir}/libmuse-camera.so*
 %{_datadir}/license/%{name}
-%{_includedir}/media/legacy_camera.h
-%{_includedir}/media/legacy_camera_internal.h
 
 %files devel
-%{_includedir}/media/muse_camera.h
-%{_includedir}/media/muse_camera_msg.h
+%{_includedir}/media/*.h
 %{_libdir}/pkgconfig/*.pc
+%{_libdir}/liblegacy-camera.so
+%{_libdir}/libmuse-camera.so
