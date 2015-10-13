@@ -23,18 +23,21 @@
 #include <stdio.h>
 #include <dlog.h>
 #include "legacy_camera.h"
+#include "legacy_camera_internal.h"
 #include "muse_camera_msg.h"
 #include "muse_camera.h"
-#include "muse_core.h"
-#include "muse_core_ipc.h"
-#include "mm_types.h"
-#include "legacy_camera_internal.h"
+#include <muse_core.h>
+#include <muse_core_ipc.h>
+#include <mm_types.h>
+#include <muse_core_security.h>
 
 #ifdef LOG_TAG
 #undef LOG_TAG
 #endif
 #define LOG_TAG "MUSED_CAMERA"
 #define KEY_NUM 9527
+
+#define CAMERA_PRIVILEGE_NAME "http://tizen.org/privilege/camera"
 
 
 void _camera_dispatcher_callback_supported_theater_mode(int param, void *user_data)
@@ -441,18 +444,32 @@ void _camera_dispatcher_hdr_progress_cb(int percent, void *user_data)
 	return;
 }
 
+
 int camera_dispatcher_create(muse_module_h module)
 {
 	int ret = CAMERA_ERROR_NONE;
 	int device_type;
+	int client_fd = -1;
 	intptr_t handle;
 	muse_camera_info_s *camera_data;
 	tbm_bufmgr bufmgr;
 	camera_h camera;
 	muse_camera_api_e api = MUSE_CAMERA_API_CREATE;
+
 	muse_camera_msg_get(device_type, muse_core_client_get_msg(module));
+
+	/* privilege check */
+	client_fd = muse_core_client_get_msg_fd(module);
+	if (!muse_core_security_check_cynara(client_fd, CAMERA_PRIVILEGE_NAME)) {
+		LOGE("security check failed");
+		ret = CAMERA_ERROR_PERMISSION_DENIED;
+		muse_camera_msg_return(api, ret, module);
+		return MUSE_CAMERA_ERROR_NONE;
+	}
+
 	ret = legacy_camera_create((camera_device_e)device_type, &camera);
 	handle = (intptr_t)camera;
+
 	LOGD("device_type : %d, handle : 0x%x, ret : 0x%x", device_type, handle, ret);
 
 	if (ret == CAMERA_ERROR_NONE) {
