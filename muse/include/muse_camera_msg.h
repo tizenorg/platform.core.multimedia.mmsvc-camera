@@ -21,6 +21,7 @@
 extern "C" {
 #endif
 
+#include <stdint.h>
 #include "muse_core_msg_json.h"
 
 /**
