@@ -26,10 +26,12 @@ extern "C" {
   * @brief This file contains the muse camera API for framework, related structures and enumerations.
   */
 
-#include "tbm_bufmgr.h"
 #include <stdbool.h>
 #include <glib.h>
 #include <stdio.h>
+#include <tbm_bufmgr.h>
+#include "legacy_camera.h"
+#include "legacy_camera_internal.h"
 
 /**
  * @brief Enumeration for the muse camera apis.
@@ -163,6 +165,7 @@ typedef enum {
 	MUSE_CAMERA_API_ATTR_IS_ENABLED_AUTO_CONTRAST, //125
 	MUSE_CAMERA_API_ATTR_IS_SUPPORTED_AUTO_CONTRAST,
 	MUSE_CAMERA_API_ATTR_DISABLE_SHUTTER_SOUND,
+	MUSE_CAMERA_API_RETURN_BUFFER,
 	MUSE_CAMERA_API_MAX
 } muse_camera_api_e;
 
@@ -200,6 +203,18 @@ typedef enum {
 	MUSE_CAMERA_EVENT_TYPE_NUM //27
 }muse_camera_event_e;
 
+typedef struct {
+	tbm_bo bo;
+	int key;
+} muse_camera_export_data;
+
+typedef struct {
+	camera_h camera_handle;
+	tbm_bufmgr bufmgr;
+	GList *data_list;
+	GMutex list_lock;
+} muse_camera_handle_s;
+
 /**
  * @brief The structure type for data transport for the muse camera
  */
@@ -208,15 +223,7 @@ typedef struct {
 	int tbm_key;
 	tbm_bo bo;
 	tbm_bo_handle bo_handle;
-	tbm_bufmgr bufmgr;
 } muse_camera_transport_info_s;
-
-/**
- * @brief The structure type for the userdata, registering into the daemon core.
- */
-typedef struct {
-	tbm_bufmgr bufmgr;
-} muse_camera_info_s;
 
 /**
  * @brief The structure type for muse camera errors.
@@ -256,41 +263,6 @@ typedef enum {
  */
 #define CALLBACK_TIME_OUT_LONG 8
 
-
-/**
- * @brief Makes the tbm buffer object, and set to the muse camera structure.
- * @param[out] transport_info The allocated structure, tbm bo will be set in here.
- * @return TRUE on success, otherwise a FALSE value
- */
-bool muse_camera_ipc_make_tbm(muse_camera_transport_info_s *transport_info);
-
-/**
- * @brief Exports the tbm buffer object, another process can import this bo.
- * @param[in] transport_info Using transport_info.bo to export.
- * @return TBM gem name on success, otherwise a negative error value
- */
-int muse_camera_ipc_export_tbm(muse_camera_transport_info_s transport_info);
-
-/**
- * @brief Initialize the tbm buffer manager, mainly at the client side.
- * @param[out] transport_info The allocated structure, tbm bufmgr will be set in here.
- * @return TRUE on success, otherwise a FALSE value
- */
-bool muse_camera_ipc_init_tbm(muse_camera_transport_info_s *transport_info);
-
-/**
- * @brief Imports the tbm buffer object.
- * @param[out] transport_info Set the transport_info.bo.
- * @return TRUE on success, otherwise a FALSE value
- */
-int muse_camera_ipc_import_tbm(muse_camera_transport_info_s *transport_info);
-
-/**
- * @brief Unreference the tbm buffer object.
- * @param[in] transport_info Using the transport_info.bo.
- * @return TRUE on success, otherwise a FALSE value
- */
-void muse_camera_unref_tbm(muse_camera_transport_info_s *transport_info);
 
 #ifdef __cplusplus
 }
