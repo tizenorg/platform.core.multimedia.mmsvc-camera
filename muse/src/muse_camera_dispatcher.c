@@ -265,6 +265,8 @@ static int _camera_remove_export_data(muse_module_h module, int key, int remove_
 				export_data->bo = NULL;
 				export_data->key = 0;
 				muse_camera->data_list = g_list_remove(muse_camera->data_list, export_data);
+				g_free(export_data);
+				export_data = NULL;
 
 				if (remove_all == FALSE) {
 					LOGD("key %d, remove done");
@@ -452,13 +454,126 @@ void _camera_dispatcher_interrupted_cb(camera_policy_e policy, camera_state_e pr
 
 void _camera_dispatcher_preview_cb(camera_preview_data_s *frame, void *user_data)
 {
+	muse_camera_handle_s *muse_camera = NULL;
+	muse_camera_transport_info_s transport_info;
+	muse_camera_export_data *export_data = NULL;
+	int tbm_key = 0;
 	muse_module_h module = (muse_module_h)user_data;
+	unsigned char *buf_pos = NULL;
 
-	LOGD("Enter");
+	LOGD("Enter!!");
 
-	muse_camera_msg_event(MUSE_CAMERA_CB_EVENT,
-							    MUSE_CAMERA_EVENT_TYPE_PREVIEW,
-							    module);
+	if (frame == NULL) {
+		LOGE("NULL data");
+		return;
+	}
+
+	muse_camera = (muse_camera_handle_s *)muse_core_ipc_get_handle(module);
+	if (muse_camera == NULL) {
+		LOGE("NULL handle");
+		return;
+	}
+
+	export_data = g_new0(muse_camera_export_data, 1);
+	if (export_data == NULL) {
+		LOGE("alloc export_data failed");
+		return;
+	}
+
+	memset(&transport_info, 0x0, sizeof(muse_camera_transport_info_s));
+
+	transport_info.data_size += sizeof(camera_preview_data_s);
+	switch (frame->num_of_planes) {
+		case 1:
+			transport_info.data_size += frame->data.single_plane.size;
+		case 2:
+			transport_info.data_size += frame->data.double_plane.y_size
+								   + frame->data.double_plane.uv_size;
+		case 3:
+			transport_info.data_size += frame->data.triple_plane.y_size
+								   + frame->data.triple_plane.u_size
+								   + frame->data.triple_plane.v_size;
+		default:
+			break;
+	}
+
+	transport_info.bo = tbm_bo_alloc(muse_camera->bufmgr, transport_info.data_size, TBM_BO_DEFAULT);
+	if (transport_info.bo == NULL) {
+		LOGE("bo alloc failed");
+		g_free(export_data);
+		export_data = NULL;
+		return;
+	}
+
+	transport_info.bo_handle = tbm_bo_map(transport_info.bo, TBM_DEVICE_CPU, TBM_OPTION_WRITE);
+	if (transport_info.bo_handle.ptr == NULL) {
+		LOGE("bo map Error!");
+		tbm_bo_unref(transport_info.bo);
+		g_free(export_data);
+		export_data = NULL;
+		return;
+	}
+
+	buf_pos = (unsigned char *)transport_info.bo_handle.ptr;
+
+	memcpy(buf_pos, frame, sizeof(camera_preview_data_s));
+	buf_pos += sizeof(camera_preview_data_s);
+
+	switch (frame->num_of_planes) {
+		case 1:
+			memcpy(buf_pos, frame->data.single_plane.yuv, frame->data.single_plane.size);
+		case 2:
+			memcpy(buf_pos, frame->data.double_plane.y, frame->data.double_plane.y_size);
+			buf_pos += frame->data.double_plane.y_size;
+			memcpy(buf_pos, frame->data.double_plane.uv, frame->data.double_plane.uv_size);
+		case 3:
+			memcpy(buf_pos, frame->data.triple_plane.y, frame->data.triple_plane.y_size);
+			buf_pos += frame->data.triple_plane.y_size;
+			memcpy(buf_pos, frame->data.triple_plane.u, frame->data.triple_plane.u_size);
+			buf_pos += frame->data.triple_plane.u_size;
+			memcpy(buf_pos, frame->data.triple_plane.v, frame->data.triple_plane.v_size);
+		default:
+			break;
+	}
+
+	tbm_bo_unmap(transport_info.bo);
+
+	tbm_key = tbm_bo_export(transport_info.bo);
+
+	if(tbm_key == 0) {
+		LOGE("Create key_info ERROR!!");
+		tbm_bo_unref(transport_info.bo);
+		transport_info.bo = NULL;
+		g_free(export_data);
+		export_data = NULL;
+		return;
+	}
+
+	LOGD("bo %p, vaddr %p, size %d, key %d",
+	     transport_info.bo,
+	     transport_info.bo_handle.ptr,
+	     transport_info.data_size,
+	     tbm_key);
+
+	/* set bo info */
+	export_data->key = tbm_key;
+	export_data->bo = transport_info.bo;
+
+	LOGD(" ");
+
+	/* add bo info to list */
+	g_mutex_lock(&muse_camera->list_lock);
+	LOGD("muse_camera->data_list: %p, export_data : %p ", muse_camera->data_list, (gpointer)export_data);
+	muse_camera->data_list = g_list_append(muse_camera->data_list, (gpointer)export_data);
+	LOGD(" ");
+	g_mutex_unlock(&muse_camera->list_lock);
+	LOGD(" ");
+	/* add bo and key to list */
+	muse_camera_msg_event1(MUSE_CAMERA_CB_EVENT,
+							      MUSE_CAMERA_EVENT_TYPE_PREVIEW,
+							      module,
+							      INT, tbm_key);
+	LOGD(" ");
 	return;
 }
 
@@ -568,6 +683,8 @@ int camera_dispatcher_create(muse_module_h module)
 		muse_camera_msg_return(api, ret, module);
 		return MUSE_CAMERA_ERROR_NONE;
 	}
+
+	memset(muse_camera, 0x0, sizeof(muse_camera_handle_s));
 
 	g_mutex_init(&muse_camera->list_lock);
 
@@ -1795,9 +1912,10 @@ int camera_dispatcher_attr_get_preview_fps(muse_module_h module)
 	ret = legacy_camera_attr_get_preview_fps(muse_camera->camera_handle, &fps);
 
 	get_fps = (int)fps;
-
+	LOGD("get_fps : %d", get_fps);
 	muse_camera_msg_return1(api, ret, module, INT, get_fps);
-
+	LOGD("get_fps : %d", get_fps);
+	
 	return MUSE_CAMERA_ERROR_NONE;
 }
 
