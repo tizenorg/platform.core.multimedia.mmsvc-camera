@@ -203,6 +203,16 @@ typedef enum {
 	MUSE_CAMERA_EVENT_TYPE_NUM //27
 }muse_camera_event_e;
 
+/**
+ * @brief Enumeration for the muse camera events.
+ */
+typedef enum {
+	MUSE_CAMERA_EVENT_CLASS_NORMAL,
+	MUSE_CAMERA_EVENT_CLASS_IMMEDIATE,
+	MUSE_CAMERA_EVENT_CLASS_IDLE,
+	MUSE_CAMERA_EVENT_CLASS_NUM
+} muse_camera_event_class_e;
+
 typedef struct {
 	tbm_bo bo;
 	int key;

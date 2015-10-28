@@ -43,11 +43,12 @@ static int _camera_remove_export_data(muse_module_h module, int key, int remove_
 void _camera_dispatcher_callback_supported_theater_mode(int param, void *user_data)
 {
 	muse_module_h module = (muse_module_h)user_data;
-	int event;
-	event = MUSE_CAMERA_EVENT_TYPE_FOREACH_SUPPORTED_THEATER_MODE;
+
 	LOGD("Enter!! param : %d", param);
+
 	muse_camera_msg_event1(MUSE_CAMERA_CB_EVENT,
-								event,
+								MUSE_CAMERA_EVENT_TYPE_FOREACH_SUPPORTED_THEATER_MODE,
+								MUSE_CAMERA_EVENT_CLASS_IMMEDIATE,
 								module,
 								INT, param);
 }
@@ -55,11 +56,12 @@ void _camera_dispatcher_callback_supported_theater_mode(int param, void *user_da
 void _camera_dispatcher_callback_supported_af_mode(int param, void *user_data)
 {
 	muse_module_h module = (muse_module_h)user_data;
-	int event;
-	event = MUSE_CAMERA_EVENT_TYPE_FOREACH_SUPPORTED_AF_MODE;
+
 	LOGD("Enter!! param : %d", param);
+
 	muse_camera_msg_event1(MUSE_CAMERA_CB_EVENT,
-								event,
+								MUSE_CAMERA_EVENT_TYPE_FOREACH_SUPPORTED_AF_MODE,
+								MUSE_CAMERA_EVENT_CLASS_IMMEDIATE,
 								module,
 								INT, param);
 }
@@ -67,11 +69,12 @@ void _camera_dispatcher_callback_supported_af_mode(int param, void *user_data)
 void _camera_dispatcher_callback_supported_exposure_mode(int param, void *user_data)
 {
 	muse_module_h module = (muse_module_h)user_data;
-	int event;
-	event = MUSE_CAMERA_EVENT_TYPE_FOREACH_SUPPORTED_EXPOSURE_MODE;
+
 	LOGD("Enter!! param : %d", param);
+
 	muse_camera_msg_event1(MUSE_CAMERA_CB_EVENT,
-								event,
+								MUSE_CAMERA_EVENT_TYPE_FOREACH_SUPPORTED_EXPOSURE_MODE,
+								MUSE_CAMERA_EVENT_CLASS_IMMEDIATE,
 								module,
 								INT, param);
 }
@@ -79,11 +82,12 @@ void _camera_dispatcher_callback_supported_exposure_mode(int param, void *user_d
 void _camera_dispatcher_callback_supported_iso_mode(int param, void *user_data)
 {
 	muse_module_h module = (muse_module_h)user_data;
-	int event;
-	event = MUSE_CAMERA_EVENT_TYPE_FOREACH_SUPPORTED_ISO;
+
 	LOGD("Enter!! param : %d", param);
+
 	muse_camera_msg_event1(MUSE_CAMERA_CB_EVENT,
-								event,
+								MUSE_CAMERA_EVENT_TYPE_FOREACH_SUPPORTED_ISO,
+								MUSE_CAMERA_EVENT_CLASS_IMMEDIATE,
 								module,
 								INT, param);
 }
@@ -91,11 +95,12 @@ void _camera_dispatcher_callback_supported_iso_mode(int param, void *user_data)
 void _camera_dispatcher_callback_supported_whitebalance(int param, void *user_data)
 {
 	muse_module_h module = (muse_module_h)user_data;
-	int event;
-	event = MUSE_CAMERA_EVENT_TYPE_FOREACH_SUPPORTED_WHITEBALANCE;
+
 	LOGD("Enter!! param : %d", param);
+
 	muse_camera_msg_event1(MUSE_CAMERA_CB_EVENT,
-								event,
+								MUSE_CAMERA_EVENT_TYPE_FOREACH_SUPPORTED_WHITEBALANCE,
+								MUSE_CAMERA_EVENT_CLASS_IMMEDIATE,
 								module,
 								INT, param);
 }
@@ -103,11 +108,12 @@ void _camera_dispatcher_callback_supported_whitebalance(int param, void *user_da
 void _camera_dispatcher_callback_supported_effect(int param, void *user_data)
 {
 	muse_module_h module = (muse_module_h)user_data;
-	int event;
-	event = MUSE_CAMERA_EVENT_TYPE_FOREACH_SUPPORTED_EFFECT;
+
 	LOGD("Enter!! param : %d", param);
+
 	muse_camera_msg_event1(MUSE_CAMERA_CB_EVENT,
-								event,
+								MUSE_CAMERA_EVENT_TYPE_FOREACH_SUPPORTED_EFFECT,
+								MUSE_CAMERA_EVENT_CLASS_IMMEDIATE,
 								module,
 								INT, param);
 }
@@ -115,11 +121,12 @@ void _camera_dispatcher_callback_supported_effect(int param, void *user_data)
 void _camera_dispatcher_callback_supported_scene_mode(int param, void *user_data)
 {
 	muse_module_h module = (muse_module_h)user_data;
-	int event;
-	event = MUSE_CAMERA_EVENT_TYPE_FOREACH_SUPPORTED_SCENE_MODE;
+
 	LOGD("Enter!! param : %d", param);
+
 	muse_camera_msg_event1(MUSE_CAMERA_CB_EVENT,
-								event,
+								MUSE_CAMERA_EVENT_TYPE_FOREACH_SUPPORTED_SCENE_MODE,
+								MUSE_CAMERA_EVENT_CLASS_IMMEDIATE,
 								module,
 								INT, param);
 }
@@ -127,11 +134,12 @@ void _camera_dispatcher_callback_supported_scene_mode(int param, void *user_data
 void _camera_dispatcher_callback_supported_flash_mode(int param, void *user_data)
 {
 	muse_module_h module = (muse_module_h)user_data;
-	int event;
-	event = MUSE_CAMERA_EVENT_TYPE_FOREACH_SUPPORTED_FLASH_MODE;
+
 	LOGD("Enter!! param : %d", param);
+
 	muse_camera_msg_event1(MUSE_CAMERA_CB_EVENT,
-								event,
+								MUSE_CAMERA_EVENT_TYPE_FOREACH_SUPPORTED_FLASH_MODE,
+								MUSE_CAMERA_EVENT_CLASS_IMMEDIATE,
 								module,
 								INT, param);
 }
@@ -139,11 +147,12 @@ void _camera_dispatcher_callback_supported_flash_mode(int param, void *user_data
 void _camera_dispatcher_callback_supported_fps(int param, void *user_data)
 {
 	muse_module_h module = (muse_module_h)user_data;
-	int event;
-	event = MUSE_CAMERA_EVENT_TYPE_FOREACH_SUPPORTED_FPS;
+
 	LOGD("Enter!! param : %d", param);
+
 	muse_camera_msg_event1(MUSE_CAMERA_CB_EVENT,
-								event,
+								MUSE_CAMERA_EVENT_TYPE_FOREACH_SUPPORTED_FPS,
+								MUSE_CAMERA_EVENT_CLASS_IMMEDIATE,
 								module,
 								INT, param);
 }
@@ -151,11 +160,12 @@ void _camera_dispatcher_callback_supported_fps(int param, void *user_data)
 void _camera_dispatcher_callback_supported_fps_by_resolution(int param, void *user_data)
 {
 	muse_module_h module = (muse_module_h)user_data;
-	int event;
-	event = MUSE_CAMERA_EVENT_TYPE_FOREACH_SUPPORTED_FPS_BY_RESOLUTION;
+
 	LOGD("Enter!! param : %d", param);
+
 	muse_camera_msg_event1(MUSE_CAMERA_CB_EVENT,
-								event,
+								MUSE_CAMERA_EVENT_TYPE_FOREACH_SUPPORTED_FPS_BY_RESOLUTION,
+								MUSE_CAMERA_EVENT_CLASS_IMMEDIATE,
 								module,
 								INT, param);
 }
@@ -163,11 +173,12 @@ void _camera_dispatcher_callback_supported_fps_by_resolution(int param, void *us
 void _camera_dispatcher_callback_supported_stream_flip(int param, void *user_data)
 {
 	muse_module_h module = (muse_module_h)user_data;
-	int event;
-	event = MUSE_CAMERA_EVENT_TYPE_FOREACH_SUPPORTED_STREAM_FLIP;
+
 	LOGD("Enter!! param : %d", param);
+
 	muse_camera_msg_event1(MUSE_CAMERA_CB_EVENT,
-								event,
+								MUSE_CAMERA_EVENT_TYPE_FOREACH_SUPPORTED_STREAM_FLIP,
+								MUSE_CAMERA_EVENT_CLASS_IMMEDIATE,
 								module,
 								INT, param);
 }
@@ -175,11 +186,12 @@ void _camera_dispatcher_callback_supported_stream_flip(int param, void *user_dat
 void _camera_dispatcher_callback_supported_stream_rotation(int param, void *user_data)
 {
 	muse_module_h module = (muse_module_h)user_data;
-	int event;
-	event = MUSE_CAMERA_EVENT_TYPE_FOREACH_SUPPORTED_STREAM_ROTATION;
+
 	LOGD("Enter!! param : %d", param);
+
 	muse_camera_msg_event1(MUSE_CAMERA_CB_EVENT,
-								event,
+								MUSE_CAMERA_EVENT_TYPE_FOREACH_SUPPORTED_STREAM_ROTATION,
+								MUSE_CAMERA_EVENT_CLASS_IMMEDIATE,
 								module,
 								INT, param);
 }
@@ -187,11 +199,12 @@ void _camera_dispatcher_callback_supported_stream_rotation(int param, void *user
 void _camera_dispatcher_callback_supported_capture_format(int param, void *user_data)
 {
 	muse_module_h module = (muse_module_h)user_data;
-	int event;
-	event = MUSE_CAMERA_EVENT_TYPE_FOREACH_SUPPORTED_CAPTURE_FORMAT;
+
 	LOGD("Enter!! param : %d", param);
+
 	muse_camera_msg_event1(MUSE_CAMERA_CB_EVENT,
-								event,
+								MUSE_CAMERA_EVENT_TYPE_FOREACH_SUPPORTED_CAPTURE_FORMAT,
+								MUSE_CAMERA_EVENT_CLASS_IMMEDIATE,
 								module,
 								INT, param);
 }
@@ -199,11 +212,12 @@ void _camera_dispatcher_callback_supported_capture_format(int param, void *user_
 void _camera_dispatcher_callback_supported_preview_format(int param, void *user_data)
 {
 	muse_module_h module = (muse_module_h)user_data;
-	int event;
-	event = MUSE_CAMERA_EVENT_TYPE_FOREACH_SUPPORTED_PREVIEW_FORMAT;
+
 	LOGD("Enter!! param : %d", param);
+
 	muse_camera_msg_event1(MUSE_CAMERA_CB_EVENT,
-								event,
+								MUSE_CAMERA_EVENT_TYPE_FOREACH_SUPPORTED_PREVIEW_FORMAT,
+								MUSE_CAMERA_EVENT_CLASS_IMMEDIATE,
 								module,
 								INT, param);
 }
@@ -211,11 +225,12 @@ void _camera_dispatcher_callback_supported_preview_format(int param, void *user_
 void _camera_dispatcher_callback_supported_preview_resolution(int param1, int param2, void *user_data)
 {
 	muse_module_h module = (muse_module_h)user_data;
-	int event;
-	event = MUSE_CAMERA_EVENT_TYPE_FOREACH_SUPPORTED_PREVIEW_RESOLUTION;
+
 	LOGD("Enter!! param1 : %d, param2 : %d", param1, param2);
+
 	muse_camera_msg_event2(MUSE_CAMERA_CB_EVENT,
-								event,
+								MUSE_CAMERA_EVENT_TYPE_FOREACH_SUPPORTED_PREVIEW_RESOLUTION,
+								MUSE_CAMERA_EVENT_CLASS_IMMEDIATE,
 								module,
 								INT, param1,
 								INT, param2);
@@ -224,11 +239,12 @@ void _camera_dispatcher_callback_supported_preview_resolution(int param1, int pa
 void _camera_dispatcher_callback_supported_capture_resolution(int param1, int param2, void *user_data)
 {
 	muse_module_h module = (muse_module_h)user_data;
-	int event;
-	event = MUSE_CAMERA_EVENT_TYPE_FOREACH_SUPPORTED_CAPTURE_RESOLUTION;
+
 	LOGD("Enter!! param1 : %d, param2 : %d", param1, param2);
+
 	muse_camera_msg_event2(MUSE_CAMERA_CB_EVENT,
-								event,
+								MUSE_CAMERA_EVENT_TYPE_FOREACH_SUPPORTED_CAPTURE_RESOLUTION,
+								MUSE_CAMERA_EVENT_CLASS_IMMEDIATE,
 								module,
 								INT, param1,
 								INT, param2);
@@ -410,6 +426,7 @@ void _camera_dispatcher_capturing_cb(camera_image_data_s* image, camera_image_da
 	/* add bo and key to list */
 	muse_camera_msg_event3(MUSE_CAMERA_CB_EVENT,
 							      MUSE_CAMERA_EVENT_TYPE_CAPTURE,
+							      MUSE_CAMERA_EVENT_CLASS_NORMAL,
 							      module,
 							      INT, tbm_key,
 							      INT, is_postview,
@@ -423,11 +440,14 @@ void _camera_dispatcher_state_changed_cb(camera_state_e previous, camera_state_e
 	muse_module_h module = (muse_module_h)user_data;
 
 	LOGD("Enter");
+
 	int cb_previous = (int)previous;
 	int cb_current = (int)current;
 	int cb_by_policy = (int)by_policy;
+
 	muse_camera_msg_event3(MUSE_CAMERA_CB_EVENT,
 								MUSE_CAMERA_EVENT_TYPE_STATE_CHANGE,
+								MUSE_CAMERA_EVENT_CLASS_NORMAL,
 								module,
 								INT, cb_previous,
 								INT, cb_current,
@@ -440,11 +460,14 @@ void _camera_dispatcher_interrupted_cb(camera_policy_e policy, camera_state_e pr
 	muse_module_h module = (muse_module_h)user_data;
 
 	LOGD("Enter");
+
 	int cb_policy = (int)policy;
 	int cb_previous = (int)previous;
 	int cb_current = (int)current;
+
 	muse_camera_msg_event3(MUSE_CAMERA_CB_EVENT,
 								MUSE_CAMERA_EVENT_TYPE_INTERRUPTED,
+								MUSE_CAMERA_EVENT_CLASS_NORMAL,
 								module,
 								INT, cb_policy,
 								INT, cb_previous,
@@ -566,6 +589,7 @@ void _camera_dispatcher_preview_cb(camera_preview_data_s *frame, void *user_data
 	/* add bo and key to list */
 	muse_camera_msg_event1(MUSE_CAMERA_CB_EVENT,
 							      MUSE_CAMERA_EVENT_TYPE_PREVIEW,
+							      MUSE_CAMERA_EVENT_CLASS_NORMAL,
 							      module,
 							      INT, tbm_key);
 	return;
@@ -579,6 +603,7 @@ void _camera_dispatcher_media_packet_preview_cb(media_packet_h pkt, void *user_d
 
 	muse_camera_msg_event(MUSE_CAMERA_CB_EVENT,
 							    MUSE_CAMERA_EVENT_TYPE_MEDIA_PACKET_PREVIEW,
+							    MUSE_CAMERA_EVENT_CLASS_NORMAL,
 							    module);
 	return;
 }
@@ -591,6 +616,7 @@ void _camera_dispatcher_capture_completed_cb(void *user_data)
 
 	muse_camera_msg_event(MUSE_CAMERA_CB_EVENT,
 							    MUSE_CAMERA_EVENT_TYPE_CAPTURE_COMPLETE,
+							    MUSE_CAMERA_EVENT_CLASS_NORMAL,
 							    module);
 	return;
 }
@@ -603,6 +629,7 @@ void _camera_dispatcher_face_detected_cb(camera_detected_face_s *faces, int coun
 
 	muse_camera_msg_event1(MUSE_CAMERA_CB_EVENT,
 							    MUSE_CAMERA_EVENT_TYPE_FACE_DETECTION,
+							    MUSE_CAMERA_EVENT_CLASS_NORMAL,
 							    module,
 							    INT, count);
 	return;
@@ -612,10 +639,12 @@ void _camera_dispatcher_focus_changed_cb(camera_focus_state_e state, void *user_
 {
 	muse_module_h module = (muse_module_h)user_data;
 	int cb_state = (int)state;
+
 	LOGD("Enter");
 
 	muse_camera_msg_event1(MUSE_CAMERA_CB_EVENT,
 							    MUSE_CAMERA_EVENT_TYPE_FOCUS_CHANGE,
+							    MUSE_CAMERA_EVENT_CLASS_NORMAL,
 							    module,
 							    INT, cb_state);
 	return;
@@ -626,10 +655,12 @@ void _camera_dispatcher_error_cb(camera_error_e error, camera_state_e current_st
 	muse_module_h module = (muse_module_h)user_data;
 	int cb_error = (int)error;
 	int cb_current_state = (int)current_state;
+
 	LOGD("Enter");
 
 	muse_camera_msg_event2(MUSE_CAMERA_CB_EVENT,
 							    MUSE_CAMERA_EVENT_TYPE_ERROR,
+							    MUSE_CAMERA_EVENT_CLASS_NORMAL,
 							    module,
 							    INT, cb_error,
 							    INT, cb_current_state);
@@ -639,10 +670,12 @@ void _camera_dispatcher_error_cb(camera_error_e error, camera_state_e current_st
 void _camera_dispatcher_hdr_progress_cb(int percent, void *user_data)
 {
 	muse_module_h module = (muse_module_h)user_data;
+
 	LOGD("Enter");
 
 	muse_camera_msg_event1(MUSE_CAMERA_CB_EVENT,
 							    MUSE_CAMERA_EVENT_TYPE_HDR_PROGRESS,
+							    MUSE_CAMERA_EVENT_CLASS_NORMAL,
 							    module,
 							    INT, percent);
 	return;
@@ -654,17 +687,21 @@ int camera_dispatcher_create(muse_module_h module)
 	int ret = CAMERA_ERROR_NONE;
 	int device_type;
 	int client_fd = -1;
+	int pid = 0;
 	intptr_t handle;
 	muse_camera_handle_s *muse_camera = NULL;
 	muse_camera_api_e api = MUSE_CAMERA_API_CREATE;
 
 	muse_camera_msg_get(device_type, muse_core_client_get_msg(module));
+	muse_camera_msg_get(pid, muse_core_client_get_msg(module));
+
+	LOGD("device type : %d, client pid : %d", device_type, pid);
 
 	/* privilege check */
 	client_fd = muse_core_client_get_msg_fd(module);
 	if (!muse_core_security_check_cynara(client_fd, CAMERA_PRIVILEGE_NAME)) {
-		LOGE("security check failed");
 		ret = CAMERA_ERROR_PERMISSION_DENIED;
+		LOGE("security check failed 0x%x", ret);
 		muse_camera_msg_return(api, ret, module);
 		return MUSE_CAMERA_ERROR_NONE;
 	}
@@ -672,8 +709,8 @@ int camera_dispatcher_create(muse_module_h module)
 	/* init handle */
 	muse_camera = (muse_camera_handle_s *)malloc(sizeof(muse_camera_handle_s));
 	if (muse_camera == NULL) {
-		LOGE("handle alloc failed");
 		ret = CAMERA_ERROR_OUT_OF_MEMORY;
+		LOGE("handle alloc failed 0x%x", ret);
 		muse_camera_msg_return(api, ret, module);
 		return MUSE_CAMERA_ERROR_NONE;
 	}
@@ -695,15 +732,26 @@ int camera_dispatcher_create(muse_module_h module)
 	}
 
 	ret = legacy_camera_create((camera_device_e)device_type, &muse_camera->camera_handle);
+	if (ret != CAMERA_ERROR_NONE) {
+		free(muse_camera);
+		muse_camera = NULL;
+		muse_camera_msg_return(api, ret, module);
 
-	LOGD("device_type : %d, handle : 0x%x, ret : 0x%x", device_type, muse_camera, ret);
+		return MUSE_CAMERA_ERROR_NONE;
+	}
 
-	handle = (intptr_t)muse_camera;
-
+	ret = legacy_camera_set_client_pid(muse_camera->camera_handle, pid);
 	if (ret == CAMERA_ERROR_NONE) {
+		LOGD("handle : 0x%x", muse_camera);
+		handle = (intptr_t)muse_camera;
 		muse_core_ipc_set_handle(module, (intptr_t)muse_camera);
 		muse_camera_msg_return1(api, ret, module, POINTER, handle);
 	} else {
+		LOGE("legacy_camera_set_client_pid failed : 0x%x", ret);
+
+		legacy_camera_destroy(muse_camera->camera_handle);
+		muse_camera->camera_handle = NULL;
+
 		free(muse_camera);
 		muse_camera = NULL;
 
@@ -3392,10 +3440,8 @@ int camera_dispatcher_attr_disable_shutter_sound(muse_module_h module)
 
 int camera_dispatcher_return_buffer(muse_module_h module)
 {
-	int ret = CAMERA_ERROR_NONE;
-	muse_camera_handle_s *muse_camera = NULL;
-	muse_camera_api_e api = MUSE_CAMERA_API_ATTR_DISABLE_SHUTTER_SOUND;
 	int tbm_key;
+	muse_camera_handle_s *muse_camera = NULL;
 
 	muse_camera = (muse_camera_handle_s *)muse_core_ipc_get_handle(module);
 
@@ -3409,6 +3455,7 @@ int camera_dispatcher_return_buffer(muse_module_h module)
 
 	return MUSE_CAMERA_ERROR_NONE;
 }
+
 
 int (*dispatcher[MUSE_CAMERA_API_MAX]) (muse_module_h module) = {
 	camera_dispatcher_create,				/* MUSE_CAMERA_API_CREATE */

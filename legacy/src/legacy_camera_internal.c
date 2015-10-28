@@ -33,79 +33,6 @@
 #define LOG_TAG "TIZEN_N_CAMERA"
 
 
-int legacy_camera_set_x11_display_rotation(camera_h camera, camera_rotation_e rotation)
-{
-	return legacy_camera_set_display_rotation(camera, rotation);
-}
-
-
-int legacy_camera_get_x11_display_rotation(camera_h camera, camera_rotation_e *rotation)
-{
-	return legacy_camera_get_display_rotation(camera, rotation);
-}
-
-
-int legacy_camera_set_x11_display_flip(camera_h camera, camera_flip_e flip)
-{
-	return legacy_camera_set_display_flip(camera, flip);
-}
-
-
-int legacy_camera_get_x11_display_flip(camera_h camera, camera_flip_e *flip)
-{
-	return legacy_camera_get_display_flip(camera, flip);
-}
-
-
-int legacy_camera_set_x11_display_visible(camera_h camera, bool visible)
-{
-	return legacy_camera_set_display_visible(camera, visible);
-}
-
-
-int legacy_camera_is_x11_display_visible(camera_h camera, bool *visible)
-{
-	return legacy_camera_is_display_visible(camera, visible);
-}
-
-
-int legacy_camera_set_x11_display_mode(camera_h camera, camera_display_mode_e mode)
-{
-	return legacy_camera_set_display_mode(camera, mode);
-}
-
-
-int legacy_camera_get_x11_display_mode(camera_h camera, camera_display_mode_e *mode)
-{
-	return legacy_camera_get_display_mode(camera, mode);
-}
-
-
-int legacy_camera_set_x11_display_pixmap(camera_h camera, legacy_camera_x11_pixmap_updated_cb callback, void *user_data)
-{
-	int ret = MM_ERROR_NONE;
-	camera_s *handle = (camera_s *)camera;
-	camera_state_e capi_state = CAMERA_STATE_NONE;
-
-	if (handle == NULL || callback == NULL) {
-		LOGE("INVALID_PARAMETER(handle:%p,callback:%p,user_data:%p)", handle, callback, user_data);
-		return CAMERA_ERROR_INVALID_PARAMETER;
-	}
-
-	legacy_camera_get_state(camera, &capi_state);
-	if (capi_state > CAMERA_STATE_CREATED) {
-		LOGE("INVALID STATE(state:%d)", capi_state);
-		return CAMERA_ERROR_INVALID_STATE;
-	}
-
-	ret = mm_camcorder_set_attributes(handle->mm_handle, NULL,
-					  MMCAM_DISPLAY_SURFACE, MM_DISPLAY_SURFACE_X_EXT,
-					  MMCAM_DISPLAY_HANDLE, callback, sizeof(void *),
-					  NULL);
-
-	return __convert_camera_error_code(__func__, ret);
-}
-
 int legacy_camera_set_mused_display(camera_h camera, camera_display_type_e type)
 {
 	int ret = MM_ERROR_NONE;
@@ -175,4 +102,21 @@ int legacy_camera_set_shm_socket_path_for_mused(camera_h camera, char *socket_pa
 	return CAMERA_ERROR_NONE;
 }
 
+int legacy_camera_set_client_pid(camera_h camera, int pid)
+{
+	int ret;
+	camera_s *handle = (camera_s *)camera;
 
+	if (handle == NULL) {
+		LOGE("NULL handle");
+		return CAMERA_ERROR_INVALID_PARAMETER;
+	}
+
+	LOGE("pid %d", pid);
+
+	ret = mm_camcorder_set_attributes(handle->mm_handle, NULL,
+	                                  MMCAM_PID_FOR_SOUND_FOCUS, pid,
+	                                  NULL);
+
+	return __convert_camera_error_code(__func__, ret);
+}
