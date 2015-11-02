@@ -425,12 +425,12 @@ void _camera_dispatcher_capturing_cb(camera_image_data_s* image, camera_image_da
 
 	/* add bo and key to list */
 	muse_camera_msg_event3(MUSE_CAMERA_CB_EVENT,
-							      MUSE_CAMERA_EVENT_TYPE_CAPTURE,
-							      MUSE_CAMERA_EVENT_CLASS_NORMAL,
-							      module,
-							      INT, tbm_key,
-							      INT, is_postview,
-							      INT, is_thumbnail);
+	                       MUSE_CAMERA_EVENT_TYPE_CAPTURE,
+	                       MUSE_CAMERA_EVENT_CLASS_NORMAL,
+	                       module,
+	                       INT, tbm_key,
+	                       INT, is_postview,
+	                       INT, is_thumbnail);
 
 	return;
 }
@@ -444,7 +444,7 @@ void _camera_dispatcher_state_changed_cb(camera_state_e previous, camera_state_e
 
 	muse_camera_msg_event3(MUSE_CAMERA_CB_EVENT,
 	                       MUSE_CAMERA_EVENT_TYPE_STATE_CHANGE,
-	                       MUSE_CAMERA_EVENT_CLASS_NORMAL,
+	                       MUSE_CAMERA_EVENT_CLASS_IDLE,
 	                       module,
 	                       INT, previous,
 	                       INT, current,
@@ -461,7 +461,7 @@ void _camera_dispatcher_interrupted_cb(camera_policy_e policy, camera_state_e pr
 
 	muse_camera_msg_event3(MUSE_CAMERA_CB_EVENT,
 	                       MUSE_CAMERA_EVENT_TYPE_INTERRUPTED,
-	                       MUSE_CAMERA_EVENT_CLASS_NORMAL,
+	                       MUSE_CAMERA_EVENT_CLASS_IDLE,
 	                       module,
 	                       INT, policy,
 	                       INT, previous,
@@ -584,10 +584,10 @@ void _camera_dispatcher_preview_cb(camera_preview_data_s *frame, void *user_data
 
 	/* add bo and key to list */
 	muse_camera_msg_event1(MUSE_CAMERA_CB_EVENT,
-							      MUSE_CAMERA_EVENT_TYPE_PREVIEW,
-							      MUSE_CAMERA_EVENT_CLASS_NORMAL,
-							      module,
-							      INT, tbm_key);
+	                       MUSE_CAMERA_EVENT_TYPE_PREVIEW,
+	                       MUSE_CAMERA_EVENT_CLASS_NORMAL,
+	                       module,
+	                       INT, tbm_key);
 	return;
 }
 
@@ -612,7 +612,7 @@ void _camera_dispatcher_capture_completed_cb(void *user_data)
 
 	muse_camera_msg_event(MUSE_CAMERA_CB_EVENT,
 	                      MUSE_CAMERA_EVENT_TYPE_CAPTURE_COMPLETE,
-	                      MUSE_CAMERA_EVENT_CLASS_NORMAL,
+	                      MUSE_CAMERA_EVENT_CLASS_IDLE,
 	                      module);
 	return;
 }
@@ -696,7 +696,7 @@ void _camera_dispatcher_face_detected_cb(camera_detected_face_s *faces, int coun
 		/* send message */
 		muse_camera_msg_event2(MUSE_CAMERA_CB_EVENT,
 		                       MUSE_CAMERA_EVENT_TYPE_FACE_DETECTION,
-		                       MUSE_CAMERA_EVENT_CLASS_NORMAL,
+		                       MUSE_CAMERA_EVENT_CLASS_IDLE,
 		                       module,
 		                       INT, count,
 		                       INT, tbm_key);
@@ -715,7 +715,7 @@ void _camera_dispatcher_focus_changed_cb(camera_focus_state_e state, void *user_
 
 	muse_camera_msg_event1(MUSE_CAMERA_CB_EVENT,
 	                       MUSE_CAMERA_EVENT_TYPE_FOCUS_CHANGE,
-	                       MUSE_CAMERA_EVENT_CLASS_NORMAL,
+	                       MUSE_CAMERA_EVENT_CLASS_IDLE,
 	                       module,
 	                       INT, state);
 
@@ -730,7 +730,7 @@ void _camera_dispatcher_error_cb(camera_error_e error, camera_state_e current_st
 
 	muse_camera_msg_event2(MUSE_CAMERA_CB_EVENT,
 	                       MUSE_CAMERA_EVENT_TYPE_ERROR,
-	                       MUSE_CAMERA_EVENT_CLASS_NORMAL,
+	                       MUSE_CAMERA_EVENT_CLASS_IDLE,
 	                       module,
 	                       INT, error,
 	                       INT, current_state);
@@ -746,7 +746,7 @@ void _camera_dispatcher_hdr_progress_cb(int percent, void *user_data)
 
 	muse_camera_msg_event1(MUSE_CAMERA_CB_EVENT,
 	                       MUSE_CAMERA_EVENT_TYPE_HDR_PROGRESS,
-	                       MUSE_CAMERA_EVENT_CLASS_NORMAL,
+	                       MUSE_CAMERA_EVENT_CLASS_IDLE,
 	                       module,
 	                       INT, percent);
 	return;

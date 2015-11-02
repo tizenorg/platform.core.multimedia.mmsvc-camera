@@ -160,7 +160,7 @@ typedef const char* STRING;
 			LOGE("sending message failed"); \
 			ret = CAMERA_ERROR_INVALID_OPERATION; \
 		} else \
-			ret = client_wait_for_cb_return(api, cb_info, CALLBACK_TIME_OUT); \
+			ret = _client_wait_for_cb_return(api, cb_info, CALLBACK_TIME_OUT); \
 		muse_core_msg_json_factory_free(__sndMsg__); \
 	}while(0)
 
@@ -181,7 +181,7 @@ typedef const char* STRING;
 			LOGE("sending message failed"); \
 			ret = CAMERA_ERROR_INVALID_OPERATION; \
 		} else \
-			ret = client_wait_for_cb_return(api, cb_info, CALLBACK_TIME_OUT_LONG); \
+			ret = _client_wait_for_cb_return(api, cb_info, CALLBACK_TIME_OUT_LONG); \
 		muse_core_msg_json_factory_free(__sndMsg__); \
 	}while(0)
 
@@ -207,7 +207,7 @@ typedef const char* STRING;
 			LOGE("sending message failed"); \
 			ret = CAMERA_ERROR_INVALID_OPERATION; \
 		} else \
-			ret = client_wait_for_cb_return(api, cb_info, CALLBACK_TIME_OUT); \
+			ret = _client_wait_for_cb_return(api, cb_info, CALLBACK_TIME_OUT); \
 		muse_core_msg_json_factory_free(__sndMsg__); \
 	}while(0)
 
@@ -260,7 +260,7 @@ typedef const char* STRING;
 			LOGE("sending message failed"); \
 			ret = CAMERA_ERROR_INVALID_OPERATION; \
 		} else \
-			ret = client_wait_for_cb_return(api, cb_info, CALLBACK_TIME_OUT); \
+			ret = _client_wait_for_cb_return(api, cb_info, CALLBACK_TIME_OUT); \
 		muse_core_msg_json_factory_free(__sndMsg__); \
 	}while(0)
 
@@ -294,7 +294,7 @@ typedef const char* STRING;
 			LOGE("sending message failed"); \
 			ret = CAMERA_ERROR_INVALID_OPERATION; \
 		} else \
-			ret = client_wait_for_cb_return(api, cb_info, CALLBACK_TIME_OUT); \
+			ret = _client_wait_for_cb_return(api, cb_info, CALLBACK_TIME_OUT); \
 		muse_core_msg_json_factory_free(__sndMsg__); \
 	}while(0)
 
@@ -325,7 +325,7 @@ typedef const char* STRING;
 			LOGE("sending message failed"); \
 			ret = CAMERA_ERROR_INVALID_OPERATION; \
 		} else \
-			ret = client_wait_for_cb_return(api, cb_info, CALLBACK_TIME_OUT); \
+			ret = _client_wait_for_cb_return(api, cb_info, CALLBACK_TIME_OUT); \
 		muse_core_msg_json_factory_free(__sndMsg__); \
 	}while(0)
 

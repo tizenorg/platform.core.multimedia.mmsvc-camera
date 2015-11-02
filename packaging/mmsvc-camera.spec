@@ -3,7 +3,7 @@
 
 Name:       mmsvc-camera
 Summary:    A Camera module for muse server
-Version:    0.2.9
+Version:    0.2.10
 Release:    0
 Group:      Multimedia/Libraries
 License:    Apache-2.0
@@ -22,7 +22,6 @@ BuildRequires:  pkgconfig(ecore-x)
 %if %{with wayland}
 BuildRequires:  pkgconfig(ecore-wayland)
 %endif
-BuildRequires:  pkgconfig(json)
 BuildRequires:  pkgconfig(libtbm)
 BuildRequires:  pkgconfig(evas)
 BuildRequires:  pkgconfig(ecore)
