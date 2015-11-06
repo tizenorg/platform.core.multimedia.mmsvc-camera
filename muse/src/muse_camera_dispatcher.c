@@ -444,7 +444,7 @@ void _camera_dispatcher_state_changed_cb(camera_state_e previous, camera_state_e
 
 	muse_camera_msg_event3(MUSE_CAMERA_CB_EVENT,
 	                       MUSE_CAMERA_EVENT_TYPE_STATE_CHANGE,
-	                       MUSE_CAMERA_EVENT_CLASS_IDLE,
+	                       MUSE_CAMERA_EVENT_CLASS_MAIN_THREAD,
 	                       module,
 	                       INT, previous,
 	                       INT, current,
@@ -461,7 +461,7 @@ void _camera_dispatcher_interrupted_cb(camera_policy_e policy, camera_state_e pr
 
 	muse_camera_msg_event3(MUSE_CAMERA_CB_EVENT,
 	                       MUSE_CAMERA_EVENT_TYPE_INTERRUPTED,
-	                       MUSE_CAMERA_EVENT_CLASS_IDLE,
+	                       MUSE_CAMERA_EVENT_CLASS_MAIN_THREAD,
 	                       module,
 	                       INT, policy,
 	                       INT, previous,
@@ -612,7 +612,7 @@ void _camera_dispatcher_capture_completed_cb(void *user_data)
 
 	muse_camera_msg_event(MUSE_CAMERA_CB_EVENT,
 	                      MUSE_CAMERA_EVENT_TYPE_CAPTURE_COMPLETE,
-	                      MUSE_CAMERA_EVENT_CLASS_IDLE,
+	                      MUSE_CAMERA_EVENT_CLASS_MAIN_THREAD,
 	                      module);
 	return;
 }
@@ -696,7 +696,7 @@ void _camera_dispatcher_face_detected_cb(camera_detected_face_s *faces, int coun
 		/* send message */
 		muse_camera_msg_event2(MUSE_CAMERA_CB_EVENT,
 		                       MUSE_CAMERA_EVENT_TYPE_FACE_DETECTION,
-		                       MUSE_CAMERA_EVENT_CLASS_IDLE,
+		                       MUSE_CAMERA_EVENT_CLASS_MAIN_THREAD,
 		                       module,
 		                       INT, count,
 		                       INT, tbm_key);
@@ -715,7 +715,7 @@ void _camera_dispatcher_focus_changed_cb(camera_focus_state_e state, void *user_
 
 	muse_camera_msg_event1(MUSE_CAMERA_CB_EVENT,
 	                       MUSE_CAMERA_EVENT_TYPE_FOCUS_CHANGE,
-	                       MUSE_CAMERA_EVENT_CLASS_IDLE,
+	                       MUSE_CAMERA_EVENT_CLASS_MAIN_THREAD,
 	                       module,
 	                       INT, state);
 
@@ -730,7 +730,7 @@ void _camera_dispatcher_error_cb(camera_error_e error, camera_state_e current_st
 
 	muse_camera_msg_event2(MUSE_CAMERA_CB_EVENT,
 	                       MUSE_CAMERA_EVENT_TYPE_ERROR,
-	                       MUSE_CAMERA_EVENT_CLASS_IDLE,
+	                       MUSE_CAMERA_EVENT_CLASS_MAIN_THREAD,
 	                       module,
 	                       INT, error,
 	                       INT, current_state);
@@ -746,7 +746,7 @@ void _camera_dispatcher_hdr_progress_cb(int percent, void *user_data)
 
 	muse_camera_msg_event1(MUSE_CAMERA_CB_EVENT,
 	                       MUSE_CAMERA_EVENT_TYPE_HDR_PROGRESS,
-	                       MUSE_CAMERA_EVENT_CLASS_IDLE,
+	                       MUSE_CAMERA_EVENT_CLASS_MAIN_THREAD,
 	                       module,
 	                       INT, percent);
 	return;
@@ -861,17 +861,26 @@ int camera_dispatcher_start_preview(muse_module_h module)
 	muse_camera_handle_s *muse_camera = NULL;
 	muse_camera_api_e api = MUSE_CAMERA_API_START_PREVIEW;
 	char *caps = NULL;
+	camera_state_e prev_state = CAMERA_STATE_NONE;
 
 	muse_camera = (muse_camera_handle_s *)muse_core_ipc_get_handle(module);
 
 	LOGD("handle : %p", muse_camera);
 
+	legacy_camera_get_state(muse_camera->camera_handle, &prev_state);
+
 	ret = legacy_camera_start_preview(muse_camera->camera_handle);
-	if(ret == CAMERA_ERROR_NONE) {
+	if (ret != CAMERA_ERROR_NONE) {
+		LOGD("start preview failed 0x%x", ret);
+		muse_camera_msg_return(api, ret, module);
+		return MUSE_CAMERA_ERROR_NONE;
+	}
+
+	if (prev_state == CAMERA_STATE_CREATED) {
 		ret = legacy_camera_get_video_caps(muse_camera->camera_handle, &caps);
-		if((ret == CAMERA_ERROR_NONE) && caps) {
+		if (ret == CAMERA_ERROR_NONE && caps) {
 			LOGD("caps : %s", caps);
-			muse_camera_msg_return1(api, ret, module, STRING, caps);
+			muse_camera_msg_return2(api, ret, module, STRING, caps, INT, prev_state);
 			g_free(caps);
 		} else {
 			LOGD("Failed to get server's video caps. ret 0x%x, caps %p", ret, caps);
@@ -881,9 +890,8 @@ int camera_dispatcher_start_preview(muse_module_h module)
 			}
 		}
 	} else {
-		LOGD("start preview failed 0x%x", ret);
-		muse_camera_msg_return(api, ret, module);
-		return ret;
+		LOGD("preview started after capture");
+		muse_camera_msg_return1(api, ret, module, INT, prev_state);
 	}
 
 	return MUSE_CAMERA_ERROR_NONE;
@@ -1180,8 +1188,6 @@ int camera_dispatcher_set_display(muse_module_h module)
 {
 	int ret = CAMERA_ERROR_NONE;
 	muse_camera_handle_s *muse_camera = NULL;
-	int display_type;
-	int display_surface;
 	muse_camera_api_e api = MUSE_CAMERA_API_SET_DISPLAY;
 	static guint stream_id = 0;
 	char socket_path[SOCKET_PATH_LENGTH] = {0,};
@@ -1189,10 +1195,7 @@ int camera_dispatcher_set_display(muse_module_h module)
 
 	muse_camera = (muse_camera_handle_s *)muse_core_ipc_get_handle(module);
 
-	muse_camera_msg_get(display_type, muse_core_client_get_msg(module));
-	muse_camera_msg_get(display_surface, muse_core_client_get_msg(module));
-
-	LOGD("handle : 0x%x, display_type : %d", muse_camera, display_type);
+	LOGD("handle : 0x%x", muse_camera);
 
 	camera = muse_camera->camera_handle;
 	stream_id = muse_core_get_atomic_uint();
@@ -1201,10 +1204,7 @@ int camera_dispatcher_set_display(muse_module_h module)
 
 	LOGD("socket_path : %s", socket_path);
 
-	ret = legacy_camera_set_shm_socket_path_for_mused(camera, socket_path);
-
-	ret |= legacy_camera_set_mused_display(muse_camera->camera_handle, (camera_display_type_e)display_type);
-
+	ret = legacy_camera_set_display(muse_camera->camera_handle, CAMERA_DISPLAY_TYPE_REMOTE, (void *)socket_path);
 	if (ret != CAMERA_ERROR_NONE) {
 		muse_camera_msg_return(api, ret, module);
 	} else {
