@@ -154,7 +154,7 @@ typedef const char* STRING;
 	do{	\
 		char *__sndMsg__; \
 		int __len__; \
-		__sndMsg__ = muse_core_msg_json_factory_new(api, 	0); \
+		__sndMsg__ = muse_core_msg_json_factory_new(api, 0); \
 		__len__ = muse_core_ipc_send_msg(fd, __sndMsg__); \
 		if (__len__ <= 0) { \
 			LOGE("sending message failed"); \

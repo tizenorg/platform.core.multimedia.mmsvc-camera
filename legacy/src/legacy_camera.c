@@ -1443,6 +1443,7 @@ int legacy_camera_set_display(camera_h camera, camera_display_type_e type, camer
 
 	Evas_Object *obj = NULL;
 	const char *object_type = NULL;
+	char *socket_path = NULL;
 
 	if (camera == NULL) {
 		LOGE("INVALID_PARAMETER(0x%08x)", CAMERA_ERROR_INVALID_PARAMETER);
@@ -1457,13 +1458,11 @@ int legacy_camera_set_display(camera_h camera, camera_display_type_e type, camer
 	handle = (camera_s *)camera;
 	handle->display_type = type;
 
-	if (type == CAMERA_DISPLAY_TYPE_NONE) {
-		/* NULL surface */
-		set_surface = MM_DISPLAY_SURFACE_NULL;
-		handle->display_handle = 0;
+	LOGD("display type - %d, display handle - %p", type, display);
 
-		LOGD("display type NONE");
-	} else {
+	switch (type) {
+	case CAMERA_DISPLAY_TYPE_OVERLAY:
+	case CAMERA_DISPLAY_TYPE_EVAS:
 		obj = (Evas_Object *)display;
 		object_type = evas_object_type_get(obj);
 		if (object_type) {
@@ -1528,17 +1527,36 @@ int legacy_camera_set_display(camera_h camera, camera_display_type_e type, camer
 			LOGE("failed to get evas object type from %p", obj);
 			return CAMERA_ERROR_INVALID_PARAMETER;
 		}
+		break;
+	case CAMERA_DISPLAY_TYPE_REMOTE:
+		set_surface = MM_DISPLAY_SURFACE_REMOTE;
+		handle->display_handle = display;
+		break;
+	case CAMERA_DISPLAY_TYPE_NONE:
+		set_surface = MM_DISPLAY_SURFACE_NULL;
+		handle->display_handle = 0;
+		break;
+	default:
+		LOGE("unknown display type %d", type);
+		return CAMERA_ERROR_INVALID_PARAMETER;
 	}
 
 	ret = mm_camcorder_set_attributes(handle->mm_handle, NULL,
-					  MMCAM_DISPLAY_DEVICE, MM_DISPLAY_DEVICE_MAINLCD,
-					  MMCAM_DISPLAY_SURFACE, set_surface,
-					  NULL);
+	                                  MMCAM_DISPLAY_DEVICE, MM_DISPLAY_DEVICE_MAINLCD,
+	                                  MMCAM_DISPLAY_SURFACE, set_surface,
+	                                  NULL);
 
-	if (ret == MM_ERROR_NONE && type != CAMERA_DISPLAY_TYPE_NONE) {
-		ret = mm_camcorder_set_attributes(handle->mm_handle, NULL,
-						  MMCAM_DISPLAY_HANDLE, set_handle, sizeof(void *),
-						  NULL);
+	if (ret == MM_ERROR_NONE) {
+		if (type == CAMERA_DISPLAY_TYPE_REMOTE) {
+			socket_path = (char *)handle->display_handle;
+			ret = mm_camcorder_set_attributes(handle->mm_handle, NULL,
+			                                  MMCAM_DISPLAY_SHM_SOCKET_PATH, socket_path, strlen(socket_path),
+			                                  NULL);
+		} else if (type != CAMERA_DISPLAY_TYPE_NONE) {
+			ret = mm_camcorder_set_attributes(handle->mm_handle, NULL,
+			                                  MMCAM_DISPLAY_HANDLE, set_handle, sizeof(void *),
+			                                  NULL);
+		}
 	}
 
 	return __convert_camera_error_code(__func__, ret);

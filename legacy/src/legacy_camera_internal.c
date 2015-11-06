@@ -33,42 +33,6 @@
 #define LOG_TAG "TIZEN_N_CAMERA"
 
 
-int legacy_camera_set_mused_display(camera_h camera, camera_display_type_e type)
-{
-	int ret = MM_ERROR_NONE;
-	int set_surface = MM_DISPLAY_SURFACE_X;
-	camera_s *handle = NULL;
-
-	if (camera == NULL) {
-		LOGE("INVALID_PARAMETER(0x%08x)", CAMERA_ERROR_INVALID_PARAMETER);
-		return CAMERA_ERROR_INVALID_PARAMETER;
-	}
-
-	handle = (camera_s *)camera;
-	handle->display_type = type;
-
-	switch(type) {
-		case CAMERA_DISPLAY_TYPE_OVERLAY:
-			set_surface = MM_DISPLAY_SURFACE_X;
-			LOGD("display type OVERLAY : set_surface : 0x%x", set_surface);
-			break;
-		case CAMERA_DISPLAY_TYPE_EVAS:
-			set_surface = MM_DISPLAY_SURFACE_EVAS;
-			break;
-		case CAMERA_DISPLAY_TYPE_NONE:
-		default:
-			set_surface = MM_DISPLAY_SURFACE_NULL;
-			break;
-	}
-
-	ret = mm_camcorder_set_attributes(handle->mm_handle, NULL,
-					  MMCAM_DISPLAY_DEVICE, MM_DISPLAY_DEVICE_MAINLCD,
-					  MMCAM_DISPLAY_SURFACE, set_surface,
-					  NULL);
-
-	return __convert_camera_error_code(__func__, ret);
-}
-
 int legacy_camera_get_video_caps(camera_h camera, char **caps)
 {
 	int ret;
@@ -80,24 +44,6 @@ int legacy_camera_get_video_caps(camera_h camera, char **caps)
 		return __convert_camera_error_code(__func__, ret);
 	}
 #endif /* HAVE_WAYLAND */
-
-	return CAMERA_ERROR_NONE;
-}
-
-int legacy_camera_set_shm_socket_path_for_mused(camera_h camera, char *socket_path)
-{
-	int ret;
-	camera_s *handle = (camera_s *)camera;
-
-	LOGE("var : %s", socket_path);
-	ret = mm_camcorder_set_attributes(handle->mm_handle, NULL,
-				    MMCAM_DISPLAY_SHM_SOCKET_PATH, socket_path, strlen(socket_path),
-				    NULL);
-
-	if (ret != MM_ERROR_NONE) {
-		LOGE("error set shm socket path attribute 0x%x", ret);
-		return __convert_camera_error_code(__func__, ret);
-	}
 
 	return CAMERA_ERROR_NONE;
 }

@@ -115,6 +115,7 @@ typedef enum
 {
 	CAMERA_DISPLAY_TYPE_OVERLAY = 0,	/**< Overlay surface display */
 	CAMERA_DISPLAY_TYPE_EVAS,		/**< Evas object surface display */
+	CAMERA_DISPLAY_TYPE_REMOTE,		/**< Remote surface for display */
 	CAMERA_DISPLAY_TYPE_NONE		/**< This disposes off buffers */
 } camera_display_type_e;
 
