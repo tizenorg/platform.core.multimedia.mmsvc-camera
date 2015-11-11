@@ -165,6 +165,24 @@ typedef const char* STRING;
 	}while(0)
 
 /**
+ * @brief Send the message from proxy to module via ipc.
+ * @param[in] api The enumeration of the corresponding api.
+ * @param[in] fd The socket fd that connected to the module via ipc.
+ * @param[in] cb_info The callback information, waiting for the ack from the module.
+ */
+#define muse_camera_msg_send_no_return(api, fd, cb_info) \
+	do{	\
+		char *__sndMsg__; \
+		int __len__; \
+		__sndMsg__ = muse_core_msg_json_factory_new(api, 0); \
+		__len__ = muse_core_ipc_send_msg(fd, __sndMsg__); \
+		if (__len__ <= 0) { \
+			LOGE("sending message failed"); \
+		} \
+		muse_core_msg_json_factory_free(__sndMsg__); \
+	} while(0)
+
+/**
  * @brief Send the message from proxy to module via ipc, waits more period of time for the ack.
  * @param[in] api The enumeration of the corresponding api.
  * @param[in] fd The socket fd that connected to the module via ipc.
