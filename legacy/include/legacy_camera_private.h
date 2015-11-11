@@ -90,9 +90,6 @@ int __camera_start_continuous_focusing(camera_h camera);
 int _camera_set_use(camera_h camera, bool used);
 bool _camera_is_used(camera_h camera);
 void _camera_remove_cb_message(camera_s *handle);
-int _camera_get_tbm_surface_format(int in_format, uint32_t *out_format);
-int _camera_get_media_packet_mimetype(int in_format, media_format_mimetype_e *mimetype);
-int _camera_media_packet_finalize(media_packet_h pkt, int error_code, void *user_data);
 int __convert_camera_error_code(const char* func, int code);
 
 #ifdef __cplusplus

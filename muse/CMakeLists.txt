@@ -2,7 +2,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 SET(service "muse")
 SET(submodule "camera")
 
-SET(dependents "dlog glib-2.0 mused mm-common libtbm")
+SET(dependents "dlog glib-2.0 mused mm-common libtbm gstreamer-1.0")
 SET(fw_name "${service}-${submodule}")
 
 PROJECT(${fw_name})

@@ -19,6 +19,7 @@
 
 #include <tizen.h>
 #include <media_packet.h>
+#include <mm_camcorder.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -553,24 +554,7 @@ typedef void (*camera_focus_changed_cb)(camera_focus_state_e state, void *user_d
  * @see	camera_set_preview_cb()
  * @see	camera_unset_preview_cb()
  */
-typedef void (*camera_preview_cb)(camera_preview_data_s *frame, void *user_data);
-
-/**
- * @brief Called to register for notifications about delivering media packet when every preview frame is displayed.
- * @since_tizen @if MOBILE 2.3 @elseif WEARABLE 2.3.1 @endif
- *
- * @remarks This function is issued in the context of gstreamer so the UI update code should not be directly invoked.\n
- *          If the camera is used as a recorder then this callback function won't be called.\n
- *          and the packet should be released by media_packet_destroy() after use.
- *
- * @param[in] pkt Reference pointer to media packet
- * @param[in] user_data The user data passed from the callback registration function
- * @pre	camera_start_preview() will invoke this callback function if you register this callback using camera_set_media_packet_preview_cb().
- * @see	camera_start_preview()
- * @see	camera_set_media_packet_preview_cb()
- * @see	camera_unset_media_packet_preview_cb()
- */
-typedef void (*camera_media_packet_preview_cb)(media_packet_h pkt, void *user_data);
+typedef void (*camera_preview_cb)(MMCamcorderVideoStreamDataType *frame, void *user_data);
 
 /**
  * @brief Called to get information about image data taken by the camera once per frame while capturing.
@@ -1636,7 +1620,7 @@ int legacy_camera_unset_preview_cb(camera_h camera);
  * @see	camera_unset_media_packet_preview_cb()
  * @see	camera_media_packet_preview_cb()
  */
-int legacy_camera_set_media_packet_preview_cb(camera_h camera, camera_media_packet_preview_cb callback, void *user_data);
+int legacy_camera_set_media_packet_preview_cb(camera_h camera, camera_preview_cb callback, void *user_data);
 
 /**
  * @brief Unregisters the media packet callback function.

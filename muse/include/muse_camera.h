@@ -166,6 +166,7 @@ typedef enum {
 	MUSE_CAMERA_API_ATTR_IS_SUPPORTED_AUTO_CONTRAST,
 	MUSE_CAMERA_API_ATTR_DISABLE_SHUTTER_SOUND,
 	MUSE_CAMERA_API_RETURN_BUFFER,
+	MUSE_CAMERA_API_PREVIEW_CB_RETURN,
 	MUSE_CAMERA_API_MAX
 } muse_camera_api_e;
 
@@ -216,6 +217,7 @@ typedef enum {
 typedef struct {
 	tbm_bo bo;
 	int key;
+	void *internal_buffer;
 } muse_camera_export_data;
 
 typedef struct {
@@ -223,17 +225,10 @@ typedef struct {
 	tbm_bufmgr bufmgr;
 	GList *data_list;
 	GMutex list_lock;
+	GMutex preview_cb_lock;
+	GCond preview_cb_cond;
 } muse_camera_handle_s;
 
-/**
- * @brief The structure type for data transport for the muse camera
- */
-typedef struct {
-	int data_size;
-	int tbm_key;
-	tbm_bo bo;
-	tbm_bo_handle bo_handle;
-} muse_camera_transport_info_s;
 
 /**
  * @brief The structure type for muse camera errors.
