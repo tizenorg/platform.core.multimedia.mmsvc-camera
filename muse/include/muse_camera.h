@@ -30,7 +30,6 @@ extern "C" {
 #include <glib.h>
 #include <stdio.h>
 #include <tbm_bufmgr.h>
-#include "legacy_camera.h"
 #include "legacy_camera_internal.h"
 
 /**
@@ -171,6 +170,15 @@ typedef enum {
 } muse_camera_api_e;
 
 /**
+ * @brief Enumeration for the muse camera API class.
+ */
+typedef enum {
+	MUSE_CAMERA_API_CLASS_IMMEDIATE,
+	MUSE_CAMERA_API_CLASS_THREAD_SUB,
+	MUSE_CAMERA_API_CLASS_NUM
+} muse_camera_api_class_e;
+
+/**
  * @brief Enumeration for the muse camera events.
  */
 typedef enum {
@@ -205,12 +213,11 @@ typedef enum {
 }muse_camera_event_e;
 
 /**
- * @brief Enumeration for the muse camera events.
+ * @brief Enumeration for the muse camera events class.
  */
 typedef enum {
-	MUSE_CAMERA_EVENT_CLASS_NORMAL,
-	MUSE_CAMERA_EVENT_CLASS_IMMEDIATE,
-	MUSE_CAMERA_EVENT_CLASS_MAIN_THREAD,
+	MUSE_CAMERA_EVENT_CLASS_THREAD_MAIN,
+	MUSE_CAMERA_EVENT_CLASS_THREAD_SUB,
 	MUSE_CAMERA_EVENT_CLASS_NUM
 } muse_camera_event_class_e;
 
