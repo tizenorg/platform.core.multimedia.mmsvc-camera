@@ -352,6 +352,7 @@ static int __mm_camera_message_callback(int message, void *param, void *user_dat
 	case MM_MESSAGE_CAMCORDER_STATE_CHANGED:
 	case MM_MESSAGE_CAMCORDER_STATE_CHANGED_BY_ASM:
 	case MM_MESSAGE_CAMCORDER_STATE_CHANGED_BY_SECURITY:
+	case MM_MESSAGE_CAMCORDER_STATE_CHANGED_BY_RM:
 		if (message == MM_MESSAGE_CAMCORDER_STATE_CHANGED &&
 		    (m->state.previous < MM_CAMCORDER_STATE_NONE ||
 		     m->state.previous > MM_CAMCORDER_STATE_PAUSED ||
@@ -383,6 +384,9 @@ static int __mm_camera_message_callback(int message, void *param, void *user_dat
 		} else if (message == MM_MESSAGE_CAMCORDER_STATE_CHANGED_BY_SECURITY) {
 			policy = CAMERA_POLICY_SECURITY;
 			LOGW("CAMERA_POLICY_SECURITY");
+		} else if (message == MM_MESSAGE_CAMCORDER_STATE_CHANGED_BY_RM) {
+			policy = CAMERA_POLICY_RESOURCE_CONFLICT;
+			LOGW("CAMERA_POLICY_RESOURCE_CONFLICT");
 		}
 
 		if (previous_state != handle->state && handle->user_cb[_CAMERA_EVENT_TYPE_STATE_CHANGE]) {
