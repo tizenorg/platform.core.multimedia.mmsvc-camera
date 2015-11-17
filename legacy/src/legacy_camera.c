@@ -1362,6 +1362,16 @@ int legacy_camera_set_display(camera_h camera, camera_display_type_e type, camer
 	if (ret == MM_ERROR_NONE) {
 		if (type == CAMERA_DISPLAY_TYPE_REMOTE) {
 			socket_path = (char *)handle->display_handle;
+
+			if (!access(socket_path, F_OK)) {
+				LOGW("socket_path already existed. remove it.");
+				if (!unlink(socket_path)) {
+					LOGW("[%s] remove done", socket_path);
+				} else {
+					LOGE("[%s] remove failed : errno %d", socket_path, errno);
+				}
+			}
+
 			ret = mm_camcorder_set_attributes(handle->mm_handle, NULL,
 			                                  MMCAM_DISPLAY_SHM_SOCKET_PATH, socket_path, strlen(socket_path),
 			                                  NULL);
