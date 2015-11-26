@@ -2096,6 +2096,10 @@ int legacy_camera_get_recommended_preview_resolution(camera_h camera, int *width
 	MMCamAttrsInfo height_info;
 
 	legacy_camera_get_capture_resolution(camera, &capture_w, &capture_h);
+	if (capture_h == 0) {
+		LOGE("Capture Height is 0");
+		return CAMERA_ERROR_INVALID_PARAMETER;
+	}
 	ratio = (double)capture_w / (double)capture_h;
 	if (ratio > 1.5) {
 		wide = MM_CAMCORDER_PREVIEW_TYPE_WIDE;
