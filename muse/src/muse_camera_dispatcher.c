@@ -403,7 +403,7 @@ void _camera_dispatcher_capturing_cb(camera_image_data_s* image, camera_image_da
 	if (is_thumbnail) {
 		memcpy(buf_pos, thumbnail, sizeof(camera_image_data_s));
 		buf_pos += sizeof(camera_image_data_s);
-		memcpy(buf_pos + sizeof(camera_image_data_s), image->data, thumbnail->size);
+		memcpy(buf_pos + sizeof(camera_image_data_s), thumbnail->data, thumbnail->size);
 	}
 
 	tbm_bo_unmap(bo);
@@ -717,6 +717,10 @@ void _camera_dispatcher_face_detected_cb(camera_detected_face_s *faces, int coun
 		bo = tbm_bo_alloc(muse_camera->bufmgr, bo_size, TBM_BO_DEFAULT);
 		if (bo == NULL) {
 			LOGE("tbm_bo_alloc failed");
+
+			g_free(export_data);
+			export_data = NULL;
+
 			return;
 		}
 
@@ -2501,7 +2505,7 @@ int camera_dispatcher_attr_set_tag_image_description(muse_module_h module)
 	muse_camera_handle_s *muse_camera = NULL;
 	muse_camera_api_e api = MUSE_CAMERA_API_ATTR_SET_TAG_IMAGE_DESCRIPTION;
 	muse_camera_api_class_e class = MUSE_CAMERA_API_CLASS_IMMEDIATE;
-	char description[MUSE_MSG_MAX_LENGTH] = {0,};
+	char description[MUSE_CAMERA_MSG_MAX_LENGTH] = {0,};
 
 	muse_camera = (muse_camera_handle_s *)muse_core_ipc_get_handle(module);
 
@@ -2547,7 +2551,7 @@ int camera_dispatcher_attr_set_tag_software(muse_module_h module)
 	muse_camera_handle_s *muse_camera = NULL;
 	muse_camera_api_e api = MUSE_CAMERA_API_ATTR_SET_TAG_SOFTWARE;
 	muse_camera_api_class_e class = MUSE_CAMERA_API_CLASS_IMMEDIATE;
-	char software[MUSE_MSG_MAX_LENGTH] = {0,};
+	char software[MUSE_CAMERA_MSG_MAX_LENGTH] = {0,};
 
 	muse_camera = (muse_camera_handle_s *)muse_core_ipc_get_handle(module);
 

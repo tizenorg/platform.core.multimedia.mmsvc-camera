@@ -211,9 +211,10 @@ static gboolean __mm_videostream_callback(MMCamcorderVideoStreamDataType *stream
 
 	camera_s *handle = (camera_s *)user_data;
 
-	if (handle->user_cb[_CAMERA_EVENT_TYPE_PREVIEW] ||
-	    handle->user_cb[_CAMERA_EVENT_TYPE_MEDIA_PACKET_PREVIEW]) {
+	if (handle->user_cb[_CAMERA_EVENT_TYPE_PREVIEW]) {
 		((camera_preview_cb)handle->user_cb[_CAMERA_EVENT_TYPE_PREVIEW])(stream, handle->user_data[_CAMERA_EVENT_TYPE_PREVIEW]);
+	} else if (handle->user_cb[_CAMERA_EVENT_TYPE_MEDIA_PACKET_PREVIEW]) {
+		((camera_preview_cb)handle->user_cb[_CAMERA_EVENT_TYPE_MEDIA_PACKET_PREVIEW])(stream, handle->user_data[_CAMERA_EVENT_TYPE_MEDIA_PACKET_PREVIEW]);
 	}
 
 	return 1;
@@ -1367,13 +1368,10 @@ int legacy_camera_set_display(camera_h camera, camera_display_type_e type, camer
 		if (type == CAMERA_DISPLAY_TYPE_REMOTE) {
 			socket_path = (char *)handle->display_handle;
 
-			if (!access(socket_path, F_OK)) {
-				LOGW("socket_path already existed. remove it.");
-				if (!unlink(socket_path)) {
-					LOGW("[%s] remove done", socket_path);
-				} else {
-					LOGE("[%s] remove failed : errno %d", socket_path, errno);
-				}
+			if (!unlink(socket_path)) {
+				LOGW("[%s] remove done", socket_path);
+			} else {
+				LOGW("[%s] remove failed : errno %d", socket_path, errno);
 			}
 
 			ret = mm_camcorder_set_attributes(handle->mm_handle, NULL,
