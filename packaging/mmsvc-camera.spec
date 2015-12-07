@@ -3,7 +3,7 @@
 
 Name:       mmsvc-camera
 Summary:    A Camera module for muse server
-Version:    0.2.17
+Version:    0.2.18
 Release:    0
 Group:      Multimedia/Libraries
 License:    Apache-2.0
@@ -13,7 +13,6 @@ BuildRequires:  pkgconfig(gstreamer-1.0)
 BuildRequires:  pkgconfig(dlog)
 BuildRequires:  pkgconfig(mused)
 BuildRequires:  pkgconfig(mm-camcorder)
-BuildRequires:  pkgconfig(audio-session-mgr)
 BuildRequires:  pkgconfig(capi-base-common)
 BuildRequires:  pkgconfig(capi-media-tool)
 %if %{with x}

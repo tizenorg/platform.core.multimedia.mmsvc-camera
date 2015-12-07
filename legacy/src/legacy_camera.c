@@ -19,7 +19,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <mm.h>
-#include <audio-session-manager-types.h>
 #include <mm_camcorder.h>
 #include <mm_types.h>
 #include <math.h>
@@ -367,13 +366,13 @@ static int __mm_camera_message_callback(int message, void *param, void *user_dat
 
 		if (message == MM_MESSAGE_CAMCORDER_STATE_CHANGED_BY_ASM) {
 			switch (m->state.code) {
-			case ASM_EVENT_SOURCE_CALL_START:
-			case ASM_EVENT_SOURCE_CALL_END:
+			case MM_MSG_CODE_INTERRUPTED_BY_CALL_START:
+			case MM_MSG_CODE_INTERRUPTED_BY_CALL_END:
 				policy = CAMERA_POLICY_SOUND_BY_CALL;
 				LOGW("CAMERA_POLICY_SOUND_BY_CALL");
 				break;
-			case ASM_EVENT_SOURCE_ALARM_START:
-			case ASM_EVENT_SOURCE_ALARM_END:
+			case MM_MSG_CODE_INTERRUPTED_BY_ALARM_START:
+			case MM_MSG_CODE_INTERRUPTED_BY_ALARM_END:
 				policy = CAMERA_POLICY_SOUND_BY_ALARM;
 				LOGW("CAMERA_POLICY_SOUND_BY_ALARM");
 				break;
