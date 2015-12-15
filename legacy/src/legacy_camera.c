@@ -1737,6 +1737,22 @@ int legacy_camera_get_preview_format(camera_h camera, camera_pixel_format_e *for
 	return __convert_camera_error_code(__func__, ret);
 }
 
+int legacy_camera_get_facing_direction(camera_h camera, camera_facing_direction_e *facing_direction)
+{
+	if (camera == NULL || facing_direction == NULL) {
+		LOGE("INVALID_PARAMETER(0x%08x)", CAMERA_ERROR_INVALID_PARAMETER);
+		return CAMERA_ERROR_INVALID_PARAMETER;
+	}
+
+	int ret = MM_ERROR_NONE;
+	camera_s *handle = (camera_s *)camera;
+
+	ret = mm_camcorder_get_attributes(handle->mm_handle, NULL,
+					  MMCAM_CAMERA_FACING_DIRECTION, facing_direction,
+					  NULL);
+
+	return __convert_camera_error_code(__func__, ret);
+}
 
 int legacy_camera_set_preview_cb(camera_h camera, camera_preview_cb callback, void *user_data)
 {
