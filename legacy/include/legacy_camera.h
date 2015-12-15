@@ -172,6 +172,16 @@ typedef enum
 } camera_focus_state_e;
 
 /**
+ * @brief Enumeration for the facing direction of camera module
+ * @since_tizen @if MOBILE 3.0 @elseif WEARABLE 3.0 @endif
+ */
+typedef enum {
+	CAMERA_FACING_DIRECTION_REAR = 0, /**< Rear */
+	CAMERA_FACING_DIRECTION_FRONT,    /**< front */
+} camera_facing_direction_e;
+
+
+/**
  * @brief The structure type of the image data.
  * @since_tizen @if MOBILE 2.3 @elseif WEARABLE 2.3.1 @endif
  */

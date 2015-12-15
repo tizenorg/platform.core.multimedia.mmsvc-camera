@@ -1666,6 +1666,26 @@ int camera_dispatcher_get_preview_format(muse_module_h module)
 	return MUSE_CAMERA_ERROR_NONE;
 }
 
+int camera_dispatcher_get_facing_direction(muse_module_h module)
+{
+	int ret = CAMERA_ERROR_NONE;
+	muse_camera_handle_s *muse_camera = NULL;
+	camera_facing_direction_e get_facing_direction = CAMERA_FACING_DIRECTION_REAR;
+	muse_camera_api_e api = MUSE_CAMERA_API_GET_FACING_DIRECTION;
+	muse_camera_api_class_e class = MUSE_CAMERA_API_CLASS_IMMEDIATE;
+
+	muse_camera = (muse_camera_handle_s *)muse_core_ipc_get_handle(module);
+
+	LOGD("handle : %p", muse_camera);
+
+	ret = legacy_camera_get_facing_direction(muse_camera->camera_handle, &get_facing_direction);
+	if (ret == CAMERA_ERROR_NONE) {
+		muse_camera_msg_return1(api, class, ret, module, INT, get_facing_direction);
+	} else {
+		muse_camera_msg_return(api, class, ret, module);
+	}
+}
+
 int camera_dispatcher_set_preview_cb(muse_module_h module)
 {
 	int ret = CAMERA_ERROR_NONE;
@@ -3827,6 +3847,7 @@ int (*dispatcher[MUSE_CAMERA_API_MAX]) (muse_module_h module) = {
 	camera_dispatcher_get_capture_resolution, /* MUSE_CAMERA_API_GET_CAPTURE_RESOLUTION, */
 	camera_dispatcher_get_capture_format, /* MUSE_CAMERA_API_GET_CAPTURE_FORMAT, */
 	camera_dispatcher_get_preview_format, /* MUSE_CAMERA_API_GET_PREVIEW_FORMAT, */
+	camera_dispatcher_get_facing_direction, /* MUSE_CAMERA_API_GET_FACING_DIRECTION, */
 	camera_dispatcher_set_preview_cb, /* MUSE_CAMERA_API_SET_PREVIEW_CB, */
 	camera_dispatcher_unset_preview_cb, /* MUSE_CAMERA_API_UNSET_PREVIEW_CB, */
 	camera_dispatcher_set_media_packet_preview_cb, /* MUSE_CAMERA_API_SET_MEDIA_PACKET_PREVIEW_CB, */
