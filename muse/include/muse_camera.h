@@ -268,7 +268,7 @@ typedef enum {
 /**
  * @brief Definition for the wait time of the ipc callback.
  */
-#define CALLBACK_TIME_OUT 3
+#define CALLBACK_TIME_OUT 5
 
 /**
  * @brief Definition for the long wait time of the ipc callback.
