@@ -537,6 +537,9 @@ void _camera_dispatcher_preview_cb(MMCamcorderVideoStreamDataType *stream, void 
 			data_size += stream->data.yuv422p.length_u;
 			data_size += stream->data.yuv422p.length_v;
 			break;
+		case MM_CAM_STREAM_DATA_ENCODED:
+			data_size += stream->data.encoded.length_data;
+			break;
 		default :
 			LOGW("unknown data type %d", stream->data_type);
 			break;
@@ -587,6 +590,9 @@ void _camera_dispatcher_preview_cb(MMCamcorderVideoStreamDataType *stream, void 
 			memcpy(buf_pos, stream->data.yuv422p.y, stream->data.yuv422p.length_y);
 			memcpy(buf_pos + stream->data.yuv422p.length_y, stream->data.yuv422p.u, stream->data.yuv422p.length_u);
 			memcpy(buf_pos + stream->data.yuv422p.length_y + stream->data.yuv422p.length_u, stream->data.yuv422p.v, stream->data.yuv422p.length_v);
+			break;
+		case MM_CAM_STREAM_DATA_ENCODED:
+			memcpy(buf_pos, stream->data.encoded.data, stream->data.encoded.length_data);
 			break;
 		default :
 			break;
