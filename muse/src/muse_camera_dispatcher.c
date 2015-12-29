@@ -868,10 +868,6 @@ int camera_dispatcher_create(muse_module_h module)
 
 	memset(muse_camera, 0x0, sizeof(muse_camera_handle_s));
 
-	g_mutex_init(&muse_camera->list_lock);
-	g_mutex_init(&muse_camera->preview_cb_lock);
-	g_cond_init(&muse_camera->preview_cb_cond);
-
 	if (muse_core_ipc_get_bufmgr(&muse_camera->bufmgr) != MM_ERROR_NONE) {
 		LOGE("muse_core_ipc_get_bufmgr failed");
 
@@ -894,12 +890,7 @@ int camera_dispatcher_create(muse_module_h module)
 	}
 
 	ret = legacy_camera_set_client_pid(muse_camera->camera_handle, pid);
-	if (ret == CAMERA_ERROR_NONE) {
-		LOGD("handle : 0x%x", muse_camera);
-		handle = (intptr_t)muse_camera;
-		muse_core_ipc_set_handle(module, (intptr_t)muse_camera);
-		muse_camera_msg_return1(api, class, ret, module, POINTER, handle);
-	} else {
+	if (ret != CAMERA_ERROR_NONE) {
 		LOGE("legacy_camera_set_client_pid failed : 0x%x", ret);
 
 		legacy_camera_destroy(muse_camera->camera_handle);
@@ -907,9 +898,19 @@ int camera_dispatcher_create(muse_module_h module)
 
 		free(muse_camera);
 		muse_camera = NULL;
-
 		muse_camera_msg_return(api, class, ret, module);
+
+		return MUSE_CAMERA_ERROR_NONE;
 	}
+
+	g_mutex_init(&muse_camera->list_lock);
+	g_mutex_init(&muse_camera->preview_cb_lock);
+	g_cond_init(&muse_camera->preview_cb_cond);
+
+	LOGD("handle : 0x%x", muse_camera);
+	handle = (intptr_t)muse_camera;
+	muse_core_ipc_set_handle(module, (intptr_t)muse_camera);
+	muse_camera_msg_return1(api, class, ret, module, POINTER, handle);
 
 	return MUSE_CAMERA_ERROR_NONE;
 }
