@@ -1470,6 +1470,19 @@ int legacy_camera_set_preview_format(camera_h camera, camera_pixel_format_e form
 int legacy_camera_get_preview_format(camera_h camera, camera_pixel_format_e *format);
 
 /**
+ * @brief Gets the facing direction of camera module.
+ * @since_tizen 3.0
+ * @param[in] camera The handle to the camera
+ * @param[out] facing_direciton The facing direction of camera module
+ * @return @c 0 on success, otherwise a negative error value
+ * @retval #CAMERA_ERROR_NONE Successful
+ * @retval #CAMERA_ERROR_INVALID_OPERATION Internal error
+ * @retval #CAMERA_ERROR_INVALID_PARAMETER Invalid parameter
+ * @retval #CAMERA_ERROR_NOT_SUPPORTED The feature is not supported
+ */
+int legacy_camera_get_facing_direction(camera_h camera, camera_facing_direction_e *facing_direction);
+
+/**
  * @}
  */
 

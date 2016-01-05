@@ -257,12 +257,12 @@ typedef enum {
 #define MUSE_CAMERA_MSG_MAX_LENGTH		512
 
 /**
- * @brief Definition for the socket path length of the shmsink.
+ * @brief Definition for the socket path length of the ipc sink.
  */
 #define SOCKET_PATH_LENGTH 32
 
 /**
- * @brief Definition for the socket path base of the shmsink.
+ * @brief Definition for the socket path base of the ipc sink.
  */
 #define SOCKET_PATH_BASE "/tmp/mused_gst.%d"
 

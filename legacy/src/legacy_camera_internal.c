@@ -30,7 +30,7 @@
 #ifdef LOG_TAG
 #undef LOG_TAG
 #endif
-#define LOG_TAG "TIZEN_N_CAMERA"
+#define LOG_TAG "LEGACY_CAMERA"
 
 
 int legacy_camera_get_video_caps(camera_h camera, char **caps)

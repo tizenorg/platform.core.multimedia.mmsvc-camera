@@ -39,7 +39,7 @@
 #ifdef LOG_TAG
 #undef LOG_TAG
 #endif
-#define LOG_TAG "TIZEN_N_CAMERA"
+#define LOG_TAG "LEGACY_CAMERA"
 
 static gboolean __mm_videostream_callback(MMCamcorderVideoStreamDataType *stream, void *user_data);
 static gboolean __mm_capture_callback(MMCamcorderCaptureDataType *frame, MMCamcorderCaptureDataType *thumbnail, void *user_data);
@@ -1374,7 +1374,7 @@ int legacy_camera_set_display(camera_h camera, camera_display_type_e type, camer
 			}
 
 			ret = mm_camcorder_set_attributes(handle->mm_handle, NULL,
-			                                  MMCAM_DISPLAY_SHM_SOCKET_PATH, socket_path, strlen(socket_path),
+			                                  MMCAM_DISPLAY_SOCKET_PATH, socket_path, strlen(socket_path),
 			                                  NULL);
 		} else if (type != CAMERA_DISPLAY_TYPE_NONE) {
 			ret = mm_camcorder_set_attributes(handle->mm_handle, NULL,

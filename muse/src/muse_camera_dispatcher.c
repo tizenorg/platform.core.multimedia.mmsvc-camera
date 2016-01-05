@@ -1691,6 +1691,8 @@ int camera_dispatcher_get_facing_direction(muse_module_h module)
 	} else {
 		muse_camera_msg_return(api, class, ret, module);
 	}
+
+	return MUSE_CAMERA_ERROR_NONE;
 }
 
 int camera_dispatcher_set_preview_cb(muse_module_h module)
