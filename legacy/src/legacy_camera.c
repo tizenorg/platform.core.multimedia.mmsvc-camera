@@ -645,6 +645,7 @@ int legacy_camera_create(camera_device_e device, camera_h* camera)
 	handle->is_used_in_recorder = false;
 	handle->on_continuous_focusing = false;
 	handle->cached_focus_mode = -1;
+	handle->device_type = device;
 
 	g_mutex_init(&handle->idle_cb_lock);
 
@@ -1086,7 +1087,6 @@ int legacy_camera_get_device_count(camera_h camera, int *device_count)
 	return __convert_camera_error_code(__func__, ret);
 }
 
-
 int legacy_camera_start_face_detection(camera_h camera, camera_face_detected_cb callback, void *user_data)
 {
 	if (camera == NULL) {
@@ -1175,6 +1175,20 @@ int legacy_camera_get_state(camera_h camera, camera_state_e *state)
 	return CAMERA_ERROR_NONE;
 }
 
+int legacy_camera_get_device_type(camera_h camera, camera_device_e *device_type)
+{
+	int ret = MM_ERROR_NONE;
+	camera_s *handle = (camera_s *)camera;
+
+	if (camera == NULL || device_type == NULL) {
+		LOGE("INVALID_PARAMETER(0x%08x)", CAMERA_ERROR_INVALID_PARAMETER);
+		return CAMERA_ERROR_INVALID_PARAMETER;
+	}
+
+	*device_type = handle->device_type;
+
+	return ret;
+}
 
 int legacy_camera_start_focusing(camera_h camera, bool continuous)
 {
@@ -4087,4 +4101,76 @@ int legacy_camera_attr_disable_shutter_sound(camera_h camera, bool disable)
 	}
 
 	return CAMERA_ERROR_NONE;
+}
+
+
+int legacy_camera_attr_get_encoded_preview_bitrate(camera_h camera, int *bitrate)
+{
+	if (camera == NULL || bitrate == NULL) {
+		LOGE("INVALID_PARAMETER(0x%08x)", CAMERA_ERROR_INVALID_PARAMETER);
+		return CAMERA_ERROR_INVALID_PARAMETER;
+	}
+
+	int ret = MM_ERROR_NONE;
+	camera_s *handle = (camera_s *)camera;
+
+	ret = mm_camcorder_get_attributes(handle->mm_handle, NULL,
+					  MMCAM_ENCODED_PREVIEW_BITRATE, bitrate,
+					  NULL);
+
+	return __convert_camera_error_code(__func__, ret);
+}
+
+
+int legacy_camera_attr_set_encoded_preview_bitrate(camera_h camera, int bitrate)
+{
+	if (camera == NULL) {
+		LOGE("INVALID_PARAMETER(0x%08x)", CAMERA_ERROR_INVALID_PARAMETER);
+		return CAMERA_ERROR_INVALID_PARAMETER;
+	}
+
+	int ret = MM_ERROR_NONE;
+	camera_s *handle = (camera_s *)camera;
+
+	ret = mm_camcorder_set_attributes(handle->mm_handle, NULL,
+					  MMCAM_ENCODED_PREVIEW_BITRATE, bitrate,
+					  NULL);
+
+	return __convert_camera_error_code(__func__, ret);
+}
+
+
+int legacy_camera_attr_get_encoded_preview_gop_interval(camera_h camera, int *interval)
+{
+	if (camera == NULL || interval == NULL) {
+		LOGE("INVALID_PARAMETER(0x%08x)", CAMERA_ERROR_INVALID_PARAMETER);
+		return CAMERA_ERROR_INVALID_PARAMETER;
+	}
+
+	int ret = MM_ERROR_NONE;
+	camera_s *handle = (camera_s *)camera;
+
+	ret = mm_camcorder_get_attributes(handle->mm_handle, NULL,
+					  MMCAM_ENCODED_PREVIEW_GOP_INTERVAL, interval,
+					  NULL);
+
+	return __convert_camera_error_code(__func__, ret);
+}
+
+
+int legacy_camera_attr_set_encoded_preview_gop_interval(camera_h camera, int interval)
+{
+	if (camera == NULL) {
+		LOGE("INVALID_PARAMETER(0x%08x)", CAMERA_ERROR_INVALID_PARAMETER);
+		return CAMERA_ERROR_INVALID_PARAMETER;
+	}
+
+	int ret = MM_ERROR_NONE;
+	camera_s *handle = (camera_s *)camera;
+
+	ret = mm_camcorder_set_attributes(handle->mm_handle, NULL,
+					  MMCAM_ENCODED_PREVIEW_GOP_INTERVAL, interval,
+					  NULL);
+
+	return __convert_camera_error_code(__func__, ret);
 }
