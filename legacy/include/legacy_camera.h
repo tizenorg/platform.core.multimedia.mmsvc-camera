@@ -454,6 +454,15 @@ typedef enum
 } camera_attr_flash_mode_e;
 
 /**
+ * @brief Enumeration for the current flash state.
+ * @since_tizen 3.0
+ */
+typedef enum {
+	CAMERA_ATTR_FLASH_STATE_OFF = 0,  /**< Flash is currently off */
+	CAMERA_ATTR_FLASH_STATE_ON,       /**< Flash is currently on */
+} camera_attr_flash_state_e;
+
+/**
  * @brief Enumeration to preview FPS.
  * @since_tizen @if MOBILE 2.3 @elseif WEARABLE 2.3.1 @endif
  */
@@ -3453,6 +3462,12 @@ bool legacy_camera_attr_is_supported_auto_contrast(camera_h camera);
  * @retval #CAMERA_ERROR_NOT_SUPPORTED The feature is not supported
  */
 int legacy_camera_attr_disable_shutter_sound(camera_h camera, bool disable);
+
+int legacy_camera_attr_get_encoded_preview_bitrate(camera_h camera, int *bitrate);
+int legacy_camera_attr_set_encoded_preview_bitrate(camera_h camera, int bitrate);
+int legacy_camera_attr_get_encoded_preview_gop_interval(camera_h camera, int *gop);
+int legacy_camera_attr_set_encoded_preview_gop_interval(camera_h camera, int gop);
+
 
 /**
  * @}
