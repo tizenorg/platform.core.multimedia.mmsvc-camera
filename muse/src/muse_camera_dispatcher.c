@@ -1695,6 +1695,29 @@ int camera_dispatcher_get_facing_direction(muse_module_h module)
 	return MUSE_CAMERA_ERROR_NONE;
 }
 
+int camera_dispatcher_get_flash_state(muse_module_h module)
+{
+	int ret = CAMERA_ERROR_NONE;
+	camera_device_e device_type = CAMERA_DEVICE_CAMERA0;
+	muse_camera_handle_s *muse_camera = NULL;
+	camera_flash_state_e get_flash_state = CAMERA_FLASH_STATE_NOT_USED;
+	muse_camera_api_e api = MUSE_CAMERA_API_GET_FLASH_STATE;
+	muse_camera_api_class_e class = MUSE_CAMERA_API_CLASS_IMMEDIATE;
+
+	muse_camera_msg_get(device_type, muse_core_client_get_msg(module));
+
+	if (device_type == CAMERA_DEVICE_CAMERA0)
+		muse_core_client_get_value(module, "flash_state_camera0", &get_flash_state);
+	else
+		muse_core_client_get_value(module, "flash_state_camera1", &get_flash_state);
+
+	LOGD("fash state : %d", get_flash_state);
+
+	muse_camera_msg_return1(api, class, ret, module, INT, get_flash_state);
+
+	return MUSE_CAMERA_ERROR_NONE;
+}
+
 int camera_dispatcher_set_preview_cb(muse_module_h module)
 {
 	int ret = CAMERA_ERROR_NONE;
@@ -2645,7 +2668,8 @@ int camera_dispatcher_attr_set_flash_mode(muse_module_h module)
 {
 	int ret = CAMERA_ERROR_NONE;
 	muse_camera_handle_s *muse_camera = NULL;
-	int set_mode;
+	int set_mode = 0;;
+	camera_device_e device_type = CAMERA_DEVICE_CAMERA0;
 	muse_camera_api_e api = MUSE_CAMERA_API_ATTR_SET_FLASH_MODE;
 	muse_camera_api_class_e class = MUSE_CAMERA_API_CLASS_IMMEDIATE;
 
@@ -2656,6 +2680,15 @@ int camera_dispatcher_attr_set_flash_mode(muse_module_h module)
 	LOGD("handle : 0x%x, set_mode : %d", muse_camera, set_mode);
 
 	ret = legacy_camera_attr_set_flash_mode(muse_camera->camera_handle, (camera_attr_flash_mode_e)set_mode);
+	if (ret == CAMERA_ERROR_NONE) {
+		ret = legacy_camera_get_device_type(muse_camera->camera_handle, &device_type);
+		if (ret == CAMERA_ERROR_NONE) {
+			if (device_type == CAMERA_DEVICE_CAMERA0)
+				muse_core_client_set_value(module, "flash_state_camera0", set_mode>0?1:0);
+			else
+				muse_core_client_set_value(module, "flash_state_camera1", set_mode>0?1:0);
+		}
+	}
 
 	LOGD("ret : 0x%x", ret);
 
@@ -3779,6 +3812,96 @@ int camera_dispatcher_attr_disable_shutter_sound(muse_module_h module)
 	return MUSE_CAMERA_ERROR_NONE;
 }
 
+int camera_dispatcher_attr_get_encoded_preview_bitrate(muse_module_h module)
+{
+	int ret = CAMERA_ERROR_NONE;
+	muse_camera_handle_s *muse_camera = NULL;
+	int get_bitrate;
+	muse_camera_api_e api = MUSE_CAMERA_API_ATTR_GET_ENCODED_PREVIEW_BITRATE;
+	muse_camera_api_class_e class = MUSE_CAMERA_API_CLASS_IMMEDIATE;
+
+	muse_camera = (muse_camera_handle_s *)muse_core_ipc_get_handle(module);
+
+	LOGD("handle : %p", muse_camera);
+
+	ret = legacy_camera_attr_get_encoded_preview_bitrate(muse_camera->camera_handle, &get_bitrate);
+	if (ret == CAMERA_ERROR_NONE) {
+		muse_camera_msg_return1(api, class, ret, module, INT, get_bitrate);
+	} else {
+		muse_camera_msg_return(api, class, ret, module);
+	}
+
+	return MUSE_CAMERA_ERROR_NONE;
+}
+
+int camera_dispatcher_attr_set_encoded_preview_bitrate(muse_module_h module)
+{
+	int ret = CAMERA_ERROR_NONE;
+	muse_camera_handle_s *muse_camera = NULL;
+	int set_bitrate;
+	muse_camera_api_e api = MUSE_CAMERA_API_ATTR_SET_ENCODED_PREVIEW_BITRATE;
+	muse_camera_api_class_e class = MUSE_CAMERA_API_CLASS_IMMEDIATE;
+
+	muse_camera = (muse_camera_handle_s *)muse_core_ipc_get_handle(module);
+
+	muse_camera_msg_get(set_bitrate, muse_core_client_get_msg(module));
+
+	LOGD("handle : 0x%x, set_encoded_preview_bitrate : %d", muse_camera, set_bitrate);
+
+	ret = legacy_camera_attr_set_encoded_preview_bitrate(muse_camera->camera_handle, set_bitrate);
+
+	LOGD("ret : 0x%x", ret);
+
+	muse_camera_msg_return(api, class, ret, module);
+
+	return MUSE_CAMERA_ERROR_NONE;
+}
+
+int camera_dispatcher_attr_get_encoded_preview_gop_interval(muse_module_h module)
+{
+	int ret = CAMERA_ERROR_NONE;
+	muse_camera_handle_s *muse_camera = NULL;
+	int get_gop_interval;
+	muse_camera_api_e api = MUSE_CAMERA_API_ATTR_GET_ENCODED_PREVIEW_GOP_INTERVAL;
+	muse_camera_api_class_e class = MUSE_CAMERA_API_CLASS_IMMEDIATE;
+
+	muse_camera = (muse_camera_handle_s *)muse_core_ipc_get_handle(module);
+
+	LOGD("handle : %p", muse_camera);
+
+	ret = legacy_camera_attr_get_encoded_preview_gop_interval(muse_camera->camera_handle, &get_gop_interval);
+	if (ret == CAMERA_ERROR_NONE) {
+		muse_camera_msg_return1(api, class, ret, module, INT, get_gop_interval);
+	} else {
+		muse_camera_msg_return(api, class, ret, module);
+	}
+
+	return MUSE_CAMERA_ERROR_NONE;
+}
+
+int camera_dispatcher_attr_set_encoded_preview_gop_interval(muse_module_h module)
+{
+	int ret = CAMERA_ERROR_NONE;
+	muse_camera_handle_s *muse_camera = NULL;
+	int set_gop_interval;
+	muse_camera_api_e api = MUSE_CAMERA_API_ATTR_SET_ENCODED_PREVIEW_GOP_INTERVAL;
+	muse_camera_api_class_e class = MUSE_CAMERA_API_CLASS_IMMEDIATE;
+
+	muse_camera = (muse_camera_handle_s *)muse_core_ipc_get_handle(module);
+
+	muse_camera_msg_get(set_gop_interval, muse_core_client_get_msg(module));
+
+	LOGD("handle : 0x%x, set_encoded_preview_gop_interval : %d", muse_camera, set_gop_interval);
+
+	ret = legacy_camera_attr_set_encoded_preview_gop_interval(muse_camera->camera_handle, set_gop_interval);
+
+	LOGD("ret : 0x%x", ret);
+
+	muse_camera_msg_return(api, class, ret, module);
+
+	return MUSE_CAMERA_ERROR_NONE;
+}
+
 int camera_dispatcher_return_buffer(muse_module_h module)
 {
 	int tbm_key = 0;
@@ -3857,6 +3980,7 @@ int (*dispatcher[MUSE_CAMERA_API_MAX]) (muse_module_h module) = {
 	camera_dispatcher_get_capture_format, /* MUSE_CAMERA_API_GET_CAPTURE_FORMAT, */
 	camera_dispatcher_get_preview_format, /* MUSE_CAMERA_API_GET_PREVIEW_FORMAT, */
 	camera_dispatcher_get_facing_direction, /* MUSE_CAMERA_API_GET_FACING_DIRECTION, */
+	camera_dispatcher_get_flash_state, /* MUSE_CAMERA_API_GET_FLASH_STATE, */
 	camera_dispatcher_set_preview_cb, /* MUSE_CAMERA_API_SET_PREVIEW_CB, */
 	camera_dispatcher_unset_preview_cb, /* MUSE_CAMERA_API_UNSET_PREVIEW_CB, */
 	camera_dispatcher_set_media_packet_preview_cb, /* MUSE_CAMERA_API_SET_MEDIA_PACKET_PREVIEW_CB, */
@@ -3951,6 +4075,10 @@ int (*dispatcher[MUSE_CAMERA_API_MAX]) (muse_module_h module) = {
 	camera_dispatcher_attr_is_enabled_auto_contrast, /* MUSE_CAMERA_API_ATTR_IS_ENABLED_AUTO_CONTRAST, */
 	camera_dispatcher_attr_is_supported_auto_contrast, /* MUSE_CAMERA_API_ATTR_IS_SUPPORTED_AUTO_CONTRAST, */
 	camera_dispatcher_attr_disable_shutter_sound, /* MUSE_CAMERA_API_ATTR_DISABLE_SHUTTER_SOUND, */
+	camera_dispatcher_attr_get_encoded_preview_bitrate, /* MUSE_CAMERA_API_ATTR_GET_ENCODED_PREVIEW_BITRATE, */
+	camera_dispatcher_attr_set_encoded_preview_bitrate, /* MUSE_CAMERA_API_ATTR_SET_ENCODED_PREVIEW_BITRATE, */
+	camera_dispatcher_attr_get_encoded_preview_gop_interval, /* MUSE_CAMERA_API_ATTR_GET_ENCODED_PREVIEW_GOP_INTERVAL, */
+	camera_dispatcher_attr_set_encoded_preview_gop_interval, /* MUSE_CAMERA_API_ATTR_SET_ENCODED_PREVIEW_GOP_INTERVAL, */
 	camera_dispatcher_return_buffer, /* MUSE_CAMERA_API_RETURN_BUFFER, */
 	camera_dispatcher_preview_cb_return, /* MUSE_CAMERA_API_PREVIEW_CB_RETURN, */
 };
