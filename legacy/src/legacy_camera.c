@@ -4088,3 +4088,75 @@ int legacy_camera_attr_disable_shutter_sound(camera_h camera, bool disable)
 
 	return CAMERA_ERROR_NONE;
 }
+
+
+int legacy_camera_attr_get_encoded_preview_bitrate(camera_h camera, int *bitrate)
+{
+	if (camera == NULL || bitrate == NULL) {
+		LOGE("INVALID_PARAMETER(0x%08x)", CAMERA_ERROR_INVALID_PARAMETER);
+		return CAMERA_ERROR_INVALID_PARAMETER;
+	}
+
+	int ret = MM_ERROR_NONE;
+	camera_s *handle = (camera_s *)camera;
+
+	ret = mm_camcorder_get_attributes(handle->mm_handle, NULL,
+					  MMCAM_ENCODED_PREVIEW_BITRATE, bitrate,
+					  NULL);
+
+	return __convert_camera_error_code(__func__, ret);
+}
+
+
+int legacy_camera_attr_set_encoded_preview_bitrate(camera_h camera, int bitrate)
+{
+	if (camera == NULL) {
+		LOGE("INVALID_PARAMETER(0x%08x)", CAMERA_ERROR_INVALID_PARAMETER);
+		return CAMERA_ERROR_INVALID_PARAMETER;
+	}
+
+	int ret = MM_ERROR_NONE;
+	camera_s *handle = (camera_s *)camera;
+
+	ret = mm_camcorder_set_attributes(handle->mm_handle, NULL,
+					  MMCAM_ENCODED_PREVIEW_BITRATE, bitrate,
+					  NULL);
+
+	return __convert_camera_error_code(__func__, ret);
+}
+
+
+int legacy_camera_attr_get_encoded_preview_gop_interval(camera_h camera, int *interval)
+{
+	if (camera == NULL || interval == NULL) {
+		LOGE("INVALID_PARAMETER(0x%08x)", CAMERA_ERROR_INVALID_PARAMETER);
+		return CAMERA_ERROR_INVALID_PARAMETER;
+	}
+
+	int ret = MM_ERROR_NONE;
+	camera_s *handle = (camera_s *)camera;
+
+	ret = mm_camcorder_get_attributes(handle->mm_handle, NULL,
+					  MMCAM_ENCODED_PREVIEW_GOP_INTERVAL, interval,
+					  NULL);
+
+	return __convert_camera_error_code(__func__, ret);
+}
+
+
+int legacy_camera_attr_set_encoded_preview_gop_interval(camera_h camera, int interval)
+{
+	if (camera == NULL) {
+		LOGE("INVALID_PARAMETER(0x%08x)", CAMERA_ERROR_INVALID_PARAMETER);
+		return CAMERA_ERROR_INVALID_PARAMETER;
+	}
+
+	int ret = MM_ERROR_NONE;
+	camera_s *handle = (camera_s *)camera;
+
+	ret = mm_camcorder_set_attributes(handle->mm_handle, NULL,
+					  MMCAM_ENCODED_PREVIEW_GOP_INTERVAL, interval,
+					  NULL);
+
+	return __convert_camera_error_code(__func__, ret);
+}
