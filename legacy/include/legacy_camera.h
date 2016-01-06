@@ -180,6 +180,14 @@ typedef enum {
 	CAMERA_FACING_DIRECTION_FRONT,    /**< Front */
 } camera_facing_direction_e;
 
+/**
+ * @brief Enumeration for the current flash state.
+ * @since_tizen 3.0
+ */
+typedef enum {
+	CAMERA_FLASH_STATE_NOT_USED = 0,  /**< Flash is not used now through camera API */
+	CAMERA_FLASH_STATE_USED,          /**< Flash is used now through camera API */
+} camera_flash_state_e;
 
 /**
  * @brief The structure type of the image data.
@@ -452,6 +460,7 @@ typedef enum
     CAMERA_ATTR_FLASH_MODE_REAR_CURTAIN,     /**< Rear curtain synchronization */
     CAMERA_ATTR_FLASH_MODE_PERMANENT,        /**< Keep turned on until turning off */
 } camera_attr_flash_mode_e;
+
 
 /**
  * @brief Enumeration to preview FPS.
@@ -913,6 +922,20 @@ int legacy_camera_stop_continuous_capture(camera_h camera);
  * @see legacy_camera_start_capture()
  */
 int legacy_camera_get_state(camera_h camera, camera_state_e *state);
+
+/**
+ * @brief Gets the device type of the camera.
+ *
+ * @since_tizen 3.0
+ * @param[in] camera The handle to the camera
+ * @param[out] device_type The current device type of the camera
+ * @return @c 0 on success, otherwise a negative error value
+ * @retval #CAMERA_ERROR_NONE Successful
+ * @retval #CAMERA_ERROR_INVALID_PARAMETER Invalid parameter
+ * @retval #CAMERA_ERROR_PERMISSION_DENIED The access to the resources can not be granted
+ * @retval #CAMERA_ERROR_NOT_SUPPORTED The feature is not supported
+ */
+int legacy_camera_get_device_type(camera_h camera, camera_device_e *device_type);
 
 /**
  * @brief Starts camera auto-focusing, asynchronously.
@@ -3453,6 +3476,59 @@ bool legacy_camera_attr_is_supported_auto_contrast(camera_h camera);
  * @retval #CAMERA_ERROR_NOT_SUPPORTED The feature is not supported
  */
 int legacy_camera_attr_disable_shutter_sound(camera_h camera, bool disable);
+
+/**
+ * @brief Gets the bit rate of encoded preview.
+ * @since_tizen 3.0
+ * @param[in] camera The handle to the camera
+ * @param[out] bitrate The bit rate of encoded preview
+ * @return @c 0 on success, otherwise a negative error value
+ * @retval #CAMERA_ERROR_NONE Successful
+ * @retval #CAMERA_ERROR_INVALID_OPERATION Internal error
+ * @retval #CAMERA_ERROR_INVALID_PARAMETER Invalid parameter
+ * @retval #CAMERA_ERROR_NOT_SUPPORTED The feature is not supported
+ */
+int legacy_camera_attr_get_encoded_preview_bitrate(camera_h camera, int *bitrate);
+
+/**
+ * @brief Sets the bit rate of encoded preview.
+ * @since_tizen 3.0
+ * @param[in] camera The handle to the camera
+ * @param[in] bitrate The bit rate of encoded preview
+ * @return @c 0 on success, otherwise a negative error value
+ * @retval #CAMERA_ERROR_NONE Successful
+ * @retval #CAMERA_ERROR_INVALID_OPERATION Internal error
+ * @retval #CAMERA_ERROR_INVALID_PARAMETER Invalid parameter
+ * @retval #CAMERA_ERROR_NOT_SUPPORTED The feature is not supported
+ */
+int legacy_camera_attr_set_encoded_preview_bitrate(camera_h camera, int bitrate);
+
+/**
+ * @brief Gets the GOP(Group Of Pictures) interval of encoded preview.
+ * @since_tizen 3.0
+ * @param[in] camera The handle to the camera
+ * @param[out] interval the GOP interval of encoded preview (mili second)
+ * @return @c 0 on success, otherwise a negative error value
+ * @retval #CAMERA_ERROR_NONE Successful
+ * @retval #CAMERA_ERROR_INVALID_OPERATION Internal error
+ * @retval #CAMERA_ERROR_INVALID_PARAMETER Invalid parameter
+ * @retval #CAMERA_ERROR_NOT_SUPPORTED The feature is not supported
+ */
+int legacy_camera_attr_get_encoded_preview_gop_interval(camera_h camera, int *interval);
+
+/**
+ * @brief Sets the GOP(Group Of Pictures) interval of encoded preview.
+ * @since_tizen 3.0
+ * @param[in] camera The handle to the camera
+ * @param[in] interval the GOP interval of encoded preview (mili second)
+ * @return @c 0 on success, otherwise a negative error value
+ * @retval #CAMERA_ERROR_NONE Successful
+ * @retval #CAMERA_ERROR_INVALID_OPERATION Internal error
+ * @retval #CAMERA_ERROR_INVALID_PARAMETER Invalid parameter
+ * @retval #CAMERA_ERROR_NOT_SUPPORTED The feature is not supported
+ */
+int legacy_camera_attr_set_encoded_preview_gop_interval(camera_h camera, int interval);
+
 
 /**
  * @}
