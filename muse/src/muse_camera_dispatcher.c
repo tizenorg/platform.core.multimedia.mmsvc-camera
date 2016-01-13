@@ -3954,3 +3954,67 @@ int (*dispatcher[MUSE_CAMERA_API_MAX]) (muse_module_h module) = {
 	camera_dispatcher_return_buffer, /* MUSE_CAMERA_API_RETURN_BUFFER, */
 	camera_dispatcher_preview_cb_return, /* MUSE_CAMERA_API_PREVIEW_CB_RETURN, */
 };
+
+
+/******************/
+/* cmd dispatcher */
+/******************/
+static int camera_cmd_dispatcher_shutdown(muse_module_h module)
+{
+	muse_camera_handle_s *muse_camera = NULL;
+	camera_state_e state = CAMERA_STATE_NONE;
+	int capture_try_count = 0;
+
+	muse_camera = (muse_camera_handle_s *)muse_core_ipc_get_handle(module);
+	if (muse_camera == NULL) {
+		LOGE("NULL handle");
+		return MUSE_CAMERA_ERROR_NONE;
+	}
+
+again:
+	legacy_camera_get_state(muse_camera->camera_handle, &state);
+
+	LOGW("current state : %d", state);
+
+	switch (state) {
+	case CAMERA_STATE_CAPTURING:
+		if (capture_try_count < 30) {
+			LOGW("now capturing.. wait for capture data...");
+			usleep(100 * 1000);
+			capture_try_count++;
+			goto again;
+		} else {
+			LOGE("wait capture data timeout! keep going...");
+		}
+	case CAMERA_STATE_CAPTURED:
+		legacy_camera_start_preview(muse_camera->camera_handle);
+	case CAMERA_STATE_PREVIEW:
+		legacy_camera_stop_preview(muse_camera->camera_handle);
+	case CAMERA_STATE_CREATED:
+		if (legacy_camera_destroy(muse_camera->camera_handle) == CAMERA_ERROR_NONE) {
+			_camera_remove_export_data(module, 0, TRUE);
+
+			g_mutex_clear(&muse_camera->list_lock);
+			g_mutex_clear(&muse_camera->preview_cb_lock);
+			g_cond_clear(&muse_camera->preview_cb_cond);
+
+			muse_camera->bufmgr = NULL;
+
+			free(muse_camera);
+			muse_camera = NULL;
+		} else {
+			LOGE("failed to destroy camera handle");
+		}
+	default:
+		break;
+	}
+
+	LOGW("done");
+
+	return MUSE_CAMERA_ERROR_NONE;
+}
+
+int (*cmd_dispatcher[MUSE_MODULE_EVENT_MAX])(muse_module_h module) = {
+	camera_cmd_dispatcher_shutdown, /* MUSE_MODULE_EVENT_SHUTDOWN */
+	NULL, /* MUSE_MODULE_EVENT_DEBUG_INFO_DUMP */
+};
