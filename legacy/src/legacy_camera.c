@@ -1254,7 +1254,7 @@ int legacy_camera_cancel_focusing(camera_h camera)
 int legacy_camera_set_display(camera_h camera, camera_display_type_e type, camera_display_h display)
 {
 	int ret = MM_ERROR_NONE;
-	int set_surface = MM_DISPLAY_SURFACE_X;
+	int set_surface = MM_DISPLAY_SURFACE_OVERLAY;
 	void *set_handle = NULL;
 	camera_s *handle = NULL;
 
@@ -1315,7 +1315,7 @@ int legacy_camera_set_display(camera_h camera, camera_display_type_e type, camer
 
 				/* set wayland info */
 				handle->wl_info = (void *)wl_info;
-				set_surface = MM_DISPLAY_SURFACE_X;
+				set_surface = MM_DISPLAY_SURFACE_OVERLAY;
 				set_handle = (void *)wl_info;
 
 				LOGD("wayland obj %p, window %p, surface %p, display %p, size %d,%d,%dx%d",
@@ -1324,7 +1324,7 @@ int legacy_camera_set_display(camera_h camera, camera_display_type_e type, camer
 #else /* HAVE_WAYLAND */
 				/* x window overlay surface */
 				handle->display_handle = (void *)elm_win_xwindow_get(obj);
-				set_surface = MM_DISPLAY_SURFACE_X;
+				set_surface = MM_DISPLAY_SURFACE_OVERLAY;
 				set_handle = &(handle->display_handle);
 
 				LOGD("display type OVERLAY : handle %p, %d", set_handle, (int)handle->display_handle);
