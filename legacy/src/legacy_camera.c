@@ -1087,6 +1087,7 @@ int legacy_camera_get_device_count(camera_h camera, int *device_count)
 	return __convert_camera_error_code(__func__, ret);
 }
 
+
 int legacy_camera_start_face_detection(camera_h camera, camera_face_detected_cb callback, void *user_data)
 {
 	if (camera == NULL) {
@@ -1270,11 +1271,8 @@ int legacy_camera_set_display(camera_h camera, camera_display_type_e type, camer
 	int ret = MM_ERROR_NONE;
 	int set_surface = MM_DISPLAY_SURFACE_OVERLAY;
 	void *set_handle = NULL;
-	camera_s *handle = NULL;
-
-	Evas_Object *obj = NULL;
-	const char *object_type = NULL;
 	char *socket_path = NULL;
+	camera_s *handle = NULL;
 
 	if (camera == NULL) {
 		LOGE("INVALID_PARAMETER(0x%08x)", CAMERA_ERROR_INVALID_PARAMETER);
@@ -1293,71 +1291,14 @@ int legacy_camera_set_display(camera_h camera, camera_display_type_e type, camer
 
 	switch (type) {
 	case CAMERA_DISPLAY_TYPE_OVERLAY:
+		handle->display_handle = display;
+		set_surface = MM_DISPLAY_SURFACE_OVERLAY;
+		set_handle = display;
+		break;
 	case CAMERA_DISPLAY_TYPE_EVAS:
-		obj = (Evas_Object *)display;
-		object_type = evas_object_type_get(obj);
-		if (object_type) {
-			if (type == CAMERA_DISPLAY_TYPE_OVERLAY && !strcmp(object_type, "elm_win")) {
-#ifdef HAVE_WAYLAND
-				MMCamWaylandInfo *wl_info = (MMCamWaylandInfo *)malloc(sizeof(MMCamWaylandInfo));
-
-				if (wl_info == NULL) {
-					LOGE("wl_info alloc failed : %d", sizeof(MMCamWaylandInfo));
-					return __convert_camera_error_code(__func__, MM_ERROR_CAMCORDER_LOW_MEMORY);
-				}
-
-				memset(wl_info, 0x0, sizeof(MMCamWaylandInfo));
-
-				wl_info->evas_obj = (void *)obj;
-				wl_info->window = (void *)elm_win_wl_window_get(obj);
-				wl_info->surface = (void *)ecore_wl_window_surface_get(wl_info->window);
-				wl_info->display = (void *)ecore_wl_display_get();
-
-				if (wl_info->window == NULL || wl_info->surface == NULL || wl_info->display == NULL) {
-					LOGE("something is NULL %p, %p, %p", wl_info->window, wl_info->surface, wl_info->display);
-					free(wl_info);
-					return __convert_camera_error_code(__func__, MM_ERROR_CAMCORDER_INTERNAL);
-				}
-
-				evas_object_geometry_get(obj, &wl_info->window_x, &wl_info->window_y,
-							      &wl_info->window_width, &wl_info->window_height);
-
-				if (handle->wl_info) {
-					free(handle->wl_info);
-					handle->wl_info = NULL;
-				}
-
-				/* set wayland info */
-				handle->wl_info = (void *)wl_info;
-				set_surface = MM_DISPLAY_SURFACE_OVERLAY;
-				set_handle = (void *)wl_info;
-
-				LOGD("wayland obj %p, window %p, surface %p, display %p, size %d,%d,%dx%d",
-				     wl_info->evas_obj, wl_info->window, wl_info->surface, wl_info->display,
-				     wl_info->window_x, wl_info->window_y, wl_info->window_width, wl_info->window_height);
-#else /* HAVE_WAYLAND */
-				/* x window overlay surface */
-				handle->display_handle = (void *)elm_win_xwindow_get(obj);
-				set_surface = MM_DISPLAY_SURFACE_OVERLAY;
-				set_handle = &(handle->display_handle);
-
-				LOGD("display type OVERLAY : handle %p, %d", set_handle, (int)handle->display_handle);
-#endif /* HAVE_WAYLAND */
-			} else if (type == CAMERA_DISPLAY_TYPE_EVAS && !strcmp(object_type, "image")) {
-				/* evas object surface */
-				handle->display_handle = display;
-				set_surface = MM_DISPLAY_SURFACE_EVAS;
-				set_handle = display;
-
-				LOGD("display type EVAS : handle %p", set_handle);
-			} else {
-				LOGE("unknown evas object [%p,%s] or type [%d] mismatch", obj, object_type, type);
-				return CAMERA_ERROR_INVALID_PARAMETER;
-			}
-		} else {
-			LOGE("failed to get evas object type from %p", obj);
-			return CAMERA_ERROR_INVALID_PARAMETER;
-		}
+		handle->display_handle = display;
+		set_surface = MM_DISPLAY_SURFACE_EVAS;
+		set_handle = display;
 		break;
 	case CAMERA_DISPLAY_TYPE_REMOTE:
 		set_surface = MM_DISPLAY_SURFACE_REMOTE;
@@ -1373,9 +1314,9 @@ int legacy_camera_set_display(camera_h camera, camera_display_type_e type, camer
 	}
 
 	ret = mm_camcorder_set_attributes(handle->mm_handle, NULL,
-	                                  MMCAM_DISPLAY_DEVICE, MM_DISPLAY_DEVICE_MAINLCD,
-	                                  MMCAM_DISPLAY_SURFACE, set_surface,
-	                                  NULL);
+		MMCAM_DISPLAY_DEVICE, MM_DISPLAY_DEVICE_MAINLCD,
+		MMCAM_DISPLAY_SURFACE, set_surface,
+		NULL);
 
 	if (ret == MM_ERROR_NONE) {
 		if (type == CAMERA_DISPLAY_TYPE_REMOTE) {
@@ -1392,8 +1333,8 @@ int legacy_camera_set_display(camera_h camera, camera_display_type_e type, camer
 			                                  NULL);
 		} else if (type != CAMERA_DISPLAY_TYPE_NONE) {
 			ret = mm_camcorder_set_attributes(handle->mm_handle, NULL,
-			                                  MMCAM_DISPLAY_HANDLE, set_handle, sizeof(void *),
-			                                  NULL);
+				MMCAM_DISPLAY_HANDLE, set_handle, sizeof(void *),
+				NULL);
 		}
 	}
 
@@ -1542,10 +1483,6 @@ int legacy_camera_set_display_rotation(camera_h camera, camera_rotation_e rotati
 		return CAMERA_ERROR_INVALID_PARAMETER;
 	}
 
-	if (rotation > CAMERA_ROTATION_270) {
-		return CAMERA_ERROR_INVALID_PARAMETER;
-	}
-
 	int ret = MM_ERROR_NONE;
 	camera_s *handle = (camera_s *)camera;
 
@@ -1579,10 +1516,6 @@ int legacy_camera_set_display_flip(camera_h camera, camera_flip_e flip)
 {
 	if (camera == NULL) {
 		LOGE("INVALID_PARAMETER(0x%08x)", CAMERA_ERROR_INVALID_PARAMETER);
-		return CAMERA_ERROR_INVALID_PARAMETER;
-	}
-
-	if (flip > CAMERA_FLIP_BOTH) {
 		return CAMERA_ERROR_INVALID_PARAMETER;
 	}
 
@@ -1660,10 +1593,6 @@ int legacy_camera_set_display_mode(camera_h camera, camera_display_mode_e mode)
 {
 	if (camera == NULL) {
 		LOGE("INVALID_PARAMETER(0x%08x)", CAMERA_ERROR_INVALID_PARAMETER);
-		return CAMERA_ERROR_INVALID_PARAMETER;
-	}
-
-	if (mode > CAMERA_DISPLAY_MODE_CROPPED_FULL) {
 		return CAMERA_ERROR_INVALID_PARAMETER;
 	}
 

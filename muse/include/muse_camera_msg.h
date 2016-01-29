@@ -337,7 +337,40 @@ typedef const char* STRING;
 		int __len__; \
 		int *__value__ = (int *)param; \
 		__sndMsg__ = muse_core_msg_json_factory_new(api, \
-					MUSE_TYPE_INT, #length, length, \
+					MUSE_TYPE_ARRAY, #param, \
+					datum_size == sizeof(int)? length :  \
+					length / sizeof(int) + (length % sizeof(int)?1:0), \
+					__value__, \
+					0); \
+		__len__ = muse_core_ipc_send_msg(fd, __sndMsg__); \
+		if (__len__ <= 0) { \
+			LOGE("sending message failed"); \
+			ret = CAMERA_ERROR_INVALID_OPERATION; \
+		} else \
+			ret = _client_wait_for_cb_return(api, cb_info, CALLBACK_TIME_OUT); \
+		muse_core_msg_json_factory_free(__sndMsg__); \
+	}while(0)
+
+/**
+ * @brief Send the message from proxy to module via ipc, adding an array data and value.
+ * @param[in] api The enumeration of the corresponding api.
+ * @param[in] fd The socket fd that connected to the module via ipc.
+ * @param[in] cb_info The callback information, waiting for the ack from the module.
+ * @param[out] ret The delivered return value from the module to proxy side.
+ * @param[in] param The array data parameter to be included in the message.
+ * @param[in] length The length of the array.
+ * @param[in] datum_size The size of the array.
+ * @param[in] type The data type of the parameter.
+ * @param[in] param2 The 2rd parameter to be included in the message.
+ */
+#define muse_camera_msg_send_array_and_value(api, fd, cb_info, ret, param, length, datum_size, type, param2) \
+	do{	\
+		char *__sndMsg__; \
+		int __len__; \
+		int *__value__ = (int *)param; \
+		type __value2__ = (type)param2; \
+		__sndMsg__ = muse_core_msg_json_factory_new(api, \
+					MUSE_TYPE_##type, #param2, __value2__, \
 					MUSE_TYPE_ARRAY, #param, \
 					datum_size == sizeof(int)? length :  \
 					length / sizeof(int) + (length % sizeof(int)?1:0), \
@@ -486,7 +519,6 @@ typedef const char* STRING;
 		__sndMsg__ = muse_core_msg_json_factory_new(api, \
 				MUSE_TYPE_INT, PARAM_API_CLASS, class, \
 				MUSE_TYPE_INT, PARAM_RET, ret, \
-				MUSE_TYPE_INT, #length, length, \
 				MUSE_TYPE_ARRAY, #param, \
 					datum_size == sizeof(int)? length :  \
 					length / sizeof(int) + (length % sizeof(int)?1:0), \

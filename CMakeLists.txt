@@ -9,7 +9,7 @@ SET(fw_name "${service}-${submodule}")
 
 PROJECT(${fw_name})
 
-SET(pc_dependents "dlog mm-common mused libtbm")
+SET(pc_dependents "dlog mm-common mused libtbm mm-camcorder")
 
 SET(PC_NAME ${fw_name})
 SET(PC_REQUIRED ${pc_dependents})

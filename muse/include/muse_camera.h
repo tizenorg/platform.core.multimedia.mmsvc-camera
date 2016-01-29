@@ -31,6 +31,7 @@ extern "C" {
 #include <stdio.h>
 #include <tbm_bufmgr.h>
 #include "legacy_camera_internal.h"
+#include <mm_camcorder.h>
 
 /**
  * @brief Enumeration for the muse camera apis.
@@ -240,6 +241,9 @@ typedef struct {
 	GMutex list_lock;
 	GMutex preview_cb_lock;
 	GCond preview_cb_cond;
+#ifdef HAVE_WAYLAND
+	MMCamWaylandInfo wl_info;
+#endif /* HAVE_WAYLAND */
 } muse_camera_handle_s;
 
 

@@ -1297,26 +1297,50 @@ int camera_dispatcher_set_display(muse_module_h module)
 	muse_camera_api_class_e class = MUSE_CAMERA_API_CLASS_IMMEDIATE;
 	static guint stream_id = 0;
 	char socket_path[SOCKET_PATH_LENGTH] = {0,};
-	camera_h camera;
+#ifdef HAVE_WAYLAND
+	MMCamWaylandInfo *wl_info = NULL;
+#endif /* HAVE_WAYLAND */
+	camera_display_type_e type = CAMERA_DISPLAY_TYPE_OVERLAY;
+	camera_h camera = NULL;;
 
 	muse_camera = (muse_camera_handle_s *)muse_core_ipc_get_handle(module);
 
 	LOGD("handle : 0x%x", muse_camera);
 
 	camera = muse_camera->camera_handle;
-	stream_id = muse_core_get_atomic_uint();
 
-	snprintf(socket_path, SOCKET_PATH_LENGTH, SOCKET_PATH_BASE, stream_id);
+	muse_camera_msg_get(type, muse_core_client_get_msg(module));
 
-	LOGD("socket_path : %s", socket_path);
+	LOGD("type %d", type);
+#ifdef HAVE_WAYLAND
+	if (type == CAMERA_DISPLAY_TYPE_OVERLAY) {
+		wl_info = &muse_camera->wl_info;
+		muse_camera_msg_get_array(wl_info, muse_core_client_get_msg(module));
 
-	ret = legacy_camera_set_display(muse_camera->camera_handle, CAMERA_DISPLAY_TYPE_REMOTE, (void *)socket_path);
-	if (ret != CAMERA_ERROR_NONE) {
+		LOGD("wayland parent_id : %d, window : %d,%d,%dx%d",
+			wl_info->parent_id, wl_info->window_x, wl_info->window_y,
+			wl_info->window_width, wl_info->window_height);
+
+		ret = legacy_camera_set_display(muse_camera->camera_handle, type, (void *)wl_info);
+
 		muse_camera_msg_return(api, class, ret, module);
 	} else {
-		muse_camera_msg_return1(api, class, ret, module,
-		                        STRING, socket_path);
+#endif /* HAVE_WAYLAND */
+		stream_id = muse_core_get_atomic_uint();
+
+		snprintf(socket_path, SOCKET_PATH_LENGTH, SOCKET_PATH_BASE, stream_id);
+
+		LOGD("socket_path : %s", socket_path);
+
+		ret = legacy_camera_set_display(muse_camera->camera_handle, CAMERA_DISPLAY_TYPE_REMOTE, (void *)socket_path);
+		if (ret != CAMERA_ERROR_NONE) {
+			muse_camera_msg_return(api, class, ret, module);
+		} else {
+			muse_camera_msg_return1(api, class, ret, module, STRING, socket_path);
+		}
+#ifdef HAVE_WAYLAND
 	}
+#endif /* HAVE_WAYLAND */
 
 	return MUSE_CAMERA_ERROR_NONE;
 }

@@ -461,7 +461,6 @@ typedef enum
     CAMERA_ATTR_FLASH_MODE_PERMANENT,        /**< Keep turned on until turning off */
 } camera_attr_flash_mode_e;
 
-
 /**
  * @brief Enumeration to preview FPS.
  * @since_tizen @if MOBILE 2.3 @elseif WEARABLE 2.3.1 @endif
@@ -591,7 +590,7 @@ typedef void (*camera_preview_cb)(MMCamcorderVideoStreamDataType *frame, void *u
  * @see	camera_start_continuous_capture()
  * @see	camera_capture_completed_cb()
  */
-typedef void (*camera_capturing_cb)(camera_image_data_s* image, camera_image_data_s* postview, camera_image_data_s* thumbnail, void *user_data);
+typedef void (*camera_capturing_cb)(camera_image_data_s *image, camera_image_data_s *postview, camera_image_data_s *thumbnail, void *user_data);
 
 /**
  * @brief Called when the camera capturing completes.
