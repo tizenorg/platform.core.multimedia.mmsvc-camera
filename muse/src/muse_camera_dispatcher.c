@@ -23,7 +23,7 @@
 #include <stdio.h>
 #include <dlog.h>
 #include "muse_camera_msg.h"
-#include "muse_camera.h"
+#include "muse_camera_internal.h"
 #include <muse_core.h>
 #include <muse_core_ipc.h>
 #include <mm_types.h>
@@ -1300,7 +1300,7 @@ int camera_dispatcher_set_display(muse_module_h module)
 #ifdef HAVE_WAYLAND
 	MMCamWaylandInfo *wl_info = NULL;
 #endif /* HAVE_WAYLAND */
-	camera_display_type_e type = CAMERA_DISPLAY_TYPE_OVERLAY;
+	camera_display_type_e type = CAMERA_DISPLAY_TYPE_NONE;
 	camera_h camera = NULL;;
 
 	muse_camera = (muse_camera_handle_s *)muse_core_ipc_get_handle(module);
@@ -1723,7 +1723,6 @@ int camera_dispatcher_get_flash_state(muse_module_h module)
 {
 	int ret = CAMERA_ERROR_NONE;
 	camera_device_e device_type = CAMERA_DEVICE_CAMERA0;
-	muse_camera_handle_s *muse_camera = NULL;
 	camera_flash_state_e get_flash_state = CAMERA_FLASH_STATE_NOT_USED;
 	muse_camera_api_e api = MUSE_CAMERA_API_GET_FLASH_STATE;
 	muse_camera_api_class_e class = MUSE_CAMERA_API_CLASS_IMMEDIATE;
@@ -1731,9 +1730,9 @@ int camera_dispatcher_get_flash_state(muse_module_h module)
 	muse_camera_msg_get(device_type, muse_core_client_get_msg(module));
 
 	if (device_type == CAMERA_DEVICE_CAMERA0)
-		muse_core_client_get_value(module, "flash_state_camera0", &get_flash_state);
+		muse_core_client_get_value(module, "flash_state_camera0", (int *)&get_flash_state);
 	else
-		muse_core_client_get_value(module, "flash_state_camera1", &get_flash_state);
+		muse_core_client_get_value(module, "flash_state_camera1", (int *)&get_flash_state);
 
 	LOGD("fash state : %d", get_flash_state);
 

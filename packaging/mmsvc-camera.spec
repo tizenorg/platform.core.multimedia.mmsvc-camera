@@ -3,7 +3,7 @@
 
 Name:       mmsvc-camera
 Summary:    A Camera module for muse server
-Version:    0.2.28
+Version:    0.2.29
 Release:    0
 Group:      Multimedia/Libraries
 License:    Apache-2.0
@@ -14,7 +14,6 @@ BuildRequires:  pkgconfig(dlog)
 BuildRequires:  pkgconfig(mused)
 BuildRequires:  pkgconfig(mm-camcorder)
 BuildRequires:  pkgconfig(capi-base-common)
-BuildRequires:  pkgconfig(capi-media-tool)
 %if %{with x}
 BuildRequires:  pkgconfig(ecore-x)
 %endif
@@ -38,7 +37,6 @@ A Camera module for muse server and native camera API.
 Summary:  A Camera module for muse server (Development)
 Requires: %{name} = %{version}-%{release}
 Requires: pkgconfig(libtbm)
-Requires: pkgconfig(capi-media-tool)
 
 
 %description devel

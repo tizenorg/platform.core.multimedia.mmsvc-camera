@@ -14,8 +14,8 @@
 * limitations under the License.
 */
 
-#ifndef __TIZEN_MULTIMEDIA_CAMERA_INTERNAL_H__
-#define	__TIZEN_MULTIMEDIA_CAMERA_INTERNAL_H__
+#ifndef __TIZEN_MULTIMEDIA_LEGACY_CAMERA_INTERNAL_H__
+#define __TIZEN_MULTIMEDIA_LEGACY_CAMERA_INTERNAL_H__
 #include <legacy_camera.h>
 
 #ifdef __cplusplus
@@ -66,4 +66,4 @@ int legacy_camera_set_client_pid(camera_h camera, int pid);
 }
 #endif
 
-#endif //__TIZEN_MULTIMEDIA_CAMERA_INTERNAL_H__
+#endif /* __TIZEN_MULTIMEDIA_LEGACY_CAMERA_INTERNAL_H__ */
