@@ -6,9 +6,10 @@ exec_prefix=/usr
 libdir=@LIB_INSTALL_DIR@
 includedir=/usr/include/media
 
-Name: @PC_NAME@
-Description: @PACKAGE_DESCRIPTION@
+Name: @PC_NAME2@
+Description: @PACKAGE_DESCRIPTION2@
 Version: @VERSION@
-Requires: @PC_REQUIRED@
+Requires: @PC_REQUIRED2@
+Libs: -L${libdir} @PC_LDFLAGS2@
 Cflags: -I${includedir}
 
