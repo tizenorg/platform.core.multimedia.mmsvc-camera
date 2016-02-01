@@ -4,7 +4,7 @@ SET(service "legacy")
 SET(submodule "camera")
 
 # for package file
-SET(dependents "dlog mm-camcorder capi-base-common capi-media-tool gstreamer-1.0 libtbm evas ecore elementary vconf")
+SET(dependents "dlog mm-camcorder capi-base-common gstreamer-1.0 evas ecore elementary vconf")
 
 SET(fw_name "${service}-${submodule}")
 

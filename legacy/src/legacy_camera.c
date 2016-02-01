@@ -27,8 +27,6 @@
 #include <glib.h>
 #include <dlog.h>
 #include <gst/gst.h>
-#include <tbm_bufmgr.h>
-#include <tbm_surface_internal.h>
 #include <Evas.h>
 #include <Ecore.h>
 #ifdef HAVE_WAYLAND
@@ -677,11 +675,6 @@ int legacy_camera_destroy(camera_h camera)
 	}
 
 	LOGW("camera handle %p", handle);
-
-	if (handle->pkt_fmt) {
-		media_format_unref(handle->pkt_fmt);
-		handle->pkt_fmt = NULL;
-	}
 
 	ret = mm_camcorder_destroy(handle->mm_handle);
 	if (ret == MM_ERROR_NONE) {
