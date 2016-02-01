@@ -9,11 +9,11 @@ SET(fw_name "${service}-${submodule}")
 
 PROJECT(${fw_name})
 
-SET(pc_dependents "dlog mm-common mused libtbm mm-camcorder")
+SET(pc_dependents "dlog mm-common mused libtbm")
 
 SET(PC_NAME ${fw_name})
 SET(PC_REQUIRED ${pc_dependents})
-SET(PC_LDFLAGS -lmuse-camera)
+SET(PC_LDFLAGS -llegacy-camera)
 
 CONFIGURE_FILE(
     ${fw_name}.pc.in
@@ -21,6 +21,13 @@ CONFIGURE_FILE(
     @ONLY
 )
 INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/${fw_name}.pc DESTINATION ${LIB_INSTALL_DIR}/pkgconfig)
+
+CONFIGURE_FILE(
+    legacy-camera.pc.in
+    ${CMAKE_CURRENT_SOURCE_DIR}/legacy-camera.pc
+    @ONLY
+)
+INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/legacy-camera.pc DESTINATION ${LIB_INSTALL_DIR}/pkgconfig)
 
 ADD_SUBDIRECTORY(legacy)
 ADD_SUBDIRECTORY(muse)

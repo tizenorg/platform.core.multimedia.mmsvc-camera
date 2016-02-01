@@ -14,8 +14,8 @@
 * limitations under the License.
 */
 
-#ifndef __TIZEN_MULTIMEDIA_CAMERA_H__
-#define __TIZEN_MULTIMEDIA_CAMERA_H__
+#ifndef __TIZEN_MULTIMEDIA_LEGACY_CAMERA_H__
+#define __TIZEN_MULTIMEDIA_LEGACY_CAMERA_H__
 
 #include <tizen.h>
 #include <media_packet.h>
@@ -3536,5 +3536,5 @@ int legacy_camera_attr_set_encoded_preview_gop_interval(camera_h camera, int int
 }
 #endif
 
-#endif /* __TIZEN_MULTIMEDIA_CAMERA_H__ */
+#endif /* __TIZEN_MULTIMEDIA_LEGACY_CAMERA_H__ */
 
