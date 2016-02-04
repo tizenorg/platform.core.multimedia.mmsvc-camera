@@ -1317,8 +1317,8 @@ int camera_dispatcher_set_display(muse_module_h module)
 		wl_info = &muse_camera->wl_info;
 		muse_camera_msg_get_array(wl_info, muse_core_client_get_msg(module));
 
-		LOGD("wayland parent_id : %d, window : %d,%d,%dx%d",
-			wl_info->parent_id, wl_info->window_x, wl_info->window_y,
+		LOGD("wayland global surface id : %d, window : %d,%d,%dx%d",
+			wl_info->global_surface_id, wl_info->window_x, wl_info->window_y,
 			wl_info->window_width, wl_info->window_height);
 
 		ret = legacy_camera_set_display(muse_camera->camera_handle, type, (void *)wl_info);
