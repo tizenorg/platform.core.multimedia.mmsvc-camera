@@ -492,7 +492,7 @@ void _camera_dispatcher_interrupted_cb(camera_policy_e policy, camera_state_e pr
 	return;
 }
 
-void _camera_dispatcher_preview_cb(MMCamcorderVideoStreamDataType *stream, void *user_data)
+void _camera_dispatcher_preview_cb(MMCamcorderVideoStreamDataType *stream, void *user_data, camera_preview_cb_type_e cb_type)
 {
 	muse_camera_handle_s *muse_camera = NULL;
 	int data_size = 0;
@@ -507,6 +507,7 @@ void _camera_dispatcher_preview_cb(MMCamcorderVideoStreamDataType *stream, void 
 	unsigned char *buf_pos = NULL;
 	char *send_message = NULL;
 	gint64 end_time;
+	muse_camera_event_e send_event = 0;
 
 	/*LOGD("Enter");*/
 
@@ -666,14 +667,18 @@ void _camera_dispatcher_preview_cb(MMCamcorderVideoStreamDataType *stream, void 
 	g_mutex_lock(&muse_camera->preview_cb_lock);
 
 	/* send message */
+	if (cb_type == CAMERA_PREVIEW_CB_1)
+		send_event = MUSE_CAMERA_EVENT_TYPE_PREVIEW;
+	else
+		send_event = MUSE_CAMERA_EVENT_TYPE_PREVIEW2;
+
 	send_message = muse_core_msg_json_factory_new(MUSE_CAMERA_CB_EVENT,
-	                                              MUSE_TYPE_INT, PARAM_EVENT, MUSE_CAMERA_EVENT_TYPE_PREVIEW,
+	                                              MUSE_TYPE_INT, PARAM_EVENT, send_event,
 	                                              MUSE_TYPE_INT, PARAM_EVENT_CLASS, MUSE_CAMERA_EVENT_CLASS_THREAD_SUB,
 	                                              MUSE_TYPE_INT, "tbm_key", tbm_key,
 	                                              MUSE_TYPE_INT, "num_buffer_key", num_buffer_key,
 	                                              MUSE_TYPE_ARRAY, "buffer_key", BUFFER_MAX_PLANE_NUM, buffer_key,
 	                                              0);
-
 	muse_core_ipc_send_msg(muse_core_client_get_msg_fd(module), send_message);
 
 	muse_core_msg_json_factory_free(send_message);
@@ -1346,7 +1351,11 @@ int camera_dispatcher_set_display(muse_module_h module)
 
 		LOGD("socket_path : %s", socket_path);
 
-		ret = legacy_camera_set_display(muse_camera->camera_handle, CAMERA_DISPLAY_TYPE_REMOTE, (void *)socket_path);
+		ret = legacy_camera_set_preview_cb2(muse_camera->camera_handle,
+	                                   (camera_preview_cb)_camera_dispatcher_preview_cb,
+	                                   (void *)module);
+
+		ret = legacy_camera_set_display(muse_camera->camera_handle, type, (void *)socket_path);
 		if (ret != CAMERA_ERROR_NONE) {
 			muse_camera_msg_return(api, class, ret, module);
 		} else {
