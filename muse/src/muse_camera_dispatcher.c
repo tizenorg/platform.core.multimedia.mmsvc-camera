@@ -679,6 +679,207 @@ void _camera_dispatcher_preview_cb(MMCamcorderVideoStreamDataType *stream, void 
 	return;
 }
 
+void _camera_dispatcher_preview_evas_cb(MMCamcorderVideoStreamDataType *stream, void *user_data)
+{
+	muse_camera_handle_s *muse_camera = NULL;
+	int data_size = 0;
+	tbm_bo bo = NULL;
+	tbm_bo_handle bo_handle = {.ptr = NULL};
+	muse_camera_export_data *export_data = NULL;
+	int i = 0;
+	int tbm_key = 0;
+	int buffer_key[BUFFER_MAX_PLANE_NUM] = {0, };
+	int num_buffer_key = 0;
+	muse_module_h module = (muse_module_h)user_data;
+	unsigned char *buf_pos = NULL;
+	char *send_message = NULL;
+	gint64 end_time;
+
+	/*LOGD("Enter");*/
+
+	if (module == NULL || stream == NULL) {
+		LOGE("NULL data %p, %p", module, stream);
+		return;
+	}
+
+	muse_camera = (muse_camera_handle_s *)muse_core_ipc_get_handle(module);
+	if (muse_camera == NULL) {
+		LOGE("NULL handle");
+		return;
+	}
+
+	export_data = g_new0(muse_camera_export_data, 1);
+	if (export_data == NULL) {
+		LOGE("alloc export_data failed");
+		return;
+	}
+
+	data_size = sizeof(MMCamcorderVideoStreamDataType);
+
+	if (stream->bo[0] == NULL) {
+		switch (stream->data_type) {
+		case MM_CAM_STREAM_DATA_YUV420:
+			data_size += stream->data.yuv420.length_yuv;
+			break;
+		case MM_CAM_STREAM_DATA_YUV422:
+			data_size += stream->data.yuv422.length_yuv;
+			break;
+		case MM_CAM_STREAM_DATA_YUV420SP:
+			data_size += stream->data.yuv420sp.length_y;
+			data_size += stream->data.yuv420sp.length_uv;
+			break;
+		case MM_CAM_STREAM_DATA_YUV420P:
+			data_size += stream->data.yuv420p.length_y;
+			data_size += stream->data.yuv420p.length_u;
+			data_size += stream->data.yuv420p.length_v;
+			break;
+		case MM_CAM_STREAM_DATA_YUV422P:
+			data_size += stream->data.yuv422p.length_y;
+			data_size += stream->data.yuv422p.length_u;
+			data_size += stream->data.yuv422p.length_v;
+			break;
+		case MM_CAM_STREAM_DATA_ENCODED:
+			data_size += stream->data.encoded.length_data;
+			break;
+		default :
+			LOGW("unknown data type %d", stream->data_type);
+			break;
+		}
+	}
+
+	bo = tbm_bo_alloc(muse_camera->bufmgr, data_size, TBM_BO_DEFAULT);
+	if (bo == NULL) {
+		LOGE("bo alloc failed");
+		g_free(export_data);
+		export_data = NULL;
+		return;
+	}
+
+	bo_handle = tbm_bo_map(bo, TBM_DEVICE_CPU, TBM_OPTION_READ | TBM_OPTION_WRITE);
+	if (bo_handle.ptr == NULL) {
+		LOGE("bo map Error!");
+		tbm_bo_unref(bo);
+		g_free(export_data);
+		export_data = NULL;
+		return;
+	}
+
+	buf_pos = (unsigned char *)bo_handle.ptr;
+
+	memcpy(buf_pos, stream, sizeof(MMCamcorderVideoStreamDataType));
+	buf_pos += sizeof(MMCamcorderVideoStreamDataType);
+
+	if (stream->bo[0] == NULL) {
+		/* non-zero copy */
+		switch (stream->data_type) {
+		case MM_CAM_STREAM_DATA_YUV420:
+			memcpy(buf_pos, stream->data.yuv420.yuv, stream->data.yuv420.length_yuv);
+			break;
+		case MM_CAM_STREAM_DATA_YUV422:
+			memcpy(buf_pos, stream->data.yuv422.yuv, stream->data.yuv422.length_yuv);
+			break;
+		case MM_CAM_STREAM_DATA_YUV420SP:
+			memcpy(buf_pos, stream->data.yuv420sp.y, stream->data.yuv420sp.length_y);
+			memcpy(buf_pos + stream->data.yuv420sp.length_y, stream->data.yuv420sp.uv, stream->data.yuv420sp.length_uv);
+			break;
+		case MM_CAM_STREAM_DATA_YUV420P:
+			memcpy(buf_pos, stream->data.yuv420p.y, stream->data.yuv420p.length_y);
+			memcpy(buf_pos + stream->data.yuv420p.length_y, stream->data.yuv420p.u, stream->data.yuv420p.length_u);
+			memcpy(buf_pos + stream->data.yuv420p.length_y + stream->data.yuv420p.length_u, stream->data.yuv420p.v, stream->data.yuv420p.length_v);
+			break;
+		case MM_CAM_STREAM_DATA_YUV422P:
+			memcpy(buf_pos, stream->data.yuv422p.y, stream->data.yuv422p.length_y);
+			memcpy(buf_pos + stream->data.yuv422p.length_y, stream->data.yuv422p.u, stream->data.yuv422p.length_u);
+			memcpy(buf_pos + stream->data.yuv422p.length_y + stream->data.yuv422p.length_u, stream->data.yuv422p.v, stream->data.yuv422p.length_v);
+			break;
+		case MM_CAM_STREAM_DATA_ENCODED:
+			memcpy(buf_pos, stream->data.encoded.data, stream->data.encoded.length_data);
+			break;
+		default :
+			break;
+		}
+	} else {
+		/* zero copy */
+		for (i = 0 ; i < BUFFER_MAX_PLANE_NUM ; i++) {
+			if (stream->bo[i]) {
+				buffer_key[i] = tbm_bo_export(stream->bo[i]);
+				if (buffer_key[i] == 0) {
+					LOGE("failed to export bo %p", stream->bo[i]);
+					tbm_bo_unmap(bo);
+					tbm_bo_unref(bo);
+					bo = NULL;
+					g_free(export_data);
+					export_data = NULL;
+					return;
+				}
+				num_buffer_key++;
+			} else {
+				LOGD("num_buffer_key %d", num_buffer_key);
+				break;
+			}
+		}
+	}
+
+	tbm_bo_unmap(bo);
+
+	tbm_key = tbm_bo_export(bo);
+	if(tbm_key == 0) {
+		LOGE("Create key_info ERROR!!");
+		tbm_bo_unref(bo);
+		bo = NULL;
+		g_free(export_data);
+		export_data = NULL;
+		return;
+	}
+
+	/*
+	LOGD("bo %p, vaddr %p, size %d, key %d",
+	     bo, bo_handle.ptr, data_size, tbm_key);
+	*/
+
+	/* set bo info */
+	export_data->key = tbm_key;
+	export_data->bo = bo;
+	if (stream->internal_buffer) {
+		export_data->internal_buffer = stream->internal_buffer;
+		gst_buffer_ref((GstBuffer *)export_data->internal_buffer);
+	}
+
+	/* add bo info to list */
+	g_mutex_lock(&muse_camera->list_lock);
+	muse_camera->data_list = g_list_append(muse_camera->data_list, (gpointer)export_data);
+	g_mutex_unlock(&muse_camera->list_lock);
+
+	g_mutex_lock(&muse_camera->preview_cb_lock);
+
+	/* send message */
+	send_message = muse_core_msg_json_factory_new(MUSE_CAMERA_CB_EVENT,
+	                                              MUSE_TYPE_INT, PARAM_EVENT, MUSE_CAMERA_EVENT_TYPE_PREVIEW_EVAS,
+	                                              MUSE_TYPE_INT, PARAM_EVENT_CLASS, MUSE_CAMERA_EVENT_CLASS_THREAD_SUB,
+	                                              MUSE_TYPE_INT, "tbm_key", tbm_key,
+	                                              MUSE_TYPE_INT, "num_buffer_key", num_buffer_key,
+	                                              MUSE_TYPE_ARRAY, "buffer_key", BUFFER_MAX_PLANE_NUM, buffer_key,
+	                                              0);
+
+	muse_core_ipc_send_msg(muse_core_client_get_msg_fd(module), send_message);
+
+	muse_core_msg_json_factory_free(send_message);
+
+	/*LOGD("wait preview callback return message");*/
+
+	end_time = g_get_monotonic_time () + G_TIME_SPAN_SECOND;
+
+	if (!g_cond_wait_until(&muse_camera->preview_cb_cond, &muse_camera->preview_cb_lock, end_time)) {
+		LOGW("preview callback return message timeout");
+	} else {
+		/*LOGD("preview callback return message received");*/
+	}
+
+	g_mutex_unlock(&muse_camera->preview_cb_lock);
+
+	return;
+}
+
 void _camera_dispatcher_capture_completed_cb(void *user_data)
 {
 	muse_module_h module = (muse_module_h)user_data;
@@ -1332,7 +1533,11 @@ int camera_dispatcher_set_display(muse_module_h module)
 
 		LOGD("socket_path : %s", socket_path);
 
-		ret = legacy_camera_set_display(muse_camera->camera_handle, CAMERA_DISPLAY_TYPE_REMOTE, (void *)socket_path);
+		ret = legacy_camera_set_preview_evas_cb(muse_camera->camera_handle,
+	                                   (camera_preview_cb)_camera_dispatcher_preview_evas_cb,
+	                                   (void *)module);
+
+		ret = legacy_camera_set_display(muse_camera->camera_handle, type, (void *)socket_path);
 		if (ret != CAMERA_ERROR_NONE) {
 			muse_camera_msg_return(api, class, ret, module);
 		} else {

@@ -573,6 +573,8 @@ typedef void (*camera_focus_changed_cb)(camera_focus_state_e state, void *user_d
  */
 typedef void (*camera_preview_cb)(MMCamcorderVideoStreamDataType *frame, void *user_data);
 
+typedef void (*camera_preview_evas_cb)(MMCamcorderVideoStreamDataType *frame, void *user_data);
+
 /**
  * @brief Called to get information about image data taken by the camera once per frame while capturing.
  * @since_tizen @if MOBILE 2.3 @elseif WEARABLE 2.3.1 @endif
@@ -1640,6 +1642,10 @@ int legacy_camera_set_preview_cb(camera_h camera, camera_preview_cb callback, vo
  * @see legacy_camera_set_preview_cb()
  */
 int legacy_camera_unset_preview_cb(camera_h camera);
+
+int legacy_camera_set_preview_evas_cb(camera_h camera, camera_preview_evas_cb callback, void *user_data);
+
+int legacy_camera_unset_preview_evas_cb(camera_h camera);
 
 /**
  * @brief Registers a media packet callback function to be called once per frame when previewing.

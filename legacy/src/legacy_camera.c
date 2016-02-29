@@ -40,6 +40,7 @@
 #define LOG_TAG "LEGACY_CAMERA"
 
 static gboolean __mm_videostream_callback(MMCamcorderVideoStreamDataType *stream, void *user_data);
+static gboolean __mm_videostream_evas_callback(MMCamcorderVideoStreamDataType *stream, void *user_data);
 static gboolean __mm_capture_callback(MMCamcorderCaptureDataType *frame, MMCamcorderCaptureDataType *thumbnail, void *user_data);
 
 void _camera_remove_cb_message(camera_s *handle)
@@ -213,6 +214,21 @@ static gboolean __mm_videostream_callback(MMCamcorderVideoStreamDataType *stream
 	} else if (handle->user_cb[_CAMERA_EVENT_TYPE_MEDIA_PACKET_PREVIEW]) {
 		((camera_preview_cb)handle->user_cb[_CAMERA_EVENT_TYPE_MEDIA_PACKET_PREVIEW])(stream, handle->user_data[_CAMERA_EVENT_TYPE_MEDIA_PACKET_PREVIEW]);
 	}
+
+	return 1;
+}
+
+
+static gboolean __mm_videostream_evas_callback(MMCamcorderVideoStreamDataType *stream, void *user_data)
+{
+	if (user_data == NULL || stream == NULL) {
+		return 0;
+	}
+
+	camera_s *handle = (camera_s *)user_data;
+
+	if (handle->user_cb[_CAMERA_EVENT_TYPE_PREVIEW_EVAS])
+		((camera_preview_cb)handle->user_cb[_CAMERA_EVENT_TYPE_PREVIEW_EVAS])(stream, handle->user_data[_CAMERA_EVENT_TYPE_PREVIEW_EVAS]);
 
 	return 1;
 }
@@ -1710,6 +1726,49 @@ int legacy_camera_set_preview_cb(camera_h camera, camera_preview_cb callback, vo
 
 
 int legacy_camera_unset_preview_cb(camera_h camera)
+{
+	if (camera == NULL) {
+		LOGE("INVALID_PARAMETER(0x%08x)", CAMERA_ERROR_INVALID_PARAMETER);
+		return CAMERA_ERROR_INVALID_PARAMETER;
+	}
+
+	camera_s *handle = (camera_s *)camera;
+
+	if (handle->user_cb[_CAMERA_EVENT_TYPE_MEDIA_PACKET_PREVIEW] == NULL) {
+		mm_camcorder_set_video_stream_callback(handle->mm_handle,
+						       (mm_camcorder_video_stream_callback)NULL,
+						       (void *)NULL);
+	}
+
+	handle->user_cb[_CAMERA_EVENT_TYPE_PREVIEW] = (void *)NULL;
+	handle->user_data[_CAMERA_EVENT_TYPE_PREVIEW] = (void *)NULL;
+
+	return CAMERA_ERROR_NONE;
+}
+
+
+int legacy_camera_set_preview_evas_cb(camera_h camera, camera_preview_evas_cb callback, void *user_data)
+{
+	if (camera == NULL || callback == NULL) {
+		LOGE("INVALID_PARAMETER(0x%08x)", CAMERA_ERROR_INVALID_PARAMETER);
+		return CAMERA_ERROR_INVALID_PARAMETER;
+	}
+
+	LOGD("");
+
+	camera_s *handle = (camera_s *)camera;
+	handle->user_cb[_CAMERA_EVENT_TYPE_PREVIEW_EVAS] = (void *)callback;
+	handle->user_data[_CAMERA_EVENT_TYPE_PREVIEW_EVAS] = (void *)user_data;
+
+	mm_camcorder_set_video_stream_evas_callback(handle->mm_handle,
+					       (mm_camcorder_video_stream_callback)__mm_videostream_evas_callback,
+					       (void *)handle);
+
+	return CAMERA_ERROR_NONE;
+}
+
+
+int legacy_camera_unset_preview_evas_cb(camera_h camera)
 {
 	if (camera == NULL) {
 		LOGE("INVALID_PARAMETER(0x%08x)", CAMERA_ERROR_INVALID_PARAMETER);
