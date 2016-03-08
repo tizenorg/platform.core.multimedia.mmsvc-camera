@@ -35,17 +35,18 @@
 
 int legacy_camera_get_video_caps(camera_h camera, char **caps)
 {
-	int ret;
-	camera_s *handle = (camera_s *)camera;
+	int ret = CAMERA_ERROR_NONE;
 
 #ifdef HAVE_WAYLAND
+	camera_s *handle = (camera_s *)camera;
+
 	ret = mm_camcorder_get_video_caps(handle->mm_handle, caps);
 	if(ret != MM_ERROR_NONE) {
 		return __convert_camera_error_code(__func__, ret);
 	}
 #endif /* HAVE_WAYLAND */
 
-	return CAMERA_ERROR_NONE;
+	return ret;
 }
 
 int legacy_camera_set_client_pid(camera_h camera, int pid)
