@@ -1312,8 +1312,12 @@ int camera_dispatcher_set_display(muse_module_h module)
 	muse_camera_msg_get(type, muse_core_client_get_msg(module));
 
 	LOGD("type %d", type);
+	if (type == CAMERA_DISPLAY_TYPE_NONE) {
+		ret = legacy_camera_set_display(muse_camera->camera_handle, CAMERA_DISPLAY_TYPE_NONE, NULL);
+		muse_camera_msg_return(api, class, ret, module);
+	}
 #ifdef HAVE_WAYLAND
-	if (type == CAMERA_DISPLAY_TYPE_OVERLAY) {
+	else if (type == CAMERA_DISPLAY_TYPE_OVERLAY) {
 		wl_info = &muse_camera->wl_info;
 		muse_camera_msg_get_array(wl_info, muse_core_client_get_msg(module));
 
