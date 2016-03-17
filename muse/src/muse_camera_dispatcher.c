@@ -145,6 +145,20 @@ void _camera_dispatcher_callback_supported_flash_mode(int param1, void *user_dat
 	                       INT, param1);
 }
 
+int _camera_dispatcher_callback_supported_flash_mode2(int param1, void *user_data)
+{
+	int *count = (int *)user_data;
+
+	LOGD("Enter!! param : %d", param1);
+
+	if (count) {
+		(*count)++;
+		LOGD("count : %d", *count);
+	}
+
+	return true;
+}
+
 void _camera_dispatcher_callback_supported_fps(int param1, void *user_data)
 {
 	muse_module_h module = (muse_module_h)user_data;
@@ -1722,12 +1736,39 @@ int camera_dispatcher_get_facing_direction(muse_module_h module)
 int camera_dispatcher_get_flash_state(muse_module_h module)
 {
 	int ret = CAMERA_ERROR_NONE;
+	int count = 0;
+	camera_h camera = NULL;
 	camera_device_e device_type = CAMERA_DEVICE_CAMERA0;
 	camera_flash_state_e get_flash_state = CAMERA_FLASH_STATE_NOT_USED;
 	muse_camera_api_e api = MUSE_CAMERA_API_GET_FLASH_STATE;
 	muse_camera_api_class_e class = MUSE_CAMERA_API_CLASS_IMMEDIATE;
 
 	muse_camera_msg_get(device_type, muse_core_client_get_msg(module));
+
+	ret = legacy_camera_create(device_type, &camera);
+	if (ret != CAMERA_ERROR_NONE) {
+		LOGE("failed to create camera handle 0x%x", ret);
+
+		muse_camera_msg_return1(api, class, ret, module, INT, get_flash_state);
+
+		return MUSE_CAMERA_ERROR_NONE;
+	}
+
+	ret = legacy_camera_attr_foreach_supported_flash_mode(camera,
+		(camera_attr_supported_flash_mode_cb)_camera_dispatcher_callback_supported_flash_mode2,
+		(void *)&count);
+
+	legacy_camera_destroy(camera);
+	camera = NULL;
+
+	if (count < 2) {
+		LOGE("count[%d] of supported flash mode is too small, so return NOT_SUPPORTED", count);
+
+		ret = CAMERA_ERROR_NOT_SUPPORTED;
+		muse_camera_msg_return1(api, class, ret, module, INT, get_flash_state);
+
+		return MUSE_CAMERA_ERROR_NONE;
+	}
 
 	if (device_type == CAMERA_DEVICE_CAMERA0)
 		muse_core_client_get_value(module, "flash_state_camera0", (int *)&get_flash_state);
