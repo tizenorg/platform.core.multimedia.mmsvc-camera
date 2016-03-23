@@ -1309,8 +1309,6 @@ int camera_dispatcher_set_display(muse_module_h module)
 	muse_camera_handle_s *muse_camera = NULL;
 	muse_camera_api_e api = MUSE_CAMERA_API_SET_DISPLAY;
 	muse_camera_api_class_e class = MUSE_CAMERA_API_CLASS_IMMEDIATE;
-	static guint stream_id = 0;
-	char socket_path[SOCKET_PATH_LENGTH] = {0,};
 #ifdef HAVE_WAYLAND
 	MMCamWaylandInfo *wl_info = NULL;
 #endif /* HAVE_WAYLAND */
@@ -1340,18 +1338,11 @@ int camera_dispatcher_set_display(muse_module_h module)
 		muse_camera_msg_return(api, class, ret, module);
 	} else {
 #endif /* HAVE_WAYLAND */
-		stream_id = muse_core_get_atomic_uint();
+		LOGD("NOT overlay type. set NONE type.");
 
-		snprintf(socket_path, SOCKET_PATH_LENGTH, SOCKET_PATH_BASE, stream_id);
+		ret = legacy_camera_set_display(muse_camera->camera_handle, CAMERA_DISPLAY_TYPE_NONE, NULL);
 
-		LOGD("socket_path : %s", socket_path);
-
-		ret = legacy_camera_set_display(muse_camera->camera_handle, CAMERA_DISPLAY_TYPE_REMOTE, (void *)socket_path);
-		if (ret != CAMERA_ERROR_NONE) {
-			muse_camera_msg_return(api, class, ret, module);
-		} else {
-			muse_camera_msg_return1(api, class, ret, module, STRING, socket_path);
-		}
+		muse_camera_msg_return(api, class, ret, module);
 #ifdef HAVE_WAYLAND
 	}
 #endif /* HAVE_WAYLAND */
