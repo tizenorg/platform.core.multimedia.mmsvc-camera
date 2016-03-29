@@ -289,7 +289,7 @@ static int _camera_remove_export_data(muse_module_h module, int key, int remove_
 	while (tmp_list) {
 		export_data = (muse_camera_export_data *)tmp_list->data;
 		if (export_data) {
-			if (export_data->key == key || remove_all) {
+			if ((export_data->key == key && NEED_RELEASE_BUFFER(muse_camera->preview_cb_flag)) || remove_all) {
 				/*LOGD("key %d matched, remove it (remove_all %d)", key, remove_all);*/
 
 				if (export_data->bo) {
@@ -682,10 +682,12 @@ void _camera_dispatcher_preview_cb(MMCamcorderVideoStreamDataType *stream, void 
 
 	end_time = g_get_monotonic_time () + G_TIME_SPAN_SECOND;
 
-	if (!g_cond_wait_until(&muse_camera->preview_cb_cond, &muse_camera->preview_cb_lock, end_time)) {
-		LOGW("preview callback return message timeout");
-	} else {
-		/*LOGD("preview callback return message received");*/
+	if (!CHECK_PREVIEW_CB(muse_camera, PREVIEW_CB_TYPE_EVAS)) {
+		if (!g_cond_wait_until(&muse_camera->preview_cb_cond, &muse_camera->preview_cb_lock, end_time)) {
+			LOGW("preview callback return message timeout");
+		} else {
+			/*LOGD("preview callback return message received");*/
+		}
 	}
 
 	g_mutex_unlock(&muse_camera->preview_cb_lock);
@@ -920,6 +922,7 @@ int camera_dispatcher_create(muse_module_h module)
 	g_mutex_init(&muse_camera->list_lock);
 	g_mutex_init(&muse_camera->preview_cb_lock);
 	g_cond_init(&muse_camera->preview_cb_cond);
+	muse_camera->preview_cb_flag = 0;
 
 	LOGD("handle : 0x%x", muse_camera);
 	handle = (intptr_t)muse_camera;
@@ -1339,6 +1342,15 @@ int camera_dispatcher_set_display(muse_module_h module)
 	} else {
 #endif /* HAVE_WAYLAND */
 		LOGD("NOT overlay type. set NONE type.");
+
+		if (type == CAMERA_DISPLAY_TYPE_EVAS) {
+			ret = legacy_camera_set_preview_cb(muse_camera->camera_handle,
+		                                   (camera_preview_cb)_camera_dispatcher_preview_cb,
+		                                   (void *)module);
+
+			muse_camera->preview_cb_flag |= PREVIEW_CB_TYPE_EVAS;
+			LOGD("muse_camera->preview_cb_flag = 0x%08X", muse_camera->preview_cb_flag);
+		}
 
 		ret = legacy_camera_set_display(muse_camera->camera_handle, CAMERA_DISPLAY_TYPE_NONE, NULL);
 
@@ -1788,6 +1800,7 @@ int camera_dispatcher_set_preview_cb(muse_module_h module)
 	                                   (camera_preview_cb)_camera_dispatcher_preview_cb,
 	                                   (void *)module);
 
+	muse_camera->preview_cb_flag |= PREVIEW_CB_TYPE_USER;
 	LOGD("ret : 0x%x", ret);
 
 	muse_camera_msg_return(api, class, ret, module);
@@ -1806,7 +1819,11 @@ int camera_dispatcher_unset_preview_cb(muse_module_h module)
 
 	LOGD("handle : %p", muse_camera);
 
-	ret = legacy_camera_unset_preview_cb(muse_camera->camera_handle);
+	muse_camera->preview_cb_flag &= ~PREVIEW_CB_TYPE_USER;
+	if (muse_camera->preview_cb_flag & PREVIEW_CB_TYPE_EVAS)
+		LOGD("Preview callback for evas surface is remained.");
+	else
+		ret = legacy_camera_unset_preview_cb(muse_camera->camera_handle);
 
 	LOGD("ret : 0x%x", ret);
 
