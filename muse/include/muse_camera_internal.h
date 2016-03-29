@@ -29,6 +29,16 @@ extern "C" {
 #include <muse_camera.h>
 #include <legacy_camera_internal.h>
 
+#define PREVIEW_CB_TYPE_USER 0x0000000F
+#define PREVIEW_CB_TYPE_EVAS 0x000000F0
+
+#define NEED_RELEASE_BUFFER(x) \
+	((x)->preview_cb_flag && !((x)->preview_cb_flag == (PREVIEW_CB_TYPE_USER | PREVIEW_CB_TYPE_EVAS)) && \
+	(((x)->preview_cb_flag == PREVIEW_CB_TYPE_USER) || ((x)->preview_cb_flag == PREVIEW_CB_TYPE_EVAS)))
+#define CHECK_PREVIEW_CB(muse_camera, cb_type) ((muse_camera)->preview_cb_flag & cb_type)
+#define SET_PREVIEW_CB_TYPE(muse_camera, cb_type) ((muse_camera)->preview_cb_flag |= cb_type)
+#define UNSET_PREVIEW_CB_TYPE(muse_camera, cb_type) ((muse_camera)->preview_cb_flag &= ~cb_type)
+
 typedef struct {
 	camera_h camera_handle;
 	tbm_bufmgr bufmgr;
@@ -36,6 +46,7 @@ typedef struct {
 	GMutex list_lock;
 	GMutex preview_cb_lock;
 	GCond preview_cb_cond;
+	guint preview_cb_flag;
 #ifdef HAVE_WAYLAND
 	MMCamWaylandInfo wl_info;
 #endif /* HAVE_WAYLAND */
