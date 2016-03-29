@@ -338,15 +338,23 @@ static int _camera_remove_export_data(muse_module_h module, int key, int remove_
 void _camera_dispatcher_capturing_cb(camera_image_data_s* image, camera_image_data_s* postview, camera_image_data_s* thumbnail, void *user_data)
 {
 	muse_camera_handle_s *muse_camera = NULL;
-	int data_size = 0;
-	tbm_bo bo = NULL;
-	tbm_bo_handle bo_handle = {.ptr = NULL};
-	muse_camera_export_data *export_data = NULL;
-	int tbm_key = 0;
+	int data_size_main = 0;
+	int data_size_post = 0;
+	int data_size_thumb = 0;
+	tbm_bo bo_main = NULL;
+	tbm_bo bo_post = NULL;
+	tbm_bo bo_thumb = NULL;
+	tbm_bo_handle bo_main_handle = {.ptr = NULL};
+	tbm_bo_handle bo_post_handle = {.ptr = NULL};
+	tbm_bo_handle bo_thumb_handle = {.ptr = NULL};
+	muse_camera_export_data *export_data_main = NULL;
+	muse_camera_export_data *export_data_post = NULL;
+	muse_camera_export_data *export_data_thumb = NULL;
+	int tbm_key_main = 0;
+	int tbm_key_post = 0;
+	int tbm_key_thumb = 0;
 	muse_module_h module = (muse_module_h)user_data;
 	unsigned char *buf_pos = NULL;
-	int is_postview = 0;
-	int is_thumbnail = 0;
 
 	LOGD("Enter!!");
 
@@ -356,93 +364,138 @@ void _camera_dispatcher_capturing_cb(camera_image_data_s* image, camera_image_da
 		return;
 	}
 
-	export_data = g_new0(muse_camera_export_data, 1);
-	if (export_data == NULL) {
+	export_data_main = g_new0(muse_camera_export_data, 1);
+	if (export_data_main == NULL) {
 		LOGE("alloc export_data failed");
 		return;
 	}
 
 	if (image != NULL) {
 		if (image->size > 0) {
-			data_size += (sizeof(camera_image_data_s) + image->size);
-		}
-	}
-	if (postview != NULL) {
-		if (postview->size > 0) {
-			data_size += (sizeof(camera_image_data_s) + postview->size);
-			is_postview = 1;
-		}
-	}
-	if (thumbnail != NULL) {
-		if (thumbnail->size > 0) {
-			data_size += (sizeof(camera_image_data_s) + thumbnail->size);
-			is_thumbnail = 1;
-		}
-	}
+			data_size_main = sizeof(camera_image_data_s) + image->size;
 
-	bo = tbm_bo_alloc(muse_camera->bufmgr, data_size, TBM_BO_DEFAULT);
-	if (bo == NULL) {
-		LOGE("bo alloc failed");
-		g_free(export_data);
-		export_data = NULL;
-		return;
-	}
+			/* alloc bo */
+			bo_main = tbm_bo_alloc(muse_camera->bufmgr, data_size_main, TBM_BO_DEFAULT);
+			if (bo_main == NULL) {
+				LOGE("bo alloc failed");
+				goto main_image_error;
+			}
 
-	bo_handle = tbm_bo_map(bo, TBM_DEVICE_CPU, TBM_OPTION_READ | TBM_OPTION_WRITE);
-	if (bo_handle.ptr == NULL) {
-		LOGE("bo map Error!");
-		tbm_bo_unref(bo);
-		g_free(export_data);
-		export_data = NULL;
-		return;
-	}
+			bo_main_handle = tbm_bo_map(bo_main, TBM_DEVICE_CPU, TBM_OPTION_READ | TBM_OPTION_WRITE);
+			if (bo_main_handle.ptr == NULL) {
+				LOGE("bo map Error!");
+				goto main_image_error;
+			}
 
-	buf_pos = (unsigned char *)bo_handle.ptr;
-	if (image != NULL) {
-		if (image->size > 0) {
+			buf_pos = (unsigned char *)bo_main_handle.ptr;
 			memcpy(buf_pos, image, sizeof(camera_image_data_s));
 			buf_pos += sizeof(camera_image_data_s);
 			memcpy(buf_pos, image->data, image->size);
-			buf_pos += image->size;
+			tbm_bo_unmap(bo_main);
+
+			tbm_key_main = tbm_bo_export(bo_main);
+			if(tbm_key_main == 0) {
+				LOGE("Create key_info ERROR!!");
+				goto main_image_error;
+			}
+			LOGD("bo %p, vaddr %p, size %d, key %d",
+				bo_main, bo_main_handle.ptr, data_size_main, tbm_key_main);
+
+			/* set bo info */
+			export_data_main->key = tbm_key_main;
+			export_data_main->bo = bo_main;
 		}
 	}
 
-	if (is_postview) {
-		memcpy(buf_pos, postview, sizeof(camera_image_data_s));
-		buf_pos += sizeof(camera_image_data_s);
-		memcpy(buf_pos + sizeof(camera_image_data_s), postview->data, postview->size);
-		buf_pos += postview->size;
+	if (postview != NULL) {
+		if (postview->size > 0) {
+			data_size_post = sizeof(camera_image_data_s) + postview->size;
+
+			export_data_post = g_new0(muse_camera_export_data, 1);
+			if (export_data_post == NULL) {
+				LOGE("alloc export_data failed");
+				goto postview_image_error;
+			}
+
+			/* alloc bo */
+			bo_post = tbm_bo_alloc(muse_camera->bufmgr, data_size_post, TBM_BO_DEFAULT);
+			if (bo_post == NULL) {
+				LOGE("bo alloc failed");
+				goto postview_image_error;
+			}
+
+			bo_post_handle = tbm_bo_map(bo_post, TBM_DEVICE_CPU, TBM_OPTION_READ | TBM_OPTION_WRITE);
+			if (bo_post_handle.ptr == NULL) {
+				LOGE("bo map Error!");
+				goto postview_image_error;
+			}
+
+			buf_pos = (unsigned char *)bo_post_handle.ptr;
+			memcpy(buf_pos, postview, sizeof(camera_image_data_s));
+			buf_pos += sizeof(camera_image_data_s);
+			memcpy(buf_pos, postview->data, postview->size);
+			tbm_bo_unmap(bo_post);
+
+			tbm_key_post = tbm_bo_export(bo_post);
+			if(tbm_key_post == 0) {
+				LOGE("Create key_info ERROR!!");
+				goto postview_image_error;
+			}
+
+			/* set bo info */
+			export_data_post->key = tbm_key_post;
+			export_data_post->bo = bo_post;
+		}
 	}
 
-	if (is_thumbnail) {
-		memcpy(buf_pos, thumbnail, sizeof(camera_image_data_s));
-		buf_pos += sizeof(camera_image_data_s);
-		memcpy(buf_pos + sizeof(camera_image_data_s), thumbnail->data, thumbnail->size);
+	if (thumbnail != NULL) {
+		if (thumbnail->size > 0) {
+			data_size_thumb = sizeof(camera_image_data_s) + thumbnail->size;
+
+			export_data_thumb = g_new0(muse_camera_export_data, 1);
+			if (export_data_thumb == NULL) {
+				LOGE("alloc export_data failed");
+				goto thumbnail_image_error;
+			}
+
+			/* alloc bo */
+			bo_thumb = tbm_bo_alloc(muse_camera->bufmgr, data_size_thumb, TBM_BO_DEFAULT);
+			if (bo_thumb == NULL) {
+				LOGE("bo alloc failed");
+				goto thumbnail_image_error;
+			}
+
+			bo_thumb_handle = tbm_bo_map(bo_thumb, TBM_DEVICE_CPU, TBM_OPTION_READ | TBM_OPTION_WRITE);
+			if (bo_thumb_handle.ptr == NULL) {
+				LOGE("bo map Error!");
+				goto thumbnail_image_error;
+			}
+
+			buf_pos = (unsigned char *)bo_thumb_handle.ptr;
+			memcpy(buf_pos, thumbnail, sizeof(camera_image_data_s));
+			buf_pos += sizeof(camera_image_data_s);
+			memcpy(buf_pos, thumbnail->data, thumbnail->size);
+			tbm_bo_unmap(bo_thumb);
+
+			tbm_key_thumb = tbm_bo_export(bo_thumb);
+			if(tbm_key_thumb == 0) {
+				LOGE("Create key_info ERROR!!");
+				goto thumbnail_image_error;
+			}
+
+			/* set bo info */
+			export_data_thumb->key = tbm_key_thumb;
+			export_data_thumb->bo = bo_thumb;
+		}
 	}
-
-	tbm_bo_unmap(bo);
-
-	tbm_key = tbm_bo_export(bo);
-
-	if(tbm_key == 0) {
-		LOGE("Create key_info ERROR!!");
-		tbm_bo_unref(bo);
-		bo = NULL;
-		g_free(export_data);
-		export_data = NULL;
-		return;
-	}
-
-	LOGD("bo %p, vaddr %p, size %d, key %d",
-	     bo, bo_handle.ptr, data_size, tbm_key);
-
-	/* set bo info */
-	export_data->key = tbm_key;
-	export_data->bo = bo;
 
 	/* add bo info to list */
 	g_mutex_lock(&muse_camera->list_lock);
-	muse_camera->data_list = g_list_append(muse_camera->data_list, (gpointer)export_data);
+	muse_camera->data_list = g_list_append(muse_camera->data_list, (gpointer)export_data_main);
+	if (export_data_post != NULL)
+		muse_camera->data_list = g_list_append(muse_camera->data_list, (gpointer)export_data_post);
+	if (export_data_thumb != NULL)
+		muse_camera->data_list = g_list_append(muse_camera->data_list, (gpointer)export_data_thumb);
 	g_mutex_unlock(&muse_camera->list_lock);
 
 	/* send message */
@@ -450,9 +503,44 @@ void _camera_dispatcher_capturing_cb(camera_image_data_s* image, camera_image_da
 	                       MUSE_CAMERA_EVENT_TYPE_CAPTURE,
 	                       MUSE_CAMERA_EVENT_CLASS_THREAD_SUB,
 	                       module,
-	                       INT, tbm_key,
-	                       INT, is_postview,
-	                       INT, is_thumbnail);
+	                       INT, tbm_key_main,
+	                       INT, tbm_key_post,
+	                       INT, tbm_key_thumb);
+
+	return;
+
+thumbnail_image_error:
+	if (bo_thumb) {
+		tbm_bo_unref(bo_thumb);
+		bo_thumb = NULL;
+	}
+
+	if (export_data_thumb) {
+		g_free(export_data_thumb);
+		export_data_thumb = NULL;
+	}
+
+postview_image_error:
+	if (bo_post) {
+		tbm_bo_unref(bo_post);
+		bo_post = NULL;
+	}
+
+	if (export_data_post) {
+		g_free(export_data_post);
+		export_data_post = NULL;
+	}
+
+main_image_error:
+	if (bo_main) {
+		tbm_bo_unref(bo_main);
+		bo_main = NULL;
+	}
+
+	if (export_data_main) {
+		g_free(export_data_main);
+		export_data_main = NULL;
+	}
 
 	return;
 }
@@ -506,7 +594,6 @@ void _camera_dispatcher_preview_cb(MMCamcorderVideoStreamDataType *stream, void 
 	muse_module_h module = (muse_module_h)user_data;
 	unsigned char *buf_pos = NULL;
 	char *send_message = NULL;
-	gint64 end_time;
 
 	/*LOGD("Enter");*/
 
@@ -680,12 +767,14 @@ void _camera_dispatcher_preview_cb(MMCamcorderVideoStreamDataType *stream, void 
 
 	/*LOGD("wait preview callback return message");*/
 
-	end_time = g_get_monotonic_time () + G_TIME_SPAN_SECOND;
+	if (!CHECK_PREVIEW_CB(muse_camera, PREVIEW_CB_TYPE_EVAS)) {
+		gint64 end_time = g_get_monotonic_time () + G_TIME_SPAN_SECOND;
 
-	if (!g_cond_wait_until(&muse_camera->preview_cb_cond, &muse_camera->preview_cb_lock, end_time)) {
-		LOGW("preview callback return message timeout");
-	} else {
-		/*LOGD("preview callback return message received");*/
+		if (!g_cond_wait_until(&muse_camera->preview_cb_cond, &muse_camera->preview_cb_lock, end_time)) {
+			LOGW("preview callback return message timeout");
+		} else {
+			/*LOGD("preview callback return message received");*/
+		}
 	}
 
 	g_mutex_unlock(&muse_camera->preview_cb_lock);
@@ -920,6 +1009,7 @@ int camera_dispatcher_create(muse_module_h module)
 	g_mutex_init(&muse_camera->list_lock);
 	g_mutex_init(&muse_camera->preview_cb_lock);
 	g_cond_init(&muse_camera->preview_cb_cond);
+	muse_camera->preview_cb_flag = 0;
 
 	LOGD("handle : 0x%x", muse_camera);
 	handle = (intptr_t)muse_camera;
@@ -1339,6 +1429,15 @@ int camera_dispatcher_set_display(muse_module_h module)
 	} else {
 #endif /* HAVE_WAYLAND */
 		LOGD("NOT overlay type. set NONE type.");
+
+		if (type == CAMERA_DISPLAY_TYPE_EVAS) {
+			ret = legacy_camera_set_preview_cb(muse_camera->camera_handle,
+		                                   (camera_preview_cb)_camera_dispatcher_preview_cb,
+		                                   (void *)module);
+
+			if (ret == CAMERA_ERROR_NONE)
+				SET_PREVIEW_CB_TYPE(muse_camera, PREVIEW_CB_TYPE_EVAS);
+		}
 
 		ret = legacy_camera_set_display(muse_camera->camera_handle, CAMERA_DISPLAY_TYPE_NONE, NULL);
 
@@ -1788,6 +1887,9 @@ int camera_dispatcher_set_preview_cb(muse_module_h module)
 	                                   (camera_preview_cb)_camera_dispatcher_preview_cb,
 	                                   (void *)module);
 
+	if (ret == CAMERA_ERROR_NONE)
+		SET_PREVIEW_CB_TYPE(muse_camera, PREVIEW_CB_TYPE_USER);
+
 	LOGD("ret : 0x%x", ret);
 
 	muse_camera_msg_return(api, class, ret, module);
@@ -1806,7 +1908,11 @@ int camera_dispatcher_unset_preview_cb(muse_module_h module)
 
 	LOGD("handle : %p", muse_camera);
 
-	ret = legacy_camera_unset_preview_cb(muse_camera->camera_handle);
+	UNSET_PREVIEW_CB_TYPE(muse_camera, PREVIEW_CB_TYPE_USER);
+	if (CHECK_PREVIEW_CB(muse_camera, PREVIEW_CB_TYPE_EVAS))
+		LOGD("Preview callback for evas surface is remained.");
+	else
+		ret = legacy_camera_unset_preview_cb(muse_camera->camera_handle);
 
 	LOGD("ret : 0x%x", ret);
 
