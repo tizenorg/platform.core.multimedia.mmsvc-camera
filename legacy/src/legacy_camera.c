@@ -4229,3 +4229,276 @@ int legacy_camera_attr_set_encoded_preview_gop_interval(camera_h camera, int int
 
 	return __convert_camera_error_code(__func__, ret);
 }
+
+
+int legacy_camera_attr_set_pan(camera_h camera, int move_type, int pan_degree)
+{
+	if (camera == NULL) {
+		LOGE("INVALID_PARAMETER(0x%08x)", CAMERA_ERROR_INVALID_PARAMETER);
+		return CAMERA_ERROR_INVALID_PARAMETER;
+	}
+
+	int ret = MM_ERROR_NONE;
+	int degree = 0;
+	camera_s *handle = (camera_s *)camera;
+
+	if (move_type == CAMERA_ATTR_PTZ_MOVE_RELATIVE) {
+		ret = mm_camcorder_get_attributes(handle->mm_handle, NULL,
+					  MMCAM_CAMERA_PAN, &degree,
+					  NULL);
+
+		if (ret == MM_ERROR_NONE) {
+			degree += pan_degree;
+		} else {
+			LOGE("mm_camcorder_get_attributes failed : 0x%x", ret);
+			return __convert_camera_error_code(__func__, ret);
+		}
+	} else {
+		degree = pan_degree;
+	}
+
+	ret = mm_camcorder_set_attributes(handle->mm_handle, NULL,
+					  MMCAM_CAMERA_PAN, degree,
+					  NULL);
+
+	return __convert_camera_error_code(__func__, ret);
+}
+
+
+int legacy_camera_attr_get_pan(camera_h camera, int *pan_degree)
+{
+	if (camera == NULL || pan_degree == NULL) {
+		LOGE("INVALID_PARAMETER(0x%08x)", CAMERA_ERROR_INVALID_PARAMETER);
+		return CAMERA_ERROR_INVALID_PARAMETER;
+	}
+
+	int ret = MM_ERROR_NONE;
+	camera_s *handle = (camera_s *)camera;
+
+	ret = mm_camcorder_get_attributes(handle->mm_handle, NULL,
+					  MMCAM_CAMERA_PAN, pan_degree,
+					  NULL);
+
+	return __convert_camera_error_code(__func__, ret);
+}
+
+
+int legacy_camera_attr_get_pan_range(camera_h camera, int *min, int *max)
+{
+	if (camera == NULL || min == NULL || max == NULL) {
+		LOGE("INVALID_PARAMETER(0x%08x)", CAMERA_ERROR_INVALID_PARAMETER);
+		return CAMERA_ERROR_INVALID_PARAMETER;
+	}
+
+	int ret = MM_ERROR_NONE;
+	camera_s *handle = (camera_s *)camera;
+	MMCamAttrsInfo ainfo;
+
+	ret = mm_camcorder_get_attribute_info(handle->mm_handle, MMCAM_CAMERA_PAN, &ainfo);
+	if (ret == MM_ERROR_NONE) {
+		*min = ainfo.int_range.min;
+		*max = ainfo.int_range.max;
+	}
+
+	return __convert_camera_error_code(__func__, ret);
+}
+
+
+int legacy_camera_attr_set_tilt(camera_h camera, int move_type, int tilt_degree)
+{
+	if (camera == NULL) {
+		LOGE("INVALID_PARAMETER(0x%08x)", CAMERA_ERROR_INVALID_PARAMETER);
+		return CAMERA_ERROR_INVALID_PARAMETER;
+	}
+
+	int ret = MM_ERROR_NONE;
+	int degree = 0;
+	camera_s *handle = (camera_s *)camera;
+
+	if (move_type == CAMERA_ATTR_PTZ_MOVE_RELATIVE) {
+		ret = mm_camcorder_get_attributes(handle->mm_handle, NULL,
+					  MMCAM_CAMERA_TILT, &degree,
+					  NULL);
+
+		if (ret == MM_ERROR_NONE) {
+			degree += tilt_degree;
+		} else {
+			LOGE("mm_camcorder_get_attributes failed : 0x%x", ret);
+			return __convert_camera_error_code(__func__, ret);
+		}
+	} else {
+		degree = tilt_degree;
+	}
+
+	ret = mm_camcorder_set_attributes(handle->mm_handle, NULL,
+					  MMCAM_CAMERA_TILT, degree,
+					  NULL);
+
+	return __convert_camera_error_code(__func__, ret);
+}
+
+
+int legacy_camera_attr_get_tilt(camera_h camera, int *tilt_degree)
+{
+	if (camera == NULL || tilt_degree == NULL) {
+		LOGE("INVALID_PARAMETER(0x%08x)", CAMERA_ERROR_INVALID_PARAMETER);
+		return CAMERA_ERROR_INVALID_PARAMETER;
+	}
+
+	int ret = MM_ERROR_NONE;
+	camera_s *handle = (camera_s *)camera;
+
+	ret = mm_camcorder_get_attributes(handle->mm_handle, NULL,
+					  MMCAM_CAMERA_TILT, tilt_degree,
+					  NULL);
+
+	return __convert_camera_error_code(__func__, ret);
+}
+
+
+int legacy_camera_attr_get_tilt_range(camera_h camera, int *min, int *max)
+{
+	if (camera == NULL || min == NULL || max == NULL) {
+		LOGE("INVALID_PARAMETER(0x%08x)", CAMERA_ERROR_INVALID_PARAMETER);
+		return CAMERA_ERROR_INVALID_PARAMETER;
+	}
+
+	int ret = MM_ERROR_NONE;
+	camera_s *handle = (camera_s *)camera;
+	MMCamAttrsInfo ainfo;
+
+	ret = mm_camcorder_get_attribute_info(handle->mm_handle, MMCAM_CAMERA_TILT, &ainfo);
+	if (ret == MM_ERROR_NONE) {
+		*min = ainfo.int_range.min;
+		*max = ainfo.int_range.max;
+	}
+
+	return __convert_camera_error_code(__func__, ret);
+}
+
+
+int legacy_camera_attr_set_ptz_type(camera_h camera, int ptz_type)
+{
+	if (camera == NULL) {
+		LOGE("INVALID_PARAMETER(0x%08x)", CAMERA_ERROR_INVALID_PARAMETER);
+		return CAMERA_ERROR_INVALID_PARAMETER;
+	}
+
+	int ret = MM_ERROR_NONE;
+	camera_s *handle = (camera_s *)camera;
+
+	ret = mm_camcorder_set_attributes(handle->mm_handle, NULL,
+					  MMCAM_CAMERA_PTZ_TYPE, ptz_type,
+					  NULL);
+
+	return __convert_camera_error_code(__func__, ret);
+}
+
+
+int legacy_camera_attr_foreach_supported_ptz_type(camera_h camera, camera_attr_supported_ptz_type_cb foreach_cb, void *user_data)
+{
+	if (camera == NULL || foreach_cb == NULL) {
+		LOGE("INVALID_PARAMETER(0x%08x)", CAMERA_ERROR_INVALID_PARAMETER);
+		return CAMERA_ERROR_INVALID_PARAMETER;
+	}
+
+	int i = 0;
+	int ret = MM_ERROR_NONE;
+	camera_s *handle = (camera_s *)camera;
+	MMCamAttrsInfo info;
+
+	ret = mm_camcorder_get_attribute_info(handle->mm_handle, MMCAM_CAMERA_PTZ_TYPE, &info);
+	if (ret != MM_ERROR_NONE) {
+		return __convert_camera_error_code(__func__, ret);
+	}
+
+	for (i = 0 ; i < info.int_array.count ; i++) {
+		if (!foreach_cb(info.int_array.array[i], user_data)) {
+			break;
+		}
+	}
+
+	return CAMERA_ERROR_NONE;
+}
+
+
+int legacy_camera_attr_set_display_roi_area(camera_h camera, int *display_roi_area)
+{
+	if (camera == NULL || display_roi_area == NULL) {
+		LOGE("INVALID_PARAMETER(0x%08x)", CAMERA_ERROR_INVALID_PARAMETER);
+		return CAMERA_ERROR_INVALID_PARAMETER;
+	}
+
+	int ret = MM_ERROR_NONE;
+	int current_method = MM_DISPLAY_METHOD_LETTER_BOX;
+	camera_s *handle = (camera_s *)camera;
+
+	ret = mm_camcorder_get_attributes(handle->mm_handle, NULL,
+					  MMCAM_DISPLAY_GEOMETRY_METHOD, &current_method,
+					  NULL);
+	if (ret != MM_ERROR_NONE) {
+		LOGE("INVALID_OPERATION(0x%08x)", CAMERA_ERROR_INVALID_OPERATION);
+		return CAMERA_ERROR_INVALID_OPERATION;
+	}
+
+	if (current_method != MM_DISPLAY_METHOD_CUSTOM_ROI) {
+		LOGE("NOT CUSTOM_ROI mode - %d", current_method);
+		return CAMERA_ERROR_INVALID_OPERATION;
+	}
+
+	ret = mm_camcorder_set_attributes(handle->mm_handle, NULL,
+					  MMCAM_DISPLAY_RECT_X, display_roi_area[0],
+					  MMCAM_DISPLAY_RECT_Y, display_roi_area[1],
+					  MMCAM_DISPLAY_RECT_WIDTH, display_roi_area[2],
+					  MMCAM_DISPLAY_RECT_HEIGHT, display_roi_area[3],
+					  NULL);
+
+	return __convert_camera_error_code(__func__, ret);
+}
+
+int legacy_camera_attr_get_display_roi_area(camera_h camera, int *display_roi_area)
+{
+	if (camera == NULL || display_roi_area == NULL) {
+		LOGE("INVALID_PARAMETER(0x%08x)", CAMERA_ERROR_INVALID_PARAMETER);
+		return CAMERA_ERROR_INVALID_PARAMETER;
+	}
+
+	int ret = MM_ERROR_NONE;
+	int current_method = MM_DISPLAY_METHOD_LETTER_BOX;
+	int x = 0;
+	int y = 0;
+	int width = 0;
+	int height = 0;
+	camera_s *handle = (camera_s *)camera;
+
+	ret = mm_camcorder_get_attributes(handle->mm_handle, NULL,
+					  MMCAM_DISPLAY_GEOMETRY_METHOD, &current_method,
+					  NULL);
+	if (ret != MM_ERROR_NONE) {
+		LOGE("INVALID_OPERATION(0x%08x)", CAMERA_ERROR_INVALID_OPERATION);
+		return CAMERA_ERROR_INVALID_OPERATION;
+	}
+
+	if (current_method != MM_DISPLAY_METHOD_CUSTOM_ROI) {
+		LOGE("NOT CUSTOM_ROI mode - %d", current_method);
+		return CAMERA_ERROR_INVALID_OPERATION;
+	}
+
+	ret = mm_camcorder_get_attributes(handle->mm_handle, NULL,
+					  MMCAM_DISPLAY_RECT_X, &x,
+					  MMCAM_DISPLAY_RECT_Y, &y,
+					  MMCAM_DISPLAY_RECT_WIDTH, &width,
+					  MMCAM_DISPLAY_RECT_HEIGHT, &height,
+					  NULL);
+
+	if (ret != MM_ERROR_NONE) {
+		LOGD("get roi area : %d,%d,%dx%d", x, y, width, height);
+
+		display_roi_area[0] = x;
+		display_roi_area[1] = y;
+		display_roi_area[2] = width;
+		display_roi_area[3] = height;
+	}
+
+	return __convert_camera_error_code(__func__, ret);
+}
