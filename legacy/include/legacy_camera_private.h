@@ -79,6 +79,7 @@ typedef struct _camera_s{
 	bool on_continuous_focusing;
 	int cached_focus_mode;
 	camera_device_e device_type;
+	camera_attr_ptz_type_e ptz_type;
 
 	GList *cb_data_list;
 	GMutex idle_cb_lock;

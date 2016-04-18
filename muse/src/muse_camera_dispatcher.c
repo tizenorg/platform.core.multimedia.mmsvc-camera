@@ -265,6 +265,19 @@ void _camera_dispatcher_callback_supported_capture_resolution(int param1, int pa
 	                       INT, param2);
 }
 
+void _camera_dispatcher_callback_supported_ptz_type(int param1, void *user_data)
+{
+	muse_module_h module = (muse_module_h)user_data;
+
+	LOGD("Enter!! param : %d", param1);
+
+	muse_camera_msg_event1(MUSE_CAMERA_CB_EVENT,
+	                       MUSE_CAMERA_EVENT_TYPE_FOREACH_SUPPORTED_PTZ_TYPE,
+	                       MUSE_CAMERA_EVENT_CLASS_THREAD_SUB,
+	                       module,
+	                       INT, param1);
+}
+
 static int _camera_remove_export_data(muse_module_h module, int key, int remove_all)
 {
 	muse_camera_handle_s *muse_camera = NULL;
@@ -4072,6 +4085,238 @@ int camera_dispatcher_attr_set_encoded_preview_gop_interval(muse_module_h module
 	return MUSE_CAMERA_ERROR_NONE;
 }
 
+int camera_dispatcher_attr_set_pan(muse_module_h module)
+{
+	int ret = CAMERA_ERROR_NONE;
+	muse_camera_handle_s *muse_camera = NULL;
+	int set_move_type = 0;
+	int set_pan_step = 0;
+	muse_camera_api_e api = MUSE_CAMERA_API_ATTR_SET_PAN;
+	muse_camera_api_class_e class = MUSE_CAMERA_API_CLASS_IMMEDIATE;
+
+	muse_camera = (muse_camera_handle_s *)muse_core_ipc_get_handle(module);
+
+	muse_camera_msg_get(set_move_type, muse_core_client_get_msg(module));
+	muse_camera_msg_get(set_pan_step, muse_core_client_get_msg(module));
+
+	LOGD("handle : 0x%x", muse_camera);
+
+	ret = legacy_camera_attr_set_pan(muse_camera->camera_handle, set_move_type, set_pan_step);
+
+	LOGD("ret : 0x%x", ret);
+
+	muse_camera_msg_return(api, class, ret, module);
+
+	return MUSE_CAMERA_ERROR_NONE;
+}
+
+int camera_dispatcher_attr_get_pan(muse_module_h module)
+{
+	int ret = CAMERA_ERROR_NONE;
+	muse_camera_handle_s *muse_camera = NULL;
+	int get_pan_step = 0;
+	muse_camera_api_e api = MUSE_CAMERA_API_ATTR_GET_PAN;
+	muse_camera_api_class_e class = MUSE_CAMERA_API_CLASS_IMMEDIATE;
+
+	muse_camera = (muse_camera_handle_s *)muse_core_ipc_get_handle(module);
+
+	LOGD("handle : %p", muse_camera);
+
+	ret = legacy_camera_attr_get_pan(muse_camera->camera_handle, &get_pan_step);
+	if (ret == CAMERA_ERROR_NONE) {
+		muse_camera_msg_return1(api, class, ret, module, INT, get_pan_step);
+	} else {
+		muse_camera_msg_return(api, class, ret, module);
+	}
+
+	return MUSE_CAMERA_ERROR_NONE;
+}
+
+int camera_dispatcher_attr_get_pan_range(muse_module_h module)
+{
+	int ret = CAMERA_ERROR_NONE;
+	muse_camera_handle_s *muse_camera = NULL;
+	int get_min = 0;
+	int get_max = 0;
+	muse_camera_api_e api = MUSE_CAMERA_API_ATTR_GET_PAN_RANGE;
+	muse_camera_api_class_e class = MUSE_CAMERA_API_CLASS_IMMEDIATE;
+
+	muse_camera = (muse_camera_handle_s *)muse_core_ipc_get_handle(module);
+
+	LOGD("handle : %p", muse_camera);
+
+	ret = legacy_camera_attr_get_pan_range(muse_camera->camera_handle, &get_min, &get_max);
+	if (ret == CAMERA_ERROR_NONE) {
+		muse_camera_msg_return2(api, class, ret, module, INT, get_min, INT, get_max);
+	} else {
+		muse_camera_msg_return(api, class, ret, module);
+	}
+
+	return MUSE_CAMERA_ERROR_NONE;
+}
+
+int camera_dispatcher_attr_set_tilt(muse_module_h module)
+{
+	int ret = CAMERA_ERROR_NONE;
+	muse_camera_handle_s *muse_camera = NULL;
+	int set_move_type = 0;
+	int set_tilt_step = 0;
+	muse_camera_api_e api = MUSE_CAMERA_API_ATTR_SET_TILT;
+	muse_camera_api_class_e class = MUSE_CAMERA_API_CLASS_IMMEDIATE;
+
+	muse_camera = (muse_camera_handle_s *)muse_core_ipc_get_handle(module);
+
+	muse_camera_msg_get(set_move_type, muse_core_client_get_msg(module));
+	muse_camera_msg_get(set_tilt_step, muse_core_client_get_msg(module));
+
+	LOGD("handle : 0x%x", muse_camera);
+
+	ret = legacy_camera_attr_set_tilt(muse_camera->camera_handle, set_move_type, set_tilt_step);
+
+	LOGD("ret : 0x%x", ret);
+
+	muse_camera_msg_return(api, class, ret, module);
+
+	return MUSE_CAMERA_ERROR_NONE;
+}
+
+int camera_dispatcher_attr_get_tilt(muse_module_h module)
+{
+	int ret = CAMERA_ERROR_NONE;
+	muse_camera_handle_s *muse_camera = NULL;
+	int get_tilt_step = 0;
+	muse_camera_api_e api = MUSE_CAMERA_API_ATTR_GET_TILT;
+	muse_camera_api_class_e class = MUSE_CAMERA_API_CLASS_IMMEDIATE;
+
+	muse_camera = (muse_camera_handle_s *)muse_core_ipc_get_handle(module);
+
+	LOGD("handle : %p", muse_camera);
+
+	ret = legacy_camera_attr_get_tilt(muse_camera->camera_handle, &get_tilt_step);
+	if (ret == CAMERA_ERROR_NONE) {
+		muse_camera_msg_return1(api, class, ret, module, INT, get_tilt_step);
+	} else {
+		muse_camera_msg_return(api, class, ret, module);
+	}
+
+	return MUSE_CAMERA_ERROR_NONE;
+}
+
+int camera_dispatcher_attr_get_tilt_range(muse_module_h module)
+{
+	int ret = CAMERA_ERROR_NONE;
+	muse_camera_handle_s *muse_camera = NULL;
+	int get_min = 0;
+	int get_max = 0;
+	muse_camera_api_e api = MUSE_CAMERA_API_ATTR_GET_TILT_RANGE;
+	muse_camera_api_class_e class = MUSE_CAMERA_API_CLASS_IMMEDIATE;
+
+	muse_camera = (muse_camera_handle_s *)muse_core_ipc_get_handle(module);
+
+	LOGD("handle : %p", muse_camera);
+
+	ret = legacy_camera_attr_get_tilt_range(muse_camera->camera_handle, &get_min, &get_max);
+	if (ret == CAMERA_ERROR_NONE) {
+		muse_camera_msg_return2(api, class, ret, module, INT, get_min, INT, get_max);
+	} else {
+		muse_camera_msg_return(api, class, ret, module);
+	}
+
+	return MUSE_CAMERA_ERROR_NONE;
+}
+
+int camera_dispatcher_attr_set_ptz_type(muse_module_h module)
+{
+	int ret = CAMERA_ERROR_NONE;
+	muse_camera_handle_s *muse_camera = NULL;
+	int set_ptz_type = 0;
+	muse_camera_api_e api = MUSE_CAMERA_API_ATTR_SET_PTZ_TYPE;
+	muse_camera_api_class_e class = MUSE_CAMERA_API_CLASS_IMMEDIATE;
+
+	muse_camera = (muse_camera_handle_s *)muse_core_ipc_get_handle(module);
+
+	muse_camera_msg_get(set_ptz_type, muse_core_client_get_msg(module));
+
+	LOGD("handle : 0x%x", muse_camera);
+
+	ret = legacy_camera_attr_set_ptz_type(muse_camera->camera_handle, set_ptz_type);
+
+	LOGD("ret : 0x%x", ret);
+
+	muse_camera_msg_return(api, class, ret, module);
+
+	return MUSE_CAMERA_ERROR_NONE;
+}
+
+int camera_dispatcher_attr_foreach_supported_ptz_type(muse_module_h module)
+{
+	int ret = CAMERA_ERROR_NONE;
+	muse_camera_handle_s *muse_camera = NULL;
+	muse_camera_api_e api = MUSE_CAMERA_API_ATTR_FOREACH_SUPPORTED_PTZ_TYPE;
+	muse_camera_api_class_e class = MUSE_CAMERA_API_CLASS_THREAD_SUB;
+
+	muse_camera = (muse_camera_handle_s *)muse_core_ipc_get_handle(module);
+
+	LOGD("handle : %p", muse_camera);
+
+	ret = legacy_camera_attr_foreach_supported_ptz_type(muse_camera->camera_handle,
+	                                                   (camera_attr_supported_ptz_type_cb)_camera_dispatcher_callback_supported_ptz_type,
+	                                                   (void *)module);
+
+	LOGD("ret : 0x%x", ret);
+
+	muse_camera_msg_return(api, class, ret, module);
+
+	return MUSE_CAMERA_ERROR_NONE;
+}
+
+int camera_dispatcher_attr_set_display_roi_area(muse_module_h module)
+{
+	int ret = CAMERA_ERROR_NONE;
+	muse_camera_handle_s *muse_camera = NULL;
+	int set_display_roi_area[4] = {0,};
+	muse_camera_api_e api = MUSE_CAMERA_API_SET_DISPLAY_ROI_AREA;
+	muse_camera_api_class_e class = MUSE_CAMERA_API_CLASS_IMMEDIATE;
+
+	muse_camera = (muse_camera_handle_s *)muse_core_ipc_get_handle(module);
+
+	muse_camera_msg_get_array(set_display_roi_area, muse_core_client_get_msg(module));
+
+	LOGD("handle : 0x%x, x : %d, y : %d, width : %d, height : %d", muse_camera,
+		set_display_roi_area[0], set_display_roi_area[1], set_display_roi_area[2], set_display_roi_area[3]);
+
+	ret = legacy_camera_attr_set_display_roi_area(muse_camera->camera_handle, set_display_roi_area);
+
+	LOGD("ret : 0x%x", ret);
+
+	muse_camera_msg_return(api, class, ret, module);
+
+	return MUSE_CAMERA_ERROR_NONE;
+}
+
+int camera_dispatcher_attr_get_display_roi_area(muse_module_h module)
+{
+	int ret = CAMERA_ERROR_NONE;
+	muse_camera_handle_s *muse_camera = NULL;
+	int get_display_roi_area[4] = {0,};
+	muse_camera_api_e api = MUSE_CAMERA_API_GET_DISPLAY_ROI_AREA;
+	muse_camera_api_class_e class = MUSE_CAMERA_API_CLASS_IMMEDIATE;
+
+	muse_camera = (muse_camera_handle_s *)muse_core_ipc_get_handle(module);
+
+	LOGD("handle : %p", muse_camera);
+
+	ret = legacy_camera_attr_get_display_roi_area(muse_camera->camera_handle, get_display_roi_area);
+	if (ret == CAMERA_ERROR_NONE) {
+		muse_camera_msg_return_array(api, class, ret, module, get_display_roi_area, sizeof(get_display_roi_area), sizeof(int));
+	} else {
+		muse_camera_msg_return(api, class, ret, module);
+	}
+
+	return MUSE_CAMERA_ERROR_NONE;
+}
+
+
 int camera_dispatcher_return_buffer(muse_module_h module)
 {
 	int tbm_key = 0;
@@ -4249,6 +4494,14 @@ int (*dispatcher[MUSE_CAMERA_API_MAX]) (muse_module_h module) = {
 	camera_dispatcher_attr_set_encoded_preview_bitrate, /* MUSE_CAMERA_API_ATTR_SET_ENCODED_PREVIEW_BITRATE, */
 	camera_dispatcher_attr_get_encoded_preview_gop_interval, /* MUSE_CAMERA_API_ATTR_GET_ENCODED_PREVIEW_GOP_INTERVAL, */
 	camera_dispatcher_attr_set_encoded_preview_gop_interval, /* MUSE_CAMERA_API_ATTR_SET_ENCODED_PREVIEW_GOP_INTERVAL, */
+	camera_dispatcher_attr_set_pan, /* MUSE_CAMERA_API_ATTR_SET_PAN */
+	camera_dispatcher_attr_get_pan, /* MUSE_CAMERA_API_ATTR_GET_PAN */
+	camera_dispatcher_attr_get_pan_range, /* MUSE_CAMERA_API_ATTR_GET_PAN_RANGE */
+	camera_dispatcher_attr_set_tilt, /* MUSE_CAMERA_API_ATTR_SET_TILT */
+	camera_dispatcher_attr_get_tilt, /* MUSE_CAMERA_API_ATTR_GET_TILT */
+	camera_dispatcher_attr_get_tilt_range, /* MUSE_CAMERA_API_ATTR_GET_TILT_RANGE */
+	camera_dispatcher_attr_set_display_roi_area, /* MUSE_CAMERA_API_SET_DISPLAY_ROI_AREA */
+	camera_dispatcher_attr_get_display_roi_area, /* MUSE_CAMERA_API_GET_DISPLAY_ROI_AREA */
 	camera_dispatcher_return_buffer, /* MUSE_CAMERA_API_RETURN_BUFFER, */
 	camera_dispatcher_preview_cb_return, /* MUSE_CAMERA_API_PREVIEW_CB_RETURN, */
 };

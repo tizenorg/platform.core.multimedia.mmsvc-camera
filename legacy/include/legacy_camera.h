@@ -295,6 +295,7 @@ typedef enum
 	CAMERA_DISPLAY_MODE_ORIGIN_SIZE,       /**< Origin size */
 	CAMERA_DISPLAY_MODE_FULL,	       /**< Full screen */
 	CAMERA_DISPLAY_MODE_CROPPED_FULL,      /**< Cropped full screen */
+	CAMERA_DISPLAY_MODE_CUSTOM_ROI,        /**< Custom ROI */
 } camera_display_mode_e;
 
 /**
@@ -501,6 +502,24 @@ typedef enum
 	CAMERA_ATTR_HDR_MODE_ENABLE,       /**< Enable HDR capture */
 	CAMERA_ATTR_HDR_MODE_KEEP_ORIGINAL /**< Enable HDR capture and keep original image data */
 } camera_attr_hdr_mode_e;
+
+/**
+ * @brief Enumeration for PTZ(Pan Tilt Zoom) type.
+ * @since_tizen 3.0
+ */
+typedef enum {
+	CAMERA_ATTR_PTZ_TYPE_MECHANICAL = 0,  /**< Move the camera device physically */
+	CAMERA_ATTR_PTZ_TYPE_ELECTRONIC       /**< Zoom digitally and move into portion of the image */
+} camera_attr_ptz_type_e;
+
+/**
+ * @brief Enumeration for PTZ(Pan Tilt Zoom) movement type.
+ * @since_tizen 3.0
+ */
+typedef enum {
+	CAMERA_ATTR_PTZ_MOVE_ABSOLUTE = 0,  /**< Move to a specific coordinate position */
+	CAMERA_ATTR_PTZ_MOVE_RELATIVE       /**< Move a specific distance from the current position */
+} camera_attr_ptz_move_type_e;
 
 
 /**
@@ -1948,6 +1967,17 @@ typedef bool (*camera_attr_supported_stream_rotation_cb)(camera_rotation_e rotat
  * @see	camera_attr_foreach_supported_theater_mode()
  */
 typedef bool (*camera_attr_supported_theater_mode_cb)(camera_attr_theater_mode_e mode, void *user_data);
+
+/**
+ * @brief Called to get each supported PTZ(Pan Tilt Zoom) type.
+ * @since_tizen 3.0
+ * @param[in] type The supported ptz type
+ * @param[in] user_data The user data passed from the foreach function
+ * @return @c true to continue with the next iteration of the loop, \n @c false to break out of the loop
+ * @pre	camera_attr_foreach_supported_ptz_type() will invoke this callback.
+ * @see	camera_attr_foreach_supported_ptz_type()
+ */
+typedef bool (*camera_attr_supported_ptz_type_cb)(camera_attr_ptz_type_e type, void *user_data);
 
 /**
  * @}
@@ -3527,6 +3557,164 @@ int legacy_camera_attr_get_encoded_preview_gop_interval(camera_h camera, int *in
  * @retval #CAMERA_ERROR_NOT_SUPPORTED The feature is not supported
  */
 int legacy_camera_attr_set_encoded_preview_gop_interval(camera_h camera, int interval);
+
+/**
+ * @brief Sets the position to move horizontally.
+ * @since_tizen 3.0
+ * @param[in] camera The handle to the camera
+ * @param[in] move_type The PTZ(Pan Tilt Zoom) move type
+ * @param[in] pan_step The step to move the camera
+ * @return @c 0 on success, otherwise a negative error value
+ * @retval #CAMERA_ERROR_NONE Successful
+ * @retval #CAMERA_ERROR_INVALID_OPERATION Internal error
+ * @retval #CAMERA_ERROR_INVALID_PARAMETER Invalid parameter
+ * @retval #CAMERA_ERROR_NOT_SUPPORTED The feature is not supported
+ */
+int legacy_camera_attr_set_pan(camera_h camera, int move_type, int pan_step);
+
+/**
+ * @brief Gets the current position of the camera.
+ * @since_tizen 3.0
+ * @param[in] camera The handle to the camera
+ * @param[out] pan_step The current horizontal distance from the starting point.
+ * @return @c 0 on success, otherwise a negative error value
+ * @retval #CAMERA_ERROR_NONE Successful
+ * @retval #CAMERA_ERROR_INVALID_OPERATION Internal error
+ * @retval #CAMERA_ERROR_INVALID_PARAMETER Invalid parameter
+ * @retval #CAMERA_ERROR_NOT_SUPPORTED The feature is not supported
+ */
+int legacy_camera_attr_get_pan(camera_h camera, int *pan_step);
+
+/**
+ * @brief Gets lower limit and upper limit for pan position.
+ * @since_tizen 3.0
+ * @remarks If the min value is greater than the max value, it means that this feature is not supported.
+ * @param[in] camera The handle to the camera
+ * @param[out] min The lower limit for pan
+ * @param[out] max The upper limit for pan
+ * @return @c 0 on success, otherwise a negative error value
+ * @retval #CAMERA_ERROR_NONE Successful
+ * @retval #CAMERA_ERROR_INVALID_OPERATION Internal error
+ * @retval #CAMERA_ERROR_INVALID_PARAMETER Invalid parameter
+ * @retval #CAMERA_ERROR_NOT_SUPPORTED The feature is not supported
+ */
+int legacy_camera_attr_get_pan_range(camera_h camera, int *min, int *max);
+
+/**
+ * @brief Sets the position to move vertically.
+ * @since_tizen 3.0
+ * @param[in] camera The handle to the camera
+ * @param[in] move_type The PTZ(Pan Tilt Zoom) move type
+ * @param[in] tilt_step The step to move the camera
+ * @return @c 0 on success, otherwise a negative error value
+ * @retval #CAMERA_ERROR_NONE Successful
+ * @retval #CAMERA_ERROR_INVALID_OPERATION Internal error
+ * @retval #CAMERA_ERROR_INVALID_PARAMETER Invalid parameter
+ * @retval #CAMERA_ERROR_NOT_SUPPORTED The feature is not supported
+ */
+int legacy_camera_attr_set_tilt(camera_h camera, int move_type, int tilt_step);
+
+/**
+ * @brief Gets the current position of the camera.
+ * @since_tizen 3.0
+ * @param[in] camera The handle to the camera
+ * @param[out] tilt_step The current vertical distance from the starting point.
+ * @return @c 0 on success, otherwise a negative error value
+ * @retval #CAMERA_ERROR_NONE Successful
+ * @retval #CAMERA_ERROR_INVALID_OPERATION Internal error
+ * @retval #CAMERA_ERROR_INVALID_PARAMETER Invalid parameter
+ * @retval #CAMERA_ERROR_NOT_SUPPORTED The feature is not supported
+ */
+int legacy_camera_attr_get_tilt(camera_h camera, int *tilt_step);
+
+/**
+ * @brief Gets lower limit and upper limit for tilt position.
+ * @since_tizen 3.0
+ * @remarks If the min value is greater than the max value, it means that this feature is not supported.
+ * @param[in] camera The handle to the camera
+ * @param[out] min The lower limit for tilt
+ * @param[out] max The upper limit for tilt
+ * @return @c 0 on success, otherwise a negative error value
+ * @retval #CAMERA_ERROR_NONE Successful
+ * @retval #CAMERA_ERROR_INVALID_OPERATION Internal error
+ * @retval #CAMERA_ERROR_INVALID_PARAMETER Invalid parameter
+ * @retval #CAMERA_ERROR_NOT_SUPPORTED The feature is not supported
+ */
+int legacy_camera_attr_get_tilt_range(camera_h camera, int *min, int *max);
+
+/**
+ * @brief Sets the type of PTZ(Pan Tilt Zoom).
+ * @since_tizen 3.0
+ * @param[in] camera The handle to the camera
+ * @param[in] ptz_type PTZ type
+ * @return @c 0 on success, otherwise a negative error value
+ * @retval #CAMERA_ERROR_NONE Successful
+ * @retval #CAMERA_ERROR_INVALID_OPERATION Internal error
+ * @retval #CAMERA_ERROR_INVALID_PARAMETER Invalid parameter
+ * @retval #CAMERA_ERROR_NOT_SUPPORTED The feature is not supported
+ */
+int legacy_camera_attr_set_ptz_type(camera_h camera, int ptz_type);
+
+/**
+ * @}
+ */
+
+/**
+ * @addtogroup CAPI_MEDIA_CAMERA_CAPABILITY_MODULE
+ * @{
+ */
+
+/**
+ * @brief Retrieves all supported PTZ(Pan Tilt Zoom) types by invoking callback function once for each supported ptz type.
+ * @since_tizen 3.0
+ * @param[in] camera The handle to the camera
+ * @param[in] callback The callback function to invoke
+ * @param[in] user_data The user data to be passed to the callback function
+ * @return @c 0 on success, otherwise a negative error value
+ * @retval #CAMERA_ERROR_NONE Successful
+ * @retval #CAMERA_ERROR_INVALID_PARAMETER Invalid parameter
+ * @retval #CAMERA_ERROR_PERMISSION_DENIED The access to the resources can not be granted
+ * @retval #CAMERA_ERROR_NOT_SUPPORTED The feature is not supported
+ * @post This function invokes camera_attr_supported_ptz_type_cb() to get all supported ptz type.
+ * @see camera_attr_set_ptz_type()
+ */
+int legacy_camera_attr_foreach_supported_ptz_type(camera_h camera, camera_attr_supported_ptz_type_cb foreach_cb, void *user_data);
+
+/**
+ * @}
+ */
+
+/**
+ * @addtogroup CAPI_MEDIA_CAMERA_ATTRIBUTES_MODULE
+ * @{
+ */
+
+/**
+ * @brief Sets the ROI(Region Of Interest) area of display.
+ * @since_tizen 3.0
+ * @remarks Before set display ROI area, #CAMERA_DISPLAY_MODE_CUSTOM_ROI should be set with legacy_camera_set_display_mode().
+ * @param[in] camera The handle to the camera
+ * @param[in] display_roi_area The information of ROI(Region Of Interest) area
+ * @return @c 0 on success, otherwise a negative error value
+ * @retval #CAMERA_ERROR_NONE Successful
+ * @retval #CAMERA_ERROR_INVALID_OPERATION Internal error
+ * @retval #CAMERA_ERROR_INVALID_PARAMETER Invalid parameter
+ * @retval #CAMERA_ERROR_NOT_SUPPORTED The feature is not supported
+ */
+int legacy_camera_attr_set_display_roi_area(camera_h camera, int *display_roi_area);
+
+/**
+ * @brief Gets the ROI(Region Of Interest) area of display.
+ * @since_tizen 3.0
+ * @param[in] camera The handle to the camera
+ * @param[out] display_roi_area The information of ROI(Region Of Interest) area
+ * @return @c 0 on success, otherwise a negative error value
+ * @retval #CAMERA_ERROR_NONE Successful
+ * @retval #CAMERA_ERROR_INVALID_OPERATION Internal error
+ * @retval #CAMERA_ERROR_INVALID_PARAMETER Invalid parameter
+ * @retval #CAMERA_ERROR_NOT_SUPPORTED The feature is not supported
+ */
+int legacy_camera_attr_get_display_roi_area(camera_h camera, int *display_roi_area);
 
 
 /**
