@@ -1835,6 +1835,15 @@ int camera_dispatcher_get_flash_state(muse_module_h module)
 
 	muse_camera_msg_get(device_type, muse_core_client_get_msg(module));
 
+	if (device_type < CAMERA_DEVICE_CAMERA0 || device_type > CAMERA_DEVICE_CAMERA1) {
+		LOGE("invalid device type %d", device_type);
+
+		ret = CAMERA_ERROR_INVALID_PARAMETER;
+		muse_camera_msg_return(api, class, ret, module);
+
+		return MUSE_CAMERA_ERROR_NONE;
+	}
+
 	ret = legacy_camera_create(device_type, &camera);
 	if (ret != CAMERA_ERROR_NONE) {
 		LOGE("failed to create camera handle 0x%x", ret);

@@ -105,6 +105,7 @@ typedef enum
 	CAMERA_PIXEL_FORMAT_RGBA,           /**< RGBA pixel format */
 	CAMERA_PIXEL_FORMAT_ARGB,           /**< ARGB pixel format */
 	CAMERA_PIXEL_FORMAT_JPEG,           /**< Encoded pixel format */
+	CAMERA_PIXEL_FORMAT_H264 = 15,      /**< Encoded pixel format : H264 (Since 3.0) */
 } camera_pixel_format_e;
 
 /**

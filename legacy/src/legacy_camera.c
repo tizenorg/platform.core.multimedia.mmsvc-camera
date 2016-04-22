@@ -611,9 +611,9 @@ int legacy_camera_create(camera_device_e device, camera_h* camera)
 
 	ret = mm_camcorder_set_attributes(handle->mm_handle, &error,
 					  MMCAM_MODE, MM_CAMCORDER_MODE_VIDEO_CAPTURE,
-					  MMCAM_CAMERA_FORMAT,  preview_format,
+					  MMCAM_CAMERA_FORMAT, preview_format,
 					  MMCAM_IMAGE_ENCODER, MM_IMAGE_CODEC_JPEG,
-					  MMCAM_CAPTURE_FORMAT,  MM_PIXEL_FORMAT_ENCODED,
+					  MMCAM_CAPTURE_FORMAT, MM_PIXEL_FORMAT_ENCODED,
 					  MMCAM_DISPLAY_SURFACE, MM_DISPLAY_SURFACE_NULL,
 					  MMCAM_DISPLAY_ROTATION, rotation,
 					  MMCAM_CAPTURE_COUNT, 1,
@@ -865,6 +865,7 @@ int legacy_camera_start_continuous_capture(camera_h camera, int count, int inter
 	MMCamcorderStateType state = MM_CAMCORDER_STATE_NONE;
 	int supported_zsl = FALSE;
 	int ret = MM_ERROR_NONE;
+	camera_attr_hdr_mode_e hdr_mode = CAMERA_ATTR_HDR_MODE_DISABLE;
 
 	mm_camcorder_get_state(handle->mm_handle, &state);
 	if (state != MM_CAMCORDER_STATE_PREPARE) {
@@ -881,6 +882,15 @@ int legacy_camera_start_continuous_capture(camera_h camera, int count, int inter
 	if (ret != MM_ERROR_NONE) {
 		LOGE("error set continuous shot attribute 0x%x", ret);
 		return __convert_camera_error_code(__func__, ret);
+	}
+
+	/* check current HDR mode */
+	if (legacy_camera_attr_get_hdr_mode(camera, &hdr_mode) == CAMERA_ERROR_NONE) {
+		LOGD("current HDR mode %d", hdr_mode);
+		if (hdr_mode != CAMERA_ATTR_HDR_MODE_DISABLE) {
+			LOGE("continuous capture is not supported in HDR mode");
+			return CAMERA_ERROR_INVALID_OPERATION;
+		}
 	}
 
 	handle->capture_count = count;
@@ -1342,6 +1352,11 @@ int legacy_camera_set_preview_resolution(camera_h camera, int width, int height)
 		return CAMERA_ERROR_INVALID_PARAMETER;
 	}
 
+	if (width <= 0 || height <= 0) {
+		LOGE("invalid preview resolution %dx%d", width, height);
+		return CAMERA_ERROR_INVALID_PARAMETER;
+	}
+
 	int ret = MM_ERROR_NONE;
 	camera_s *handle = (camera_s *)camera;
 	MMCamAttrsInfo info;
@@ -1376,10 +1391,15 @@ int legacy_camera_set_preview_resolution(camera_h camera, int width, int height)
 }
 
 
-int legacy_camera_set_capture_resolution(camera_h camera,  int width, int height)
+int legacy_camera_set_capture_resolution(camera_h camera, int width, int height)
 {
 	if (camera == NULL) {
 		LOGE("INVALID_PARAMETER(0x%08x)", CAMERA_ERROR_INVALID_PARAMETER);
+		return CAMERA_ERROR_INVALID_PARAMETER;
+	}
+
+	if (width <= 0 || height <= 0) {
+		LOGE("invalid capture resolution %dx%d", width, height);
 		return CAMERA_ERROR_INVALID_PARAMETER;
 	}
 
@@ -1406,6 +1426,12 @@ int legacy_camera_set_capture_format(camera_h camera, camera_pixel_format_e form
 		return CAMERA_ERROR_INVALID_PARAMETER;
 	}
 
+	if (format < CAMERA_PIXEL_FORMAT_NV12 || format > CAMERA_PIXEL_FORMAT_H264 ||
+		(format > CAMERA_PIXEL_FORMAT_JPEG && format < CAMERA_PIXEL_FORMAT_H264)) {
+		LOGE("invalid preview format %d", format);
+		return CAMERA_ERROR_INVALID_PARAMETER;
+	}
+
 	int ret = MM_ERROR_NONE;
 	camera_s *handle = (camera_s *)camera;
 
@@ -1421,6 +1447,12 @@ int legacy_camera_set_preview_format(camera_h camera, camera_pixel_format_e form
 {
 	if (camera == NULL) {
 		LOGE("INVALID_PARAMETER(0x%08x)", CAMERA_ERROR_INVALID_PARAMETER);
+		return CAMERA_ERROR_INVALID_PARAMETER;
+	}
+
+	if (format < CAMERA_PIXEL_FORMAT_NV12 || format > CAMERA_PIXEL_FORMAT_H264 ||
+		(format > CAMERA_PIXEL_FORMAT_JPEG && format < CAMERA_PIXEL_FORMAT_H264)) {
+		LOGE("invalid preview format %d", format);
 		return CAMERA_ERROR_INVALID_PARAMETER;
 	}
 
@@ -1476,6 +1508,11 @@ int legacy_camera_set_display_rotation(camera_h camera, camera_rotation_e rotati
 		return CAMERA_ERROR_INVALID_PARAMETER;
 	}
 
+	if (rotation < CAMERA_ROTATION_NONE || rotation > CAMERA_ROTATION_270) {
+		LOGE("invalid rotation %d", rotation);
+		return CAMERA_ERROR_INVALID_PARAMETER;
+	}
+
 	int ret = MM_ERROR_NONE;
 	camera_s *handle = (camera_s *)camera;
 
@@ -1509,6 +1546,11 @@ int legacy_camera_set_display_flip(camera_h camera, camera_flip_e flip)
 {
 	if (camera == NULL) {
 		LOGE("INVALID_PARAMETER(0x%08x)", CAMERA_ERROR_INVALID_PARAMETER);
+		return CAMERA_ERROR_INVALID_PARAMETER;
+	}
+
+	if (flip < CAMERA_FLIP_NONE || flip > CAMERA_FLIP_BOTH) {
+		LOGE("invalid flip %d", flip);
 		return CAMERA_ERROR_INVALID_PARAMETER;
 	}
 
@@ -1586,6 +1628,11 @@ int legacy_camera_set_display_mode(camera_h camera, camera_display_mode_e mode)
 {
 	if (camera == NULL) {
 		LOGE("INVALID_PARAMETER(0x%08x)", CAMERA_ERROR_INVALID_PARAMETER);
+		return CAMERA_ERROR_INVALID_PARAMETER;
+	}
+
+	if (mode < CAMERA_DISPLAY_MODE_LETTER_BOX || mode > CAMERA_DISPLAY_MODE_CROPPED_FULL) {
+		LOGE("invalid mode %d", mode);
 		return CAMERA_ERROR_INVALID_PARAMETER;
 	}
 
@@ -2130,6 +2177,11 @@ int legacy_camera_attr_set_theater_mode(camera_h camera, camera_attr_theater_mod
 		return CAMERA_ERROR_INVALID_PARAMETER;
 	}
 
+	if (mode < CAMERA_ATTR_THEATER_MODE_DISABLE || mode > CAMERA_ATTR_THEATER_MODE_ENABLE) {
+		LOGE("invalid theater mode %d", mode);
+		return CAMERA_ERROR_INVALID_PARAMETER;
+	}
+
 	int ret = MM_ERROR_NONE;
 	camera_s *handle = (camera_s *)camera;
 
@@ -2186,10 +2238,15 @@ int legacy_camera_attr_foreach_supported_theater_mode(camera_h camera, camera_at
 }
 
 
-int legacy_camera_attr_set_preview_fps(camera_h camera,  camera_attr_fps_e fps)
+int legacy_camera_attr_set_preview_fps(camera_h camera, camera_attr_fps_e fps)
 {
 	if (camera == NULL) {
 		LOGE("INVALID_PARAMETER(0x%08x)", CAMERA_ERROR_INVALID_PARAMETER);
+		return CAMERA_ERROR_INVALID_PARAMETER;
+	}
+
+	if (fps < CAMERA_ATTR_FPS_AUTO || fps > CAMERA_ATTR_FPS_120) {
+		LOGE("invalid preview fps %d", fps);
 		return CAMERA_ERROR_INVALID_PARAMETER;
 	}
 
@@ -2215,6 +2272,11 @@ int legacy_camera_attr_set_image_quality(camera_h camera, int quality)
 {
 	if (camera == NULL) {
 		LOGE("INVALID_PARAMETER(0x%08x)", CAMERA_ERROR_INVALID_PARAMETER);
+		return CAMERA_ERROR_INVALID_PARAMETER;
+	}
+
+	if (quality <= 0 || quality > 100) {
+		LOGE("invalid image quality %d", quality);
 		return CAMERA_ERROR_INVALID_PARAMETER;
 	}
 
@@ -2282,6 +2344,11 @@ int legacy_camera_attr_set_zoom(camera_h camera, int zoom)
 		return CAMERA_ERROR_INVALID_PARAMETER;
 	}
 
+	if (zoom < 0) {
+		LOGE("invalid zoom %d", zoom);
+		return CAMERA_ERROR_INVALID_PARAMETER;
+	}
+
 	int ret = MM_ERROR_NONE;
 	camera_s *handle = (camera_s *)camera;
 
@@ -2297,6 +2364,11 @@ int legacy_camera_attr_set_af_mode(camera_h camera, camera_attr_af_mode_e mode)
 {
 	if (camera == NULL) {
 		LOGE("INVALID_PARAMETER(0x%08x)", CAMERA_ERROR_INVALID_PARAMETER);
+		return CAMERA_ERROR_INVALID_PARAMETER;
+	}
+
+	if (mode < CAMERA_ATTR_AF_NONE || mode > CAMERA_ATTR_AF_FULL) {
+		LOGE("invalid mode %d", mode);
 		return CAMERA_ERROR_INVALID_PARAMETER;
 	}
 
@@ -2369,6 +2441,11 @@ int legacy_camera_attr_set_af_area(camera_h camera, int x, int y)
 		return CAMERA_ERROR_INVALID_PARAMETER;
 	}
 
+	if (x < 0 || y < 0) {
+		LOGE("invalid AF area %d, %d", x, y);
+		return CAMERA_ERROR_INVALID_PARAMETER;
+	}
+
 	int ret = MM_ERROR_NONE;
 	camera_s *handle = (camera_s *)camera;
 	camera_attr_af_mode_e mode;
@@ -2410,6 +2487,11 @@ int legacy_camera_attr_set_exposure_mode(camera_h camera, camera_attr_exposure_m
 {
 	if (camera == NULL) {
 		LOGE("INVALID_PARAMETER(0x%08x)", CAMERA_ERROR_INVALID_PARAMETER);
+		return CAMERA_ERROR_INVALID_PARAMETER;
+	}
+
+	if (mode < CAMERA_ATTR_EXPOSURE_MODE_OFF || mode > CAMERA_ATTR_EXPOSURE_MODE_CUSTOM) {
+		LOGE("invalid exposure mode %d", mode);
 		return CAMERA_ERROR_INVALID_PARAMETER;
 	}
 
@@ -2458,6 +2540,11 @@ int legacy_camera_attr_set_iso(camera_h camera, camera_attr_iso_e iso)
 {
 	if (camera == NULL) {
 		LOGE("INVALID_PARAMETER(0x%08x)", CAMERA_ERROR_INVALID_PARAMETER);
+		return CAMERA_ERROR_INVALID_PARAMETER;
+	}
+
+	if (iso < CAMERA_ATTR_ISO_AUTO || iso > CAMERA_ATTR_ISO_3200) {
+		LOGE("invalid iso %d", iso);
 		return CAMERA_ERROR_INVALID_PARAMETER;
 	}
 
@@ -2515,6 +2602,11 @@ int legacy_camera_attr_set_whitebalance(camera_h camera, camera_attr_whitebalanc
 		return CAMERA_ERROR_INVALID_PARAMETER;
 	}
 
+	if (wb < CAMERA_ATTR_WHITE_BALANCE_NONE || wb > CAMERA_ATTR_WHITE_BALANCE_CUSTOM) {
+		LOGE("invalid white balance %d", wb);
+		return CAMERA_ERROR_INVALID_PARAMETER;
+	}
+
 	int ret = MM_ERROR_NONE;
 	camera_s *handle = (camera_s *)camera;
 
@@ -2533,6 +2625,11 @@ int legacy_camera_attr_set_effect(camera_h camera, camera_attr_effect_mode_e eff
 		return CAMERA_ERROR_INVALID_PARAMETER;
 	}
 
+	if (effect < CAMERA_ATTR_EFFECT_NONE || effect > CAMERA_ATTR_EFFECT_OTHER_GRAPHICS) {
+		LOGE("invalid effect %d", effect);
+		return CAMERA_ERROR_INVALID_PARAMETER;
+	}
+
 	int ret = MM_ERROR_NONE;
 	camera_s *handle = (camera_s *)camera;
 
@@ -2548,6 +2645,11 @@ int legacy_camera_attr_set_scene_mode(camera_h camera, camera_attr_scene_mode_e 
 {
 	if (camera == NULL) {
 		LOGE("INVALID_PARAMETER(0x%08x)", CAMERA_ERROR_INVALID_PARAMETER);
+		return CAMERA_ERROR_INVALID_PARAMETER;
+	}
+
+	if (mode < CAMERA_ATTR_SCENE_MODE_NORMAL || mode > CAMERA_ATTR_SCENE_MODE_AQUA) {
+		LOGE("invalid scene mode %d", mode);
 		return CAMERA_ERROR_INVALID_PARAMETER;
 	}
 
@@ -2591,8 +2693,8 @@ int legacy_camera_attr_set_tag_image_description(camera_h camera, const char *de
 	camera_s *handle = (camera_s *)camera;
 
 	ret = mm_camcorder_set_attributes(handle->mm_handle, NULL,
-					  MMCAM_TAG_IMAGE_DESCRIPTION, description, strlen(description),
-					  NULL);
+		MMCAM_TAG_IMAGE_DESCRIPTION, description, description ? strlen(description) : 0,
+		NULL);
 
 	return __convert_camera_error_code(__func__, ret);
 }
@@ -2605,12 +2707,17 @@ int legacy_camera_attr_set_tag_orientation(camera_h camera, camera_attr_tag_orie
 		return CAMERA_ERROR_INVALID_PARAMETER;
 	}
 
+	if (orientation < CAMERA_ATTR_TAG_ORIENTATION_TOP_LEFT || orientation > CAMERA_ATTR_TAG_ORIENTATION_LEFT_BOTTOM) {
+		LOGE("invalid tag orientation %d", orientation);
+		return CAMERA_ERROR_INVALID_PARAMETER;
+	}
+
 	int ret = MM_ERROR_NONE;
 	camera_s *handle = (camera_s *)camera;
 
 	ret = mm_camcorder_set_attributes(handle->mm_handle, NULL,
-					  MMCAM_TAG_ORIENTATION, orientation,
-					  NULL);
+		MMCAM_TAG_ORIENTATION, orientation,
+		NULL);
 
 	return __convert_camera_error_code(__func__, ret);
 }
@@ -2627,8 +2734,8 @@ int legacy_camera_attr_set_tag_software(camera_h camera, const char *software)
 	camera_s *handle = (camera_s *)camera;
 
 	ret = mm_camcorder_set_attributes(handle->mm_handle, NULL,
-					  MMCAM_TAG_SOFTWARE, software, strlen(software),
-					  NULL);
+		MMCAM_TAG_SOFTWARE, software, software ? strlen(software) : 0,
+		NULL);
 
 	return __convert_camera_error_code(__func__, ret);
 }
@@ -2638,6 +2745,12 @@ int legacy_camera_attr_set_geotag(camera_h camera, double latitude , double long
 {
 	if (camera == NULL) {
 		LOGE("INVALID_PARAMETER(0x%08x)", CAMERA_ERROR_INVALID_PARAMETER);
+		return CAMERA_ERROR_INVALID_PARAMETER;
+	}
+
+	if (latitude > 90.0 || latitude < -90.0 ||
+		longitude > 180.0 || longitude < -180.0) {
+		LOGE("invalid geotag: latitude %lf, logitude %lf", latitude, longitude);
 		return CAMERA_ERROR_INVALID_PARAMETER;
 	}
 
@@ -2677,6 +2790,11 @@ int legacy_camera_attr_set_flash_mode(camera_h camera, camera_attr_flash_mode_e 
 {
 	if (camera == NULL) {
 		LOGE("INVALID_PARAMETER(0x%08x)", CAMERA_ERROR_INVALID_PARAMETER);
+		return CAMERA_ERROR_INVALID_PARAMETER;
+	}
+
+	if (mode < CAMERA_ATTR_FLASH_MODE_OFF || mode > CAMERA_ATTR_FLASH_MODE_PERMANENT) {
+		LOGE("invalid flash mode %d", mode);
 		return CAMERA_ERROR_INVALID_PARAMETER;
 	}
 
@@ -3470,7 +3588,7 @@ int legacy_camera_attr_set_stream_rotation(camera_h camera, camera_rotation_e ro
 	}
 
 	if (rotation < CAMERA_ROTATION_NONE || rotation > CAMERA_ROTATION_270) {
-		LOGE("INVALID_PARAMETER - %d", rotation);
+		LOGE("invalid stream rotation %d", rotation);
 		return CAMERA_ERROR_INVALID_PARAMETER;
 	}
 
@@ -3511,7 +3629,7 @@ int legacy_camera_attr_set_stream_flip(camera_h camera, camera_flip_e flip)
 	}
 
 	if (flip < CAMERA_FLIP_NONE || flip > CAMERA_FLIP_BOTH) {
-		LOGE("INVALID_PARAMETER - %d", flip);
+		LOGE("invalid stream flip %d", flip);
 		return CAMERA_ERROR_INVALID_PARAMETER;
 	}
 
@@ -3606,6 +3724,11 @@ int legacy_camera_attr_set_hdr_mode(camera_h camera, camera_attr_hdr_mode_e mode
 {
 	if (camera == NULL) {
 		LOGE("INVALID_PARAMETER(0x%08x)", CAMERA_ERROR_INVALID_PARAMETER);
+		return CAMERA_ERROR_INVALID_PARAMETER;
+	}
+
+	if (mode < CAMERA_ATTR_HDR_MODE_DISABLE || mode > CAMERA_ATTR_HDR_MODE_KEEP_ORIGINAL) {
+		LOGE("invalid HDR mode %d", mode);
 		return CAMERA_ERROR_INVALID_PARAMETER;
 	}
 
@@ -4051,6 +4174,11 @@ int legacy_camera_attr_set_encoded_preview_bitrate(camera_h camera, int bitrate)
 		return CAMERA_ERROR_INVALID_PARAMETER;
 	}
 
+	if (bitrate <= 0) {
+		LOGE("invalid encoded preview bitrate %d", bitrate);
+		return CAMERA_ERROR_INVALID_PARAMETER;
+	}
+
 	int ret = MM_ERROR_NONE;
 	camera_s *handle = (camera_s *)camera;
 
@@ -4084,6 +4212,11 @@ int legacy_camera_attr_set_encoded_preview_gop_interval(camera_h camera, int int
 {
 	if (camera == NULL) {
 		LOGE("INVALID_PARAMETER(0x%08x)", CAMERA_ERROR_INVALID_PARAMETER);
+		return CAMERA_ERROR_INVALID_PARAMETER;
+	}
+
+	if (interval < 0) {
+		LOGE("invalid encoded preview gop interval %d", interval);
 		return CAMERA_ERROR_INVALID_PARAMETER;
 	}
 
