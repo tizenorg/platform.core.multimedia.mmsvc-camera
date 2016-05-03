@@ -242,6 +242,7 @@ typedef struct {
 	tbm_bo bo;
 	int key;
 	void *internal_buffer;
+	tbm_bo data_bo;
 } muse_camera_export_data;
 
 

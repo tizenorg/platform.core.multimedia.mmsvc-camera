@@ -4241,7 +4241,7 @@ int legacy_camera_attr_set_pan(camera_h camera, int move_type, int pan_step)
 
 	int ret = MM_ERROR_NONE;
 	int step = 0;
-	char *pan_type = NULL;
+	const char *pan_type = NULL;
 	camera_s *handle = (camera_s *)camera;
 
 	if (handle->ptz_type == CAMERA_ATTR_PTZ_TYPE_MECHANICAL)
@@ -4280,7 +4280,7 @@ int legacy_camera_attr_get_pan(camera_h camera, int *pan_step)
 	}
 
 	int ret = MM_ERROR_NONE;
-	char *pan_type = NULL;
+	const char *pan_type = NULL;
 	camera_s *handle = (camera_s *)camera;
 
 	if (handle->ptz_type == CAMERA_ATTR_PTZ_TYPE_MECHANICAL)
@@ -4304,7 +4304,7 @@ int legacy_camera_attr_get_pan_range(camera_h camera, int *min, int *max)
 	}
 
 	int ret = MM_ERROR_NONE;
-	char *pan_type = NULL;
+	const char *pan_type = NULL;
 	camera_s *handle = (camera_s *)camera;
 	MMCamAttrsInfo ainfo;
 
@@ -4332,7 +4332,7 @@ int legacy_camera_attr_set_tilt(camera_h camera, int move_type, int tilt_step)
 
 	int ret = MM_ERROR_NONE;
 	int step = 0;
-	char *tilt_type = NULL;
+	const char *tilt_type = NULL;
 	camera_s *handle = (camera_s *)camera;
 
 	if (handle->ptz_type == CAMERA_ATTR_PTZ_TYPE_MECHANICAL)
@@ -4371,7 +4371,7 @@ int legacy_camera_attr_get_tilt(camera_h camera, int *tilt_step)
 	}
 
 	int ret = MM_ERROR_NONE;
-	char *tilt_type = NULL;
+	const char *tilt_type = NULL;
 	camera_s *handle = (camera_s *)camera;
 
 	if (handle->ptz_type == CAMERA_ATTR_PTZ_TYPE_MECHANICAL)
@@ -4395,7 +4395,7 @@ int legacy_camera_attr_get_tilt_range(camera_h camera, int *min, int *max)
 	}
 
 	int ret = MM_ERROR_NONE;
-	char *tilt_type = NULL;
+	const char *tilt_type = NULL;
 	camera_s *handle = (camera_s *)camera;
 	MMCamAttrsInfo ainfo;
 
