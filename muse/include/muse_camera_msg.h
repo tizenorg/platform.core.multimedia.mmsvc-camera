@@ -520,7 +520,7 @@ typedef const char* STRING;
 				MUSE_TYPE_INT, PARAM_API_CLASS, class, \
 				MUSE_TYPE_INT, PARAM_RET, ret, \
 				MUSE_TYPE_ARRAY, #param, \
-					datum_size == sizeof(int)? length :  \
+					datum_size == sizeof(int)? length / sizeof(int) :  \
 					length / sizeof(int) + (length % sizeof(int)?1:0), \
 					__value__, \
 				0); \

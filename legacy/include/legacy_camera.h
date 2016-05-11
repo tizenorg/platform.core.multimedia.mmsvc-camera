@@ -291,11 +291,12 @@ typedef void *camera_display_h;
  */
 typedef enum
 {
-	CAMERA_DISPLAY_MODE_LETTER_BOX = 0,    /**< Letter box */
-	CAMERA_DISPLAY_MODE_ORIGIN_SIZE,       /**< Origin size */
-	CAMERA_DISPLAY_MODE_FULL,	       /**< Full screen */
-	CAMERA_DISPLAY_MODE_CROPPED_FULL,      /**< Cropped full screen */
-	CAMERA_DISPLAY_MODE_CUSTOM_ROI,        /**< Custom ROI */
+	CAMERA_DISPLAY_MODE_LETTER_BOX = 0,       /**< Letter box */
+	CAMERA_DISPLAY_MODE_ORIGIN_SIZE,          /**< Origin size */
+	CAMERA_DISPLAY_MODE_FULL,                 /**< Full screen */
+	CAMERA_DISPLAY_MODE_CROPPED_FULL,         /**< Cropped full screen */
+	CAMERA_DISPLAY_MODE_ORIGIN_OR_LETTER_BOX, /**< Original size or letter box (Since 3.0) */
+	CAMERA_DISPLAY_MODE_CUSTOM_ROI,           /**< Custom ROI (Since 3.0) */
 } camera_display_mode_e;
 
 /**

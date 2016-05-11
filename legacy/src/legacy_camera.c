@@ -1632,7 +1632,7 @@ int legacy_camera_set_display_mode(camera_h camera, camera_display_mode_e mode)
 		return CAMERA_ERROR_INVALID_PARAMETER;
 	}
 
-	if (mode < CAMERA_DISPLAY_MODE_LETTER_BOX || mode > CAMERA_DISPLAY_MODE_CROPPED_FULL) {
+	if (mode < CAMERA_DISPLAY_MODE_LETTER_BOX || mode > CAMERA_DISPLAY_MODE_CUSTOM_ROI) {
 		LOGE("invalid mode %d", mode);
 		return CAMERA_ERROR_INVALID_PARAMETER;
 	}
