@@ -4531,8 +4531,8 @@ int legacy_camera_attr_get_display_roi_area(camera_h camera, int *display_roi_ar
 					  MMCAM_DISPLAY_RECT_HEIGHT, &height,
 					  NULL);
 
-	if (ret != MM_ERROR_NONE) {
-		LOGD("get roi area : %d,%d,%dx%d", x, y, width, height);
+	if (ret == MM_ERROR_NONE) {
+		LOGD("get roi area : %d,%d,%d,%d", x, y, width, height);
 
 		display_roi_area[0] = x;
 		display_roi_area[1] = y;
