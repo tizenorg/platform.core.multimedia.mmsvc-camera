@@ -372,7 +372,7 @@ typedef const char* STRING;
 		__sndMsg__ = muse_core_msg_json_factory_new(api, \
 					MUSE_TYPE_##type, #param2, __value2__, \
 					MUSE_TYPE_ARRAY, #param, \
-					datum_size == sizeof(int)? length :  \
+					datum_size == sizeof(int)? length / sizeof(int) :  \
 					length / sizeof(int) + (length % sizeof(int)?1:0), \
 					__value__, \
 					0); \
