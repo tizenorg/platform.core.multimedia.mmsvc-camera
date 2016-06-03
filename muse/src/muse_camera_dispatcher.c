@@ -4571,10 +4571,13 @@ again:
 		} else {
 			LOGE("wait capture data timeout! keep going...");
 		}
+		/* fall through */
 	case CAMERA_STATE_CAPTURED:
 		legacy_camera_start_preview(muse_camera->camera_handle);
+		/* fall through */
 	case CAMERA_STATE_PREVIEW:
 		legacy_camera_stop_preview(muse_camera->camera_handle);
+		/* fall through */
 	case CAMERA_STATE_CREATED:
 		if (legacy_camera_destroy(muse_camera->camera_handle) == CAMERA_ERROR_NONE) {
 			_camera_remove_export_data(module, 0, TRUE);
@@ -4590,6 +4593,7 @@ again:
 		} else {
 			LOGE("failed to destroy camera handle");
 		}
+		break;
 	default:
 		break;
 	}
