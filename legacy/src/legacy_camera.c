@@ -273,6 +273,11 @@ static gboolean __mm_capture_callback(MMCamcorderCaptureDataType *frame, MMCamco
 			postview.format = scrnl->format;
 		}
 
+		if (handle->is_capture_completed) {
+			LOGW("capture completed, so skip this capture callback");
+			return 1;
+		}
+
 		((camera_capturing_cb)handle->user_cb[_CAMERA_EVENT_TYPE_CAPTURE])(&image,
 										   scrnl ? &postview : NULL,
 										   thumbnail ? &thumb : NULL,
@@ -415,12 +420,12 @@ static int __mm_camera_message_callback(int message, void *param, void *user_dat
 		break;
 	case MM_MESSAGE_CAMCORDER_CAPTURED:
 		handle->current_capture_complete_count = m->code;
-		if (handle->capture_count == 1 ||
-		    m->code == handle->capture_count ||
-		    (handle->is_continuous_shot_break &&
-		     handle->state == CAMERA_STATE_CAPTURING)) {
+		if (handle->state == CAMERA_STATE_CAPTURING &&
+			(handle->capture_count == 1 ||
+				m->code == handle->capture_count ||
+				handle->is_continuous_shot_break)) {
 			/* pseudo state change */
-			previous_state = handle->state ;
+			previous_state = handle->state;
 			handle->state = CAMERA_STATE_CAPTURED;
 			if (previous_state != handle->state &&
 			    handle->user_cb[_CAMERA_EVENT_TYPE_STATE_CHANGE]) {
@@ -3266,10 +3271,8 @@ int legacy_camera_attr_foreach_supported_af_mode(camera_h camera, camera_attr_su
 	int i = 0;
 	camera_s *handle = (camera_s *)camera;
 	MMCamAttrsInfo af_range;
-	MMCamAttrsInfo focus_mode;
 
 	ret = mm_camcorder_get_attribute_info(handle->mm_handle, MMCAM_CAMERA_AF_SCAN_RANGE, &af_range);
-	ret |= mm_camcorder_get_attribute_info(handle->mm_handle, MMCAM_CAMERA_FOCUS_MODE, &focus_mode);
 	if (ret != MM_ERROR_NONE) {
 		return __convert_camera_error_code(__func__, ret);
 	}
