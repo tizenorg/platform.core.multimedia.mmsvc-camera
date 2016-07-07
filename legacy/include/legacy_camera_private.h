@@ -55,9 +55,7 @@ typedef struct _camera_s{
 	void* user_cb[_CAMERA_EVENT_TYPE_NUM];
 	void* user_data[_CAMERA_EVENT_TYPE_NUM];
 	void* display_handle;
-#ifdef HAVE_WAYLAND
 	MMCamWaylandInfo *wl_info;
-#endif /* #ifdef HAVE_WAYLAND */
 	camera_display_type_e display_type;
 	unsigned int state;
 
@@ -83,6 +81,8 @@ typedef struct _camera_s{
 
 	GList *cb_data_list;
 	GMutex idle_cb_lock;
+
+	void *reuse_element;
 } camera_s;
 
 int _camera_get_mm_handle(camera_h camera , MMHandleType *handle);

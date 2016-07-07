@@ -1,9 +1,6 @@
-%bcond_with wayland
-%bcond_with x
-
 Name:       mmsvc-camera
 Summary:    A Camera module for muse server
-Version:    0.2.40
+Version:    0.2.41
 Release:    0
 Group:      Multimedia/Libraries
 License:    Apache-2.0
@@ -14,12 +11,7 @@ BuildRequires:  pkgconfig(dlog)
 BuildRequires:  pkgconfig(mused)
 BuildRequires:  pkgconfig(mm-camcorder)
 BuildRequires:  pkgconfig(capi-base-common)
-%if %{with x}
-BuildRequires:  pkgconfig(ecore-x)
-%endif
-%if %{with wayland}
 BuildRequires:  pkgconfig(ecore-wayland)
-%endif
 BuildRequires:  pkgconfig(libtbm)
 BuildRequires:  pkgconfig(evas)
 BuildRequires:  pkgconfig(ecore)
@@ -52,17 +44,7 @@ Development related files of a Camera module for muse server.
 export CFLAGS+=" -DTIZEN_DEBUG_ENABLE"
 %endif
 MAJORVER=`echo %{version} | awk 'BEGIN {FS="."}{print $1}'`
-%cmake . -DCMAKE_INSTALL_PREFIX=%{_prefix} -DFULLVER=%{version} -DMAJORVER=${MAJORVER} \
-%if %{with wayland}
-	-DWAYLAND_SUPPORT=On \
-%else
-	-DWAYLAND_SUPPORT=Off \
-%endif
-%if %{with x}
-	-DX11_SUPPORT=On
-%else
-	-DX11_SUPPORT=Off
-%endif
+%cmake . -DCMAKE_INSTALL_PREFIX=%{_prefix} -DFULLVER=%{version} -DMAJORVER=${MAJORVER}
 
 make %{?jobs:-j%jobs}
 

@@ -44,9 +44,7 @@ typedef struct {
 	GMutex preview_cb_lock;
 	GCond preview_cb_cond;
 	guint preview_cb_flag;
-#ifdef HAVE_WAYLAND
 	MMCamWaylandInfo wl_info;
-#endif /* HAVE_WAYLAND */
 } muse_camera_handle_s;
 
 
