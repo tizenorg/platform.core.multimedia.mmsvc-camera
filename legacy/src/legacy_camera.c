@@ -29,9 +29,7 @@
 #include <gst/gst.h>
 #include <Evas.h>
 #include <Ecore.h>
-#ifdef HAVE_WAYLAND
 #include <Ecore_Wayland.h>
-#endif /* HAVE_WAYLAND */
 #include <Elementary.h>
 
 #ifdef LOG_TAG
@@ -190,6 +188,7 @@ int __convert_camera_error_code(const char *func, int code)
 	default:
 		ret = CAMERA_ERROR_INVALID_OPERATION;
 		errorstr = "INVALID_OPERATION";
+		break;
 	}
 
 	if (code != MM_ERROR_NONE) {
@@ -364,9 +363,6 @@ static int __mm_camera_message_callback(int message, void *param, void *user_dat
 			break;
 		}
 
-		previous_state = handle->state;
-		handle->state = __camera_state_convert(m->state.current );
-
 		if (message == MM_MESSAGE_CAMCORDER_STATE_CHANGED_BY_ASM) {
 			switch (m->state.code) {
 			case MM_MSG_CODE_INTERRUPTED_BY_CALL_START:
@@ -392,11 +388,25 @@ static int __mm_camera_message_callback(int message, void *param, void *user_dat
 			LOGW("CAMERA_POLICY_RESOURCE_CONFLICT");
 		}
 
+		if (policy != CAMERA_POLICY_NONE &&
+			handle->state == CAMERA_STATE_CAPTURING) {
+			handle->state = CAMERA_STATE_CAPTURED;
+			if (handle->user_cb[_CAMERA_EVENT_TYPE_STATE_CHANGE]) {
+				((camera_state_changed_cb)handle->user_cb[_CAMERA_EVENT_TYPE_STATE_CHANGE])(CAMERA_STATE_CAPTURING,
+					handle->state, policy, handle->user_data[_CAMERA_EVENT_TYPE_STATE_CHANGE]);
+			}
+
+			if (handle->user_cb[_CAMERA_EVENT_TYPE_CAPTURE_COMPLETE]) {
+				((camera_capture_completed_cb)handle->user_cb[_CAMERA_EVENT_TYPE_CAPTURE_COMPLETE])(handle->user_data[_CAMERA_EVENT_TYPE_CAPTURE_COMPLETE]);
+			}
+		}
+
+		previous_state = handle->state;
+		handle->state = __camera_state_convert(m->state.current);
+
 		if (previous_state != handle->state && handle->user_cb[_CAMERA_EVENT_TYPE_STATE_CHANGE]) {
 			((camera_state_changed_cb)handle->user_cb[_CAMERA_EVENT_TYPE_STATE_CHANGE])(previous_state,
-												    handle->state,
-												    policy,
-												    handle->user_data[_CAMERA_EVENT_TYPE_STATE_CHANGE]);
+				handle->state, policy, handle->user_data[_CAMERA_EVENT_TYPE_STATE_CHANGE]);
 		}
 
 		/* should change intermediate state MM_CAMCORDER_STATE_READY is not valid in capi , change to NULL state */
@@ -404,9 +414,7 @@ static int __mm_camera_message_callback(int message, void *param, void *user_dat
 		    m->state.current == MM_CAMCORDER_STATE_NULL) {
 			if (handle->user_cb[_CAMERA_EVENT_TYPE_INTERRUPTED]) {
 				((camera_interrupted_cb)handle->user_cb[_CAMERA_EVENT_TYPE_INTERRUPTED])(policy,
-													 previous_state,
-													 handle->state,
-													 handle->user_data[_CAMERA_EVENT_TYPE_INTERRUPTED]);
+					previous_state, handle->state, handle->user_data[_CAMERA_EVENT_TYPE_INTERRUPTED]);
 			} else {
 				LOGW("_CAMERA_EVENT_TYPE_INTERRUPTED cb is NULL");
 			}
@@ -686,12 +694,12 @@ int legacy_camera_destroy(camera_h camera)
 	if (ret == MM_ERROR_NONE) {
 		_camera_remove_cb_message(handle);
 		g_mutex_clear(&handle->idle_cb_lock);
-#ifdef HAVE_WAYLAND
+
 		if (handle->wl_info) {
 			free(handle->wl_info);
 			handle->wl_info = NULL;
 		}
-#endif /* HAVE_WAYLAND */
+
 		free(handle);
 	}
 
@@ -1962,6 +1970,42 @@ int legacy_camera_unset_error_cb(camera_h camera)
 	handle->user_data[_CAMERA_EVENT_TYPE_ERROR] = (void *)NULL;
 
 	return CAMERA_ERROR_NONE;
+}
+
+
+int legacy_camera_set_display_reuse_hint(camera_h camera, int hint)
+{
+	int ret = CAMERA_ERROR_NONE;
+	camera_s *handle = (camera_s *)camera;
+
+	if (!handle) {
+		LOGE("INVALID_PARAMETER(0x%08x)", CAMERA_ERROR_INVALID_PARAMETER);
+		return CAMERA_ERROR_INVALID_PARAMETER;
+	}
+
+	ret = mm_camcorder_set_attributes(handle->mm_handle, NULL,
+		MMCAM_DISPLAY_REUSE_HINT, hint,
+		NULL);
+
+	return __convert_camera_error_code(__func__, ret);
+}
+
+
+int legacy_camera_get_display_reuse_hint(camera_h camera, int *hint)
+{
+	int ret = CAMERA_ERROR_NONE;
+	camera_s *handle = (camera_s *)camera;
+
+	if (!handle || !hint) {
+		LOGE("INVALID_PARAMETER(0x%08x)", CAMERA_ERROR_INVALID_PARAMETER);
+		return CAMERA_ERROR_INVALID_PARAMETER;
+	}
+
+	ret = mm_camcorder_get_attributes(handle->mm_handle, NULL,
+		MMCAM_DISPLAY_REUSE_HINT, hint,
+		NULL);
+
+	return __convert_camera_error_code(__func__, ret);
 }
 
 

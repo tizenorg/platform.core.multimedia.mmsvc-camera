@@ -1444,9 +1444,7 @@ int camera_dispatcher_set_display(muse_module_h module)
 	muse_camera_handle_s *muse_camera = NULL;
 	muse_camera_api_e api = MUSE_CAMERA_API_SET_DISPLAY;
 	muse_camera_api_class_e class = MUSE_CAMERA_API_CLASS_IMMEDIATE;
-#ifdef HAVE_WAYLAND
 	MMCamWaylandInfo *wl_info = NULL;
-#endif /* HAVE_WAYLAND */
 	camera_display_type_e type = CAMERA_DISPLAY_TYPE_NONE;
 	camera_h camera = NULL;;
 
@@ -1459,7 +1457,7 @@ int camera_dispatcher_set_display(muse_module_h module)
 	muse_camera_msg_get(type, muse_core_client_get_msg(module));
 
 	LOGD("type %d", type);
-#ifdef HAVE_WAYLAND
+
 	if (type == CAMERA_DISPLAY_TYPE_OVERLAY) {
 		wl_info = &muse_camera->wl_info;
 		muse_camera_msg_get_array(wl_info, muse_core_client_get_msg(module));
@@ -1472,7 +1470,6 @@ int camera_dispatcher_set_display(muse_module_h module)
 
 		muse_camera_msg_return(api, class, ret, module);
 	} else {
-#endif /* HAVE_WAYLAND */
 		LOGD("NOT overlay type. set NONE type.");
 
 		if (type == CAMERA_DISPLAY_TYPE_EVAS) {
@@ -1487,9 +1484,7 @@ int camera_dispatcher_set_display(muse_module_h module)
 		ret = legacy_camera_set_display(muse_camera->camera_handle, CAMERA_DISPLAY_TYPE_NONE, NULL);
 
 		muse_camera_msg_return(api, class, ret, module);
-#ifdef HAVE_WAYLAND
 	}
-#endif /* HAVE_WAYLAND */
 
 	return MUSE_CAMERA_ERROR_NONE;
 }
@@ -4390,6 +4385,47 @@ int camera_dispatcher_preview_cb_return(muse_module_h module)
 	return MUSE_CAMERA_ERROR_NONE;
 }
 
+int camera_dispatcher_set_display_reuse_hint(muse_module_h module)
+{
+	int ret = CAMERA_ERROR_NONE;
+	int set_hint = 0;
+	muse_camera_handle_s *muse_camera = NULL;
+	muse_camera_api_e api = MUSE_CAMERA_API_SET_DISPLAY_REUSE_HINT;
+	muse_camera_api_class_e class = MUSE_CAMERA_API_CLASS_IMMEDIATE;
+
+	muse_camera = (muse_camera_handle_s *)muse_core_ipc_get_handle(module);
+
+	muse_camera_msg_get(set_hint, muse_core_client_get_msg(module));
+
+	LOGD("set hint : %d", set_hint);
+
+	ret = legacy_camera_set_display_reuse_hint(muse_camera->camera_handle, (bool)set_hint);
+
+	muse_camera_msg_return(api, class, ret, module);
+
+	return MUSE_CAMERA_ERROR_NONE;
+}
+
+int camera_dispatcher_get_display_reuse_hint(muse_module_h module)
+{
+	int ret = CAMERA_ERROR_NONE;
+	int get_hint = 0;
+	muse_camera_handle_s *muse_camera = NULL;
+	muse_camera_api_e api = MUSE_CAMERA_API_GET_DISPLAY_REUSE_HINT;
+	muse_camera_api_class_e class = MUSE_CAMERA_API_CLASS_IMMEDIATE;
+
+	muse_camera = (muse_camera_handle_s *)muse_core_ipc_get_handle(module);
+
+	ret = legacy_camera_get_display_reuse_hint(muse_camera->camera_handle, &get_hint);
+	if (ret == CAMERA_ERROR_NONE) {
+		LOGD("get hint : %d", get_hint);
+		muse_camera_msg_return1(api, class, ret, module, INT, get_hint);
+	} else {
+		muse_camera_msg_return(api, class, ret, module);
+	}
+
+	return MUSE_CAMERA_ERROR_NONE;
+}
 
 int (*dispatcher[MUSE_CAMERA_API_MAX]) (muse_module_h module) = {
 	camera_dispatcher_create, /* MUSE_CAMERA_API_CREATE */
@@ -4538,6 +4574,8 @@ int (*dispatcher[MUSE_CAMERA_API_MAX]) (muse_module_h module) = {
 	camera_dispatcher_attr_get_display_roi_area, /* MUSE_CAMERA_API_GET_DISPLAY_ROI_AREA */
 	camera_dispatcher_return_buffer, /* MUSE_CAMERA_API_RETURN_BUFFER, */
 	camera_dispatcher_preview_cb_return, /* MUSE_CAMERA_API_PREVIEW_CB_RETURN, */
+	camera_dispatcher_set_display_reuse_hint, /* MUSE_CAMERA_API_SET_DISPLAY_REUSE_HINT, */
+	camera_dispatcher_get_display_reuse_hint, /* MUSE_CAMERA_API_GET_DISPLAY_REUSE_HINT, */
 };
 
 
