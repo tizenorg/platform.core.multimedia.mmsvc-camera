@@ -1328,6 +1328,11 @@ int legacy_camera_set_display_mode(camera_h camera , camera_display_mode_e mode)
  */
 int legacy_camera_get_display_mode(camera_h camera, camera_display_mode_e *mode);
 
+
+int legacy_camera_set_display_reuse_hint(camera_h camera, bool hint);
+
+int legacy_camera_get_display_reuse_hint(camera_h camera, bool *hint);
+
 /**
  * @brief Sets the resolution of the captured image.
  * @since_tizen @if MOBILE 2.3 @elseif WEARABLE 2.3.1 @endif
@@ -1830,6 +1835,7 @@ int legacy_camera_set_error_cb(camera_h camera, camera_error_cb callback, void *
  * @see legacy_camera_set_error_cb()
  */
 int legacy_camera_unset_error_cb(camera_h camera);
+
 
 /**
  * @}

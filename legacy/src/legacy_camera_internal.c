@@ -38,12 +38,10 @@ int legacy_camera_get_video_caps(camera_h camera, char **caps)
 	int ret;
 	camera_s *handle = (camera_s *)camera;
 
-#ifdef HAVE_WAYLAND
 	ret = mm_camcorder_get_video_caps(handle->mm_handle, caps);
-	if(ret != MM_ERROR_NONE) {
+	if (ret != MM_ERROR_NONE) {
 		return __convert_camera_error_code(__func__, ret);
 	}
-#endif /* HAVE_WAYLAND */
 
 	return CAMERA_ERROR_NONE;
 }
