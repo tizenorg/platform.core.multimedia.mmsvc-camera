@@ -42,14 +42,14 @@ typedef enum {
 	_CAMERA_EVENT_TYPE_FACE_DETECTION,
 	_CAMERA_EVENT_TYPE_VIDEO_FRAME_RENDER_ERROR,
 	_CAMERA_EVENT_TYPE_NUM
-}_camera_event_e;
+} _camera_event_e;
 
 typedef struct _camera_cb_data {
 	int event_type;
 	void *handle;
 } camera_cb_data;
 
-typedef struct _camera_s{
+typedef struct _camera_s {
 	MMHandleType mm_handle;
 
 	void* user_cb[_CAMERA_EVENT_TYPE_NUM];
