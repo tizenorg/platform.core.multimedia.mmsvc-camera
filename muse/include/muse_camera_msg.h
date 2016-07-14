@@ -156,7 +156,7 @@ typedef const char* STRING;
  * @param[out] ret The delivered return value from the module to proxy side.
  */
 #define muse_camera_msg_send(api, fd, cb_info, ret) \
-	do{	\
+	do {	\
 		char *__sndMsg__; \
 		int __len__; \
 		__sndMsg__ = muse_core_msg_json_factory_new(api, 0); \
@@ -167,7 +167,7 @@ typedef const char* STRING;
 		} else \
 			ret = _client_wait_for_cb_return(api, cb_info, CALLBACK_TIME_OUT); \
 		muse_core_msg_json_factory_free(__sndMsg__); \
-	}while(0)
+	} while (0)
 
 /**
  * @brief Send the message from proxy to module via ipc.
@@ -176,7 +176,7 @@ typedef const char* STRING;
  * @param[in] cb_info The callback information, waiting for the ack from the module.
  */
 #define muse_camera_msg_send_no_return(api, fd, cb_info) \
-	do{	\
+	do {	\
 		char *__sndMsg__; \
 		int __len__; \
 		__sndMsg__ = muse_core_msg_json_factory_new(api, 0); \
@@ -185,7 +185,7 @@ typedef const char* STRING;
 			LOGE("sending message failed"); \
 		} \
 		muse_core_msg_json_factory_free(__sndMsg__); \
-	} while(0)
+	} while (0)
 
 /**
  * @brief Send the message from proxy to module via ipc, waits more period of time for the ack.
@@ -195,10 +195,10 @@ typedef const char* STRING;
  * @param[out] ret The delivered return value from the module to proxy side.
  */
 #define muse_camera_msg_send_longtime(api, fd, cb_info, ret) \
-	do{	\
+	do {	\
 		char *__sndMsg__; \
 		int __len__; \
-		__sndMsg__ = muse_core_msg_json_factory_new(api, 	0); \
+		__sndMsg__ = muse_core_msg_json_factory_new(api, 0); \
 		__len__ = muse_core_ipc_send_msg(fd, __sndMsg__); \
 		if (__len__ <= 0) { \
 			LOGE("sending message failed"); \
@@ -206,7 +206,7 @@ typedef const char* STRING;
 		} else \
 			ret = _client_wait_for_cb_return(api, cb_info, CALLBACK_TIME_OUT_LONG); \
 		muse_core_msg_json_factory_free(__sndMsg__); \
-	}while(0)
+	} while (0)
 
 /**
  * @brief Send the message from proxy to module via ipc, adding 1 more parameter.
@@ -218,7 +218,7 @@ typedef const char* STRING;
  * @param[in] param A single parameter to be included in the message.
  */
 #define muse_camera_msg_send1(api, fd, cb_info, ret, type, param) \
-	do{	\
+	do {	\
 		char *__sndMsg__; \
 		int __len__; \
 		type __value__ = (type)param; \
@@ -232,7 +232,7 @@ typedef const char* STRING;
 		} else \
 			ret = _client_wait_for_cb_return(api, cb_info, CALLBACK_TIME_OUT); \
 		muse_core_msg_json_factory_free(__sndMsg__); \
-	}while(0)
+	} while (0)
 
 /**
  * @brief Send the message from proxy to module via ipc, adding 1 more parameter.
@@ -243,7 +243,7 @@ typedef const char* STRING;
  * @param[in] param A single parameter to be included in the message.
  */
 #define muse_camera_msg_send1_no_return(api, fd, cb_info, type, param) \
-	do{	\
+	do {	\
 		char *__sndMsg__; \
 		int __len__; \
 		type __value__ = (type)param; \
@@ -255,7 +255,7 @@ typedef const char* STRING;
 			LOGE("sending message failed"); \
 		} \
 		muse_core_msg_json_factory_free(__sndMsg__); \
-	}while(0)
+	} while (0)
 
 /**
  * @brief Send the message from proxy to module via ipc, adding 2 more parameters.
@@ -269,7 +269,7 @@ typedef const char* STRING;
  * @param[in] param2 The 2nd parameter to be included in the message.
  */
 #define muse_camera_msg_send2(api, fd, cb_info, ret, type1, param1, type2, param2) \
-	do{	\
+	do {	\
 		char *__sndMsg__; \
 		int __len__; \
 		type1 __value1__ = (type1)param1; \
@@ -285,7 +285,7 @@ typedef const char* STRING;
 		} else \
 			ret = _client_wait_for_cb_return(api, cb_info, CALLBACK_TIME_OUT); \
 		muse_core_msg_json_factory_free(__sndMsg__); \
-	}while(0)
+	} while (0)
 
 /**
  * @brief Send the message from proxy to module via ipc, adding 3 more parameters.
@@ -301,7 +301,7 @@ typedef const char* STRING;
  * @param[in] param3 The 3rd parameter to be included in the message.
  */
 #define muse_camera_msg_send3(api, fd, cb_info, ret, type1, param1, type2, param2, type3, param3) \
-	do{	\
+	do {	\
 		char *__sndMsg__; \
 		int __len__; \
 		type1 __value1__ = (type1)param1; \
@@ -319,7 +319,7 @@ typedef const char* STRING;
 		} else \
 			ret = _client_wait_for_cb_return(api, cb_info, CALLBACK_TIME_OUT); \
 		muse_core_msg_json_factory_free(__sndMsg__); \
-	}while(0)
+	} while (0)
 
 /**
  * @brief Send the message from proxy to module via ipc, adding an array data.
@@ -332,14 +332,14 @@ typedef const char* STRING;
  * @param[in] datum_size The size of the array.
  */
 #define muse_camera_msg_send_array(api, fd, cb_info, ret, param, length, datum_size) \
-	do{	\
+	do {	\
 		char *__sndMsg__; \
 		int __len__; \
 		int *__value__ = (int *)param; \
 		__sndMsg__ = muse_core_msg_json_factory_new(api, \
 					MUSE_TYPE_ARRAY, #param, \
-					datum_size == sizeof(int)? length / sizeof(int) :  \
-					length / sizeof(int) + (length % sizeof(int)?1:0), \
+					datum_size == sizeof(int) ? length / sizeof(int) :  \
+					length / sizeof(int) + (length % sizeof(int) ? 1 : 0), \
 					__value__, \
 					0); \
 		__len__ = muse_core_ipc_send_msg(fd, __sndMsg__); \
@@ -349,7 +349,7 @@ typedef const char* STRING;
 		} else \
 			ret = _client_wait_for_cb_return(api, cb_info, CALLBACK_TIME_OUT); \
 		muse_core_msg_json_factory_free(__sndMsg__); \
-	}while(0)
+	} while (0)
 
 /**
  * @brief Send the message from proxy to module via ipc, adding an array data and value.
@@ -364,7 +364,7 @@ typedef const char* STRING;
  * @param[in] param2 The 2rd parameter to be included in the message.
  */
 #define muse_camera_msg_send_array_and_value(api, fd, cb_info, ret, param, length, datum_size, type, param2) \
-	do{	\
+	do {	\
 		char *__sndMsg__; \
 		int __len__; \
 		int *__value__ = (int *)param; \
@@ -372,8 +372,8 @@ typedef const char* STRING;
 		__sndMsg__ = muse_core_msg_json_factory_new(api, \
 					MUSE_TYPE_##type, #param2, __value2__, \
 					MUSE_TYPE_ARRAY, #param, \
-					datum_size == sizeof(int)? length / sizeof(int) :  \
-					length / sizeof(int) + (length % sizeof(int)?1:0), \
+					datum_size == sizeof(int) ? length / sizeof(int) :  \
+					length / sizeof(int) + (length % sizeof(int) ? 1 : 0), \
 					__value__, \
 					0); \
 		__len__ = muse_core_ipc_send_msg(fd, __sndMsg__); \
@@ -383,7 +383,7 @@ typedef const char* STRING;
 		} else \
 			ret = _client_wait_for_cb_return(api, cb_info, CALLBACK_TIME_OUT); \
 		muse_core_msg_json_factory_free(__sndMsg__); \
-	}while(0)
+	} while (0)
 
 /**
  * @brief Returning the ack message from the server to client side.
@@ -393,7 +393,7 @@ typedef const char* STRING;
  * @param[in] module The module info for the ipc transportation.
  */
 #define muse_camera_msg_return(api, class, ret, module) \
-	do{	\
+	do {	\
 		char *__sndMsg__; \
 		int __len__; \
 		__sndMsg__ = muse_core_msg_json_factory_new(api, \
@@ -406,7 +406,7 @@ typedef const char* STRING;
 			ret = CAMERA_ERROR_INVALID_OPERATION; \
 		} \
 		muse_core_msg_json_factory_free(__sndMsg__); \
-	}while(0)
+	} while (0)
 
 /**
  * @brief Returning the ack message from the server to client side.
@@ -418,7 +418,7 @@ typedef const char* STRING;
  * @param[in] param A parameter to be included in the message.
  */
 #define muse_camera_msg_return1(api, class, ret, module, type, param) \
-	do{	\
+	do {	\
 		char *__sndMsg__; \
 		int __len__; \
 		type __value__ = (type)param; \
@@ -433,7 +433,7 @@ typedef const char* STRING;
 			ret = CAMERA_ERROR_INVALID_OPERATION; \
 		} \
 		muse_core_msg_json_factory_free(__sndMsg__); \
-	}while(0)
+	} while (0)
 
 /**
  * @brief Returning the ack message from the server to client side, adding 2 parameters.
@@ -447,7 +447,7 @@ typedef const char* STRING;
  * @param[in] param2 The 2nd parameter to be included in the message.
  */
 #define muse_camera_msg_return2(api, class, ret, module, type1, param1, type2, param2) \
-	do{	\
+	do {	\
 		char *__sndMsg__; \
 		int __len__; \
 		type1 __value1__ = (type1)param1; \
@@ -464,7 +464,7 @@ typedef const char* STRING;
 			ret = CAMERA_ERROR_INVALID_OPERATION; \
 		} \
 		muse_core_msg_json_factory_free(__sndMsg__); \
-	}while(0)
+	} while (0)
 
 /**
  * @brief Returning the ack message from the server to client side, adding 3 parameters.
@@ -480,7 +480,7 @@ typedef const char* STRING;
  * @param[in] param3 The 3rd parameter to be included in the message.
  */
 #define muse_camera_msg_return3(api, class, ret, module, type1, param1, type2, param2, type3, param3) \
-	do{	\
+	do {	\
 		char *__sndMsg__; \
 		int __len__; \
 		type1 __value1__ = (type1)param1; \
@@ -499,7 +499,7 @@ typedef const char* STRING;
 			ret = CAMERA_ERROR_INVALID_OPERATION; \
 		} \
 		muse_core_msg_json_factory_free(__sndMsg__); \
-	}while(0)
+	} while (0)
 
 /**
  * @brief Returning the ack message from the server to client side, adding array parameter.
@@ -512,7 +512,7 @@ typedef const char* STRING;
  * @param[in] datum_size The size of the array.
  */
 #define muse_camera_msg_return_array(api, class, ret, module, param, length, datum_size) \
-	do{	\
+	do {	\
 		char *__sndMsg__; \
 		int __len__; \
 		int *__value__ = (int *)param; \
@@ -520,8 +520,8 @@ typedef const char* STRING;
 				MUSE_TYPE_INT, PARAM_API_CLASS, class, \
 				MUSE_TYPE_INT, PARAM_RET, ret, \
 				MUSE_TYPE_ARRAY, #param, \
-					datum_size == sizeof(int)? length / sizeof(int) :  \
-					length / sizeof(int) + (length % sizeof(int)?1:0), \
+					datum_size == sizeof(int) ? length / sizeof(int) :  \
+					length / sizeof(int) + (length % sizeof(int) ? 1 : 0), \
 					__value__, \
 				0); \
 		__len__ = muse_core_ipc_send_msg(muse_core_client_get_msg_fd(module), __sndMsg__); \
@@ -530,7 +530,7 @@ typedef const char* STRING;
 			ret = CAMERA_ERROR_INVALID_OPERATION; \
 		} \
 		muse_core_msg_json_factory_free(__sndMsg__); \
-	}while(0)
+	} while (0)
 
 /**
  * @brief Returning the event ack message from the server to client side, adding array parameter.
@@ -540,7 +540,7 @@ typedef const char* STRING;
  * @param[in] module The module info for the ipc transportation.
  */
 #define muse_camera_msg_event(api, event, class, module) \
-	do{	\
+	do {	\
 		char *__sndMsg__; \
 		__sndMsg__ = muse_core_msg_json_factory_new(api, \
 				MUSE_TYPE_INT, PARAM_EVENT, event, \
@@ -548,7 +548,7 @@ typedef const char* STRING;
 				0); \
 		muse_core_ipc_send_msg(muse_core_client_get_msg_fd(module), __sndMsg__); \
 		muse_core_msg_json_factory_free(__sndMsg__); \
-	}while(0)
+	} while (0)
 
 /**
  * @brief Returning the event ack message from the server to client side, adding array parameter.
@@ -560,7 +560,7 @@ typedef const char* STRING;
  * @param[in] param A parameter to be included in the message.
  */
 #define muse_camera_msg_event1(api, event, class, module, type, param) \
-	do{	\
+	do {	\
 		char *__sndMsg__; \
 		type __value__ = (type)param; \
 		__sndMsg__ = muse_core_msg_json_factory_new(api, \
@@ -570,7 +570,7 @@ typedef const char* STRING;
 				0); \
 		muse_core_ipc_send_msg(muse_core_client_get_msg_fd(module), __sndMsg__); \
 		muse_core_msg_json_factory_free(__sndMsg__); \
-	}while(0)
+	} while (0)
 
 /**
  * @brief Returning the event ack message from the server to client side, adding array parameter.
@@ -583,7 +583,7 @@ typedef const char* STRING;
  * @param[in] param2 The 2nd parameter to be included in the message.
  */
 #define muse_camera_msg_event2(api, event, class, module, type1, param1, type2, param2) \
-	do{	\
+	do {	\
 		char *__sndMsg__; \
 		type1 __value1__ = (type1)param1; \
 		type2 __value2__ = (type2)param2; \
@@ -595,7 +595,7 @@ typedef const char* STRING;
 				0); \
 		muse_core_ipc_send_msg(muse_core_client_get_msg_fd(module), __sndMsg__); \
 		muse_core_msg_json_factory_free(__sndMsg__); \
-	}while(0)
+	} while (0)
 
 /**
  * @brief Returning the event ack message from the server to client side, adding array parameter.
@@ -610,7 +610,7 @@ typedef const char* STRING;
  * @param[in] param3 The 3rd parameter to be included in the message.
  */
 #define muse_camera_msg_event3(api, event, class, module, type1, param1, type2, param2, type3, param3) \
-	do{	\
+	do {	\
 		char *__sndMsg__; \
 		type1 __value1__ = (type1)param1; \
 		type2 __value2__ = (type2)param2; \
@@ -624,7 +624,7 @@ typedef const char* STRING;
 				0); \
 		muse_core_ipc_send_msg(muse_core_client_get_msg_fd(module), __sndMsg__); \
 		muse_core_msg_json_factory_free(__sndMsg__); \
-	}while(0)
+	} while (0)
 
 #ifdef __cplusplus
 }
