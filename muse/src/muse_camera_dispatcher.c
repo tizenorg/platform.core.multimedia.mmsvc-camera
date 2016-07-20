@@ -1064,6 +1064,29 @@ int camera_dispatcher_create(muse_module_h module)
 	return MUSE_CAMERA_ERROR_NONE;
 }
 
+
+int camera_dispatcher_change_device(muse_module_h module)
+{
+	int ret = CAMERA_ERROR_NONE;
+	int device = CAMERA_DEVICE_CAMERA0;
+	muse_camera_handle_s *muse_camera = NULL;
+	muse_camera_api_e api = MUSE_CAMERA_API_CHANGE_DEVICE;
+	muse_camera_api_class_e class = MUSE_CAMERA_API_CLASS_IMMEDIATE;
+
+	muse_camera = (muse_camera_handle_s *)muse_core_ipc_get_handle(module);
+
+	muse_camera_msg_get(device, muse_core_client_get_msg(module));
+
+	LOGD("change device to %d", device);
+
+	ret = legacy_camera_change_device(&muse_camera->camera_handle, device);
+
+	muse_camera_msg_return(api, class, ret, module);
+
+	return MUSE_CAMERA_ERROR_NONE;
+}
+
+
 int camera_dispatcher_destroy(muse_module_h module)
 {
 	int ret = CAMERA_ERROR_NONE;
@@ -4572,10 +4595,11 @@ int (*dispatcher[MUSE_CAMERA_API_MAX]) (muse_module_h module) = {
 	camera_dispatcher_attr_foreach_supported_ptz_type, /* MUSE_CAMERA_API_ATTR_FOREACH_SUPPORTED_PTZ_TYPE */
 	camera_dispatcher_attr_set_display_roi_area, /* MUSE_CAMERA_API_SET_DISPLAY_ROI_AREA */
 	camera_dispatcher_attr_get_display_roi_area, /* MUSE_CAMERA_API_GET_DISPLAY_ROI_AREA */
-	camera_dispatcher_return_buffer, /* MUSE_CAMERA_API_RETURN_BUFFER, */
-	camera_dispatcher_preview_cb_return, /* MUSE_CAMERA_API_PREVIEW_CB_RETURN, */
-	camera_dispatcher_set_display_reuse_hint, /* MUSE_CAMERA_API_SET_DISPLAY_REUSE_HINT, */
-	camera_dispatcher_get_display_reuse_hint, /* MUSE_CAMERA_API_GET_DISPLAY_REUSE_HINT, */
+	camera_dispatcher_return_buffer, /* MUSE_CAMERA_API_RETURN_BUFFER */
+	camera_dispatcher_preview_cb_return, /* MUSE_CAMERA_API_PREVIEW_CB_RETURN */
+	camera_dispatcher_set_display_reuse_hint, /* MUSE_CAMERA_API_SET_DISPLAY_REUSE_HINT */
+	camera_dispatcher_get_display_reuse_hint, /* MUSE_CAMERA_API_GET_DISPLAY_REUSE_HINT */
+	camera_dispatcher_change_device /* MUSE_CAMERA_API_CHANGE_DEVICE */
 };
 
 

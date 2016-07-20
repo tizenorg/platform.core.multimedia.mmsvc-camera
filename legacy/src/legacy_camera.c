@@ -40,53 +40,6 @@
 static gboolean __mm_videostream_callback(MMCamcorderVideoStreamDataType *stream, void *user_data);
 static gboolean __mm_capture_callback(MMCamcorderCaptureDataType *frame, MMCamcorderCaptureDataType *thumbnail, void *user_data);
 
-void _camera_remove_cb_message(camera_s *handle)
-{
-	int ret = 0;
-	GList *list = NULL;
-	camera_cb_data *cb_data = NULL;
-
-	if (handle == NULL) {
-		LOGE("handle is NULL");
-		return;
-	}
-
-	LOGI("start");
-
-	g_mutex_lock(&handle->idle_cb_lock);
-
-	if (handle->cb_data_list) {
-		list = handle->cb_data_list;
-
-		while (list) {
-			cb_data = list->data;
-			list =  g_list_next(list);
-
-			if (!cb_data) {
-				LOGW("cb_data is NULL");
-			} else {
-				ret = g_idle_remove_by_data(cb_data);
-				LOGW("Remove cb_data[%p]. ret[%d]", cb_data, ret);
-
-				handle->cb_data_list = g_list_remove(handle->cb_data_list, cb_data);
-				free(cb_data);
-				cb_data = NULL;
-			}
-		}
-
-		g_list_free(handle->cb_data_list);
-		handle->cb_data_list = NULL;
-	} else {
-		LOGW("There is no remained callback");
-	}
-
-	g_mutex_unlock(&handle->idle_cb_lock);
-
-	LOGI("done");
-
-	return;
-}
-
 
 int __convert_camera_error_code(const char *func, int code)
 {
@@ -555,21 +508,21 @@ static int __capture_completed_event_cb(void *data)
 	return false;
 }
 
-int legacy_camera_create(camera_device_e device, camera_h* camera)
+int legacy_camera_create(camera_device_e device, camera_h *camera)
 {
+	int ret = MM_ERROR_NONE;
+	int preview_format = MM_PIXEL_FORMAT_NV12;
+	int rotation = MM_DISPLAY_ROTATION_NONE;
+	camera_s *handle = NULL;
+	char *error = NULL;
+	MMCamPreset info;
+
 	if (camera == NULL) {
 		LOGE("INVALID_PARAMETER(0x%08x)", CAMERA_ERROR_INVALID_PARAMETER);
 		return CAMERA_ERROR_INVALID_PARAMETER;
 	}
 
-	int ret = MM_ERROR_NONE;;
-	MMCamPreset info;
-	int preview_format;
-	int rotation;
-	camera_s *handle = NULL;
-	char *error = NULL;
-
-	LOGW("device name = [%d]", device);
+	LOGD("device name = [%d]",device);
 
 	info.videodev_type = device;
 
@@ -645,15 +598,143 @@ int legacy_camera_create(camera_device_e device, camera_h* camera)
 	handle->device_type = device;
 	handle->ptz_type = CAMERA_ATTR_PTZ_TYPE_ELECTRONIC;
 
-	g_mutex_init(&handle->idle_cb_lock);
-
 	mm_camcorder_set_message_callback(handle->mm_handle,
-		__mm_camera_message_callback,
-		(void *)handle);
+		__mm_camera_message_callback, (void *)handle);
 
 	*camera = (camera_h)handle;
 
-	LOGW("camera handle %p", handle);
+	LOGD("legacy camera handle %p", handle);
+
+	return __convert_camera_error_code(__func__, ret);
+}
+
+
+int legacy_camera_change_device(camera_h *camera, camera_device_e device)
+{
+	int ret = MM_ERROR_NONE;
+	int pid = 0;
+	int size = 0;
+	camera_s *old_handle = NULL;
+	camera_s *new_handle = NULL;
+	camera_state_e capi_state = CAMERA_STATE_NONE;
+	void *reuse_element = NULL;
+
+	if (camera == NULL) {
+		LOGE("NULL handle");
+		return CAMERA_ERROR_INVALID_PARAMETER;
+	}
+
+	if (device < CAMERA_DEVICE_CAMERA0 || device > CAMERA_DEVICE_CAMERA1) {
+		LOGE("invalid device %d", device);
+		return CAMERA_ERROR_INVALID_PARAMETER;
+	}
+
+	old_handle = (camera_s *)*camera;
+
+	if (old_handle->is_used_in_recorder) {
+		LOGE("camera is using in another recorder.");
+		return CAMERA_ERROR_INVALID_OPERATION;
+	}
+
+	if (old_handle->device_type == device) {
+		LOGE("same device. no need to change it.");
+		return CAMERA_ERROR_NONE;
+	}
+
+	/* check current state */
+	legacy_camera_get_state(*camera, &capi_state);
+	if (capi_state != CAMERA_STATE_CREATED) {
+		LOGE("invalid state %d", capi_state);
+		return CAMERA_ERROR_INVALID_STATE;
+	}
+
+	/* get reuse element */
+	ret = mm_camcorder_get_attributes(old_handle->mm_handle, NULL,
+		MMCAM_DISPLAY_REUSE_ELEMENT, &reuse_element, &size,
+		NULL);
+	if (ret != MM_ERROR_NONE) {
+		LOGE("failed to get reuse element 0x%x", ret);
+		return __convert_camera_error_code(__func__, ret);
+	}
+
+	LOGD("reuse element %p", reuse_element);
+
+	/* create new handle */
+	ret = legacy_camera_create(device, (camera_h *)&new_handle);
+	if (ret != CAMERA_ERROR_NONE) {
+		LOGE("failed to create new handle 0x%x", ret);
+		return ret;
+	}
+
+	/* set reuse element in new handle */
+	ret = mm_camcorder_set_attributes(new_handle->mm_handle, NULL,
+		MMCAM_DISPLAY_REUSE_ELEMENT, reuse_element, size,
+		NULL);
+	if (ret != MM_ERROR_NONE) {
+		LOGE("failed to set reuse element 0x%x", ret);
+		goto _CHANGE_DEVICE_FAILED;
+	}
+
+	/* reset reuse element in old handle */
+	ret = mm_camcorder_set_attributes(old_handle->mm_handle, NULL,
+		MMCAM_DISPLAY_REUSE_ELEMENT, NULL, 0,
+		NULL);
+	if (ret != MM_ERROR_NONE) {
+		LOGE("failed to reset reuse element 0x%x", ret);
+		goto _CHANGE_DEVICE_FAILED;
+	}
+
+	/* get pid from old handle */
+	ret = mm_camcorder_get_attributes(old_handle->mm_handle, NULL,
+		MMCAM_PID_FOR_SOUND_FOCUS, &pid,
+		NULL);
+	if (ret != MM_ERROR_NONE) {
+		LOGE("failed to get pid 0x%x", ret);
+		goto _CHANGE_DEVICE_FAILED;
+	}
+
+	LOGD("client pid %d from old handle", pid);
+
+	/* set pid to new handle */
+	ret = mm_camcorder_set_attributes(new_handle->mm_handle, NULL,
+		MMCAM_PID_FOR_SOUND_FOCUS, pid,
+		NULL);
+	if (ret != MM_ERROR_NONE) {
+		LOGE("failed to get pid 0x%x", ret);
+		goto _CHANGE_DEVICE_FAILED;
+	}
+
+	/* set previous display */
+	ret = legacy_camera_set_display(new_handle, old_handle->display_type, old_handle->display_handle);
+	if (ret != MM_ERROR_NONE) {
+		LOGE("legacy_camera_set_display failed0x%x", ret);
+		goto _CHANGE_DEVICE_FAILED;
+	}
+
+	/* release old handle */
+	ret = legacy_camera_destroy((camera_h)old_handle);
+	if (ret != CAMERA_ERROR_NONE) {
+		LOGE("failed to destroy old handle %p 0x%x", old_handle, ret);
+		goto _CHANGE_DEVICE_FAILED;
+	}
+
+	*camera = (camera_h)new_handle;
+
+	LOGD("new handle %p", new_handle);
+
+	return CAMERA_ERROR_NONE;
+
+_CHANGE_DEVICE_FAILED:
+	if (new_handle) {
+		legacy_camera_destroy((camera_h)new_handle);
+		new_handle = NULL;
+	}
+
+	if (reuse_element) {
+		mm_camcorder_set_attributes(old_handle->mm_handle, NULL,
+			MMCAM_DISPLAY_REUSE_ELEMENT, reuse_element, size,
+			NULL);
+	}
 
 	return __convert_camera_error_code(__func__, ret);
 }
@@ -678,14 +759,6 @@ int legacy_camera_destroy(camera_h camera)
 
 	ret = mm_camcorder_destroy(handle->mm_handle);
 	if (ret == MM_ERROR_NONE) {
-		_camera_remove_cb_message(handle);
-		g_mutex_clear(&handle->idle_cb_lock);
-
-		if (handle->wl_info) {
-			free(handle->wl_info);
-			handle->wl_info = NULL;
-		}
-
 		free(handle);
 	}
 
@@ -1957,10 +2030,17 @@ int legacy_camera_set_display_reuse_hint(camera_h camera, int hint)
 {
 	int ret = CAMERA_ERROR_NONE;
 	camera_s *handle = (camera_s *)camera;
+	camera_state_e capi_state = CAMERA_STATE_NONE;
 
 	if (!handle) {
 		LOGE("INVALID_PARAMETER(0x%08x)", CAMERA_ERROR_INVALID_PARAMETER);
 		return CAMERA_ERROR_INVALID_PARAMETER;
+	}
+
+	legacy_camera_get_state(camera, &capi_state);
+	if (capi_state != CAMERA_STATE_PREVIEW) {
+		LOGE("invalid state %d", capi_state);
+		return CAMERA_ERROR_INVALID_STATE;
 	}
 
 	ret = mm_camcorder_set_attributes(handle->mm_handle, NULL,
