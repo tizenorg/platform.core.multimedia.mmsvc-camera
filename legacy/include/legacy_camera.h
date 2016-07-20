@@ -244,7 +244,7 @@ typedef struct {
 /**
  * @brief The Camera handle.
  * @since_tizen @if MOBILE 2.3 @elseif WEARABLE 2.3.1 @endif
- * @see	recorder_create_videorecorder()
+ * @see legacy_recorder_create_videorecorder()
  */
 typedef struct camera_s *camera_h;
 
@@ -516,9 +516,9 @@ typedef enum {
  * @param[in] current The current state of the camera
  * @param[in] by_policy If @c true the state is changed by policy, otherwise @c false
  * @param[in] user_data The user data passed from the callback registration function
- * @pre camera_start_preview(), camera_start_capture() or camera_stop_preview()
+ * @pre legacy_camera_start_preview(), camera_start_capture() or camera_stop_preview()
  *      will invoke this callback if you register this callback using camera_set_state_changed_cb().
- * @see	camera_set_state_changed_cb()
+ * @see legacy_camera_set_state_changed_cb()
  */
 typedef void (*camera_state_changed_cb)(camera_state_e previous, camera_state_e current, bool by_policy, void *user_data);
 
@@ -530,7 +530,7 @@ typedef void (*camera_state_changed_cb)(camera_state_e previous, camera_state_e 
  * @param[in] previous The previous state of the camera
  * @param[in] current The current state of the camera
  * @param[in] user_data The user data passed from the callback registration function
- * @see	camera_set_interrupted_cb()
+ * @see legacy_camera_set_interrupted_cb()
  */
 typedef void (*camera_interrupted_cb)(camera_policy_e policy, camera_state_e previous, camera_state_e current, void *user_data);
 
@@ -545,11 +545,11 @@ typedef void (*camera_interrupted_cb)(camera_policy_e policy, camera_state_e pre
  *
  * @param[in] state The current state of the auto-focus
  * @param[in] user_data The user data passed from the callback registration function
- * @pre camera_start_focusing() will invoke this callback if you register it using camera_set_focus_changed_cb().
- * @see	camera_set_focus_changed_cb()
- * @see	camera_unset_focus_changed_cb()
- * @see	camera_start_focusing()
- * @see camera_cancel_focusing()
+ * @pre legacy_camera_start_focusing() will invoke this callback if you register it using camera_set_focus_changed_cb().
+ * @see legacy_camera_set_focus_changed_cb()
+ * @see legacy_camera_unset_focus_changed_cb()
+ * @see legacy_camera_start_focusing()
+ * @see legacy_camera_cancel_focusing()
  */
 typedef void (*camera_focus_changed_cb)(camera_focus_state_e state, void *user_data);
 
@@ -562,10 +562,10 @@ typedef void (*camera_focus_changed_cb)(camera_focus_state_e state, void *user_d
  *
  * @param[in] frame The reference pointer to preview stream data
  * @param[in] user_data The user data passed from the callback registration function
- * @pre	camera_start_preview() will invoke this callback function if you register this callback using camera_set_preview_cb().
- * @see	camera_start_preview()
- * @see	camera_set_preview_cb()
- * @see	camera_unset_preview_cb()
+ * @pre legacy_camera_start_preview() will invoke this callback function if you register this callback using camera_set_preview_cb().
+ * @see legacy_camera_start_preview()
+ * @see legacy_camera_set_preview_cb()
+ * @see legacy_camera_unset_preview_cb()
  */
 typedef void (*camera_preview_cb)(MMCamcorderVideoStreamDataType *frame, void *user_data);
 
@@ -580,10 +580,10 @@ typedef void (*camera_preview_cb)(MMCamcorderVideoStreamDataType *frame, void *u
  * @param[in] postview The image data of the postview
  * @param[in] thumbnail The image data of the thumbnail (it should be @c NULL if the available thumbnail data does not exist)
  * @param[in] user_data The user data passed from the callback registration function
- * @pre	camera_start_capture() or camera_start_continuous_capture() will invoke this callback function if it is registered using camera_start_capture() or camera_start_continuous_capture().
- * @see	camera_start_capture()
- * @see	camera_start_continuous_capture()
- * @see	camera_capture_completed_cb()
+ * @pre legacy_camera_start_capture() or camera_start_continuous_capture() will invoke this callback function if it is registered using camera_start_capture() or camera_start_continuous_capture().
+ * @see legacy_camera_start_capture()
+ * @see legacy_camera_start_continuous_capture()
+ * @see legacy_camera_capture_completed_cb()
  */
 typedef void (*camera_capturing_cb)(camera_image_data_s *image, camera_image_data_s *postview, camera_image_data_s *thumbnail, void *user_data);
 
@@ -595,10 +595,10 @@ typedef void (*camera_capturing_cb)(camera_image_data_s *image, camera_image_dat
  *          If you want to show the user a preview after capturing is finished, an application can use camera_start_preview() after calling this callback.
  *
  * @param[in] user_data The user data passed from the callback registration function
- * @pre	This callback function is invoked if it is registered using camera_start_capture() or camera_start_continuous_capture().
- * @see	camera_start_capture()
- * @see	camera_start_continuous_capture()
- * @see	camera_capturing_cb()
+ * @pre This callback function is invoked if it is registered using camera_start_capture() or camera_start_continuous_capture().
+ * @see legacy_camera_start_capture()
+ * @see legacy_camera_start_continuous_capture()
+ * @see legacy_camera_capturing_cb()
  */
 typedef void (*camera_capture_completed_cb)(void *user_data);
 
@@ -616,9 +616,9 @@ typedef void (*camera_capture_completed_cb)(void *user_data);
  * @param[in] error The error code
  * @param[in] current_state The current state of the camera
  * @param[in] user_data	The user data passed from the callback registration function
- * @pre	This callback function is invoked if it is registered using camera_set_error_cb().
- * @see	camera_set_error_cb()
- * @see	camera_unset_error_cb()
+ * @pre This callback function is invoked if it is registered using camera_set_error_cb().
+ * @see legacy_camera_set_error_cb()
+ * @see legacy_camera_unset_error_cb()
  */
 typedef void (*camera_error_cb)(camera_error_e error, camera_state_e current_state, void *user_data);
 
@@ -628,7 +628,7 @@ typedef void (*camera_error_cb)(camera_error_e error, camera_state_e current_sta
  * @param[in] faces The detected face array
  * @param[in] count The length of the array
  * @param[in] user_data The user data passed from the callback registration function
- * @see	camera_start_face_detection()
+ * @see legacy_camera_start_face_detection()
  */
 typedef void (*camera_face_detected_cb)(camera_detected_face_s *faces, int count, void *user_data);
 
@@ -648,8 +648,8 @@ typedef void (*camera_face_detected_cb)(camera_detected_face_s *faces, int count
  * @param[in] height The preview image height
  * @param[in] user_data The user data passed from the foreach function
  * @return @c true to continue with the next iteration of the loop, \n otherwise @c false to break out of the loop
- * @pre	camera_foreach_supported_preview_resolution() will invoke this callback.
- * @see	camera_foreach_supported_preview_resolution()
+ * @pre legacy_camera_foreach_supported_preview_resolution() will invoke this callback.
+ * @see legacy_camera_foreach_supported_preview_resolution()
  */
 typedef bool (*camera_supported_preview_resolution_cb)(int width, int height, void *user_data);
 
@@ -660,8 +660,8 @@ typedef bool (*camera_supported_preview_resolution_cb)(int width, int height, vo
  * @param[in] height The capture resolution height
  * @param[in] user_data The user data passed from the foreach function
  * @return @c true to continue with the next iteration of the loop, \n otherwise @c false to break out of the loop
- * @pre	camera_foreach_supported_capture_resolution() will invoke this callback.
- * @see	camera_foreach_supported_capture_resolution()
+ * @pre legacy_camera_foreach_supported_capture_resolution() will invoke this callback.
+ * @see legacy_camera_foreach_supported_capture_resolution()
  */
 typedef bool (*camera_supported_capture_resolution_cb)(int width, int height, void *user_data);
 
@@ -671,8 +671,8 @@ typedef bool (*camera_supported_capture_resolution_cb)(int width, int height, vo
  * @param[in] format The supported pixel format
  * @param[in] user_data The user data passed from the foreach function
  * @return @c true to continue with the next iteration of the loop, \n otherwise @c false to break out of the loop
- * @pre	camera_foreach_supported_capture_format() will invoke this callback.
- * @see	camera_foreach_supported_capture_format()
+ * @pre legacy_camera_foreach_supported_capture_format() will invoke this callback.
+ * @see legacy_camera_foreach_supported_capture_format()
  */
 typedef bool (*camera_supported_capture_format_cb)(camera_pixel_format_e format, void *user_data);
 
@@ -682,8 +682,8 @@ typedef bool (*camera_supported_capture_format_cb)(camera_pixel_format_e format,
  * @param[in] format The supported preview data format
  * @param[in] user_data The user data passed from the foreach function
  * @return @c true to continue with the next iteration of the loop, \n otherwise @c false to break out of the loop
- * @pre	camera_foreach_supported_preview_format() will invoke this callback.
- * @see	camera_foreach_supported_preview_format()
+ * @pre legacy_camera_foreach_supported_preview_format() will invoke this callback.
+ * @see legacy_camera_foreach_supported_preview_format()
  */
 typedef bool (*camera_supported_preview_format_cb)(camera_pixel_format_e format, void *user_data);
 
@@ -718,9 +718,35 @@ typedef bool (*camera_supported_preview_format_cb)(camera_pixel_format_e format,
  * @retval #CAMERA_ERROR_NOT_SUPPORTED The feature is not supported
  * @post If it succeeds, the camera state will be #CAMERA_STATE_CREATED.
  *
- * @see	camera_destroy()
+ * @see legacy_camera_destroy()
  */
 int legacy_camera_create(camera_device_e device, camera_h *camera);
+
+/**
+ * @brief Changes camera device.
+ *
+ * @since_tizen 3.0
+ * @privlevel public
+ * @privilege %http://tizen.org/privilege/camera
+ * @remarks This function can be used to change camera device simply without camera_destroy() and camera_create().\n
+ *          If display reuse hint is set by camera_set_display_reuse_hint() before stop preview,\n
+ *          display handle will be reused and last frame on display can be kept even though camera device is changed.
+ * @param[in] camera The handle to the camera
+ * @param[in] device The hardware camera to access
+ * @return @c 0 on success, otherwise a negative error value
+ * @retval #CAMERA_ERROR_NONE Successful
+ * @retval #CAMERA_ERROR_INVALID_PARAMETER Invalid parameter
+ * @retval #CAMERA_ERROR_INVALID_STATE Invalid state
+ * @retval #CAMERA_ERROR_OUT_OF_MEMORY Out of memory
+ * @retval #CAMERA_ERROR_INVALID_OPERATION Invalid operation
+ * @retval #CAMERA_ERROR_NOT_SUPPORTED The feature is not supported
+ * @pre    The camera state must be set to #CAMERA_STATE_CREATED.
+ * @post   If it succeeds, the camera attributes and settings will be reset.
+ *
+ * @see legacy_camera_set_display_reuse_hint()
+ * @see legacy_camera_get_display_reuse_hint()
+ */
+int legacy_camera_change_device(camera_h *camera, camera_device_e device);
 
 /**
  * @brief Destroys the camera handle and releases all its resources.
@@ -765,7 +791,7 @@ int legacy_camera_destroy(camera_h camera);
  * @post   If it succeeds, the camera state will be #CAMERA_STATE_PREVIEW.\n
  *         legacy_camera_preview_cb() will be called when preview image data becomes available.
  *
- * @see	camera_stop_preview()
+ * @see legacy_camera_stop_preview()
  * @see legacy_camera_set_display()
  * @see legacy_camera_set_preview_cb()
  * @see legacy_camera_set_media_packet_preview_cb()
@@ -796,9 +822,9 @@ int legacy_camera_start_preview(camera_h camera);
  * @retval #CAMERA_ERROR_NOT_SUPPORTED The feature is not supported
  * @pre The camera state must be set to #CAMERA_STATE_PREVIEW.
  * @post The camera state will be #CAMERA_STATE_CREATED.
- * @see	camera_start_preview()
- * @see	camera_unset_preview_cb()
- * @see	camera_unset_media_packet_preview_cb()
+ * @see legacy_camera_start_preview()
+ * @see legacy_camera_unset_preview_cb()
+ * @see legacy_camera_unset_media_packet_preview_cb()
  */
 int legacy_camera_stop_preview(camera_h camera);
 
@@ -971,7 +997,7 @@ int legacy_camera_start_focusing(camera_h camera, bool continuous);
  * @pre The camera state must be set to #CAMERA_STATE_PREVIEW.
  *
  * @see legacy_camera_start_focusing()
- * @see	camera_focus_changed_cb()
+ * @see legacy_camera_focus_changed_cb()
  */
 int legacy_camera_cancel_focusing(camera_h camera);
 
@@ -1015,8 +1041,8 @@ int legacy_camera_set_display(camera_h camera, camera_display_type_e type, camer
  * @pre The camera state must be set to #CAMERA_STATE_CREATED or #CAMERA_STATE_PREVIEW.
  *
  * @see legacy_camera_start_preview()
- * @see	camera_get_preview_resolution()
- * @see	camera_foreach_supported_preview_resolution()
+ * @see legacy_camera_get_preview_resolution()
+ * @see legacy_camera_foreach_supported_preview_resolution()
  */
 int legacy_camera_set_preview_resolution(camera_h camera, int width, int height);
 
@@ -1032,8 +1058,8 @@ int legacy_camera_set_preview_resolution(camera_h camera, int width, int height)
  * @retval #CAMERA_ERROR_INVALID_PARAMETER Invalid parameter
  * @retval #CAMERA_ERROR_PERMISSION_DENIED The access to the resources can not be granted
  * @retval #CAMERA_ERROR_NOT_SUPPORTED The feature is not supported
- * @see	camera_set_preview_resolution()
- * @see	camera_foreach_supported_preview_resolution()
+ * @see legacy_camera_set_preview_resolution()
+ * @see legacy_camera_foreach_supported_preview_resolution()
  */
 int legacy_camera_get_preview_resolution(camera_h camera, int *width, int *height);
 
@@ -1050,8 +1076,8 @@ int legacy_camera_get_preview_resolution(camera_h camera, int *width, int *heigh
  * @retval #CAMERA_ERROR_INVALID_PARAMETER Invalid parameter
  * @retval #CAMERA_ERROR_PERMISSION_DENIED The access to the resources can not be granted
  * @retval #CAMERA_ERROR_NOT_SUPPORTED The feature is not supported
- * @see	camera_set_preview_resolution()
- * @see	camera_foreach_supported_preview_resolution()
+ * @see legacy_camera_set_preview_resolution()
+ * @see legacy_camera_foreach_supported_preview_resolution()
  */
 int legacy_camera_get_recommended_preview_resolution(camera_h camera, int *width, int *height);
 
@@ -1141,9 +1167,9 @@ bool legacy_camera_is_supported_continuous_capture(camera_h camera);
  * @retval #CAMERA_ERROR_NOT_SUPPORTED The feature is not supported
  * @post This function invokes legacy_camera_supported_preview_resolution_cb() repeatedly to retrieve each supported preview resolution.
  *
- * @see	camera_set_preview_resolution()
- * @see	camera_get_preview_resolution()
- * @see	camera_supported_preview_resolution_cb()
+ * @see legacy_camera_set_preview_resolution()
+ * @see legacy_camera_get_preview_resolution()
+ * @see legacy_camera_supported_preview_resolution_cb()
  */
 int legacy_camera_foreach_supported_preview_resolution(camera_h camera,
 	camera_supported_preview_resolution_cb callback, void *user_data);
@@ -1175,7 +1201,7 @@ int legacy_camera_foreach_supported_preview_resolution(camera_h camera,
  * @retval #CAMERA_ERROR_PERMISSION_DENIED The access to the resources can not be granted
  * @retval #CAMERA_ERROR_NOT_SUPPORTED The feature is not supported
  * @see legacy_camera_start_preview()
- * @see	camera_get_display_rotation()
+ * @see legacy_camera_get_display_rotation()
  */
 int legacy_camera_set_display_rotation(camera_h camera, camera_rotation_e rotation);
 
@@ -1211,7 +1237,7 @@ int legacy_camera_get_display_rotation(camera_h camera, camera_rotation_e *rotat
  * @retval #CAMERA_ERROR_INVALID_OPERATION Display type is incorrect
  * @retval #CAMERA_ERROR_PERMISSION_DENIED The access to the resources can not be granted
  * @retval #CAMERA_ERROR_NOT_SUPPORTED The feature is not supported
- * @see	camera_get_display_flip()
+ * @see legacy_camera_get_display_flip()
  */
 int legacy_camera_set_display_flip(camera_h camera, camera_flip_e flip);
 
@@ -1301,9 +1327,35 @@ int legacy_camera_set_display_mode(camera_h camera , camera_display_mode_e mode)
  */
 int legacy_camera_get_display_mode(camera_h camera, camera_display_mode_e *mode);
 
-
+/**
+ * @brief Sets hint for reuse display.
+ * @since_tizen 3.0
+ * @remarks To reuse display, camera_change_device() function should be called for change the camera device.
+ * @param[in] camera The handle to the camera
+ * @param[in] hint The hint for reuse display
+ * @return @c 0 on success, otherwise a negative error value
+ * @retval #CAMERA_ERROR_NONE Successful
+ * @retval #CAMERA_ERROR_INVALID_PARAMETER Invalid parameter
+ * @retval #CAMERA_ERROR_INVALID_STATE Invalid state
+ * @retval #CAMERA_ERROR_NOT_SUPPORTED The feature is not supported
+ * @pre    The camera state must be set to #CAMERA_STATE_PREVIEW.
+ * @see legacy_camera_get_display_reuse_hint()
+ * @see legacy_camera_change_device()
+ */
 int legacy_camera_set_display_reuse_hint(camera_h camera, int hint);
 
+/**
+ * @brief Gets hint for reuse display.
+ * @since_tizen 3.0
+ * @param[in] camera The handle to the camera
+ * @param[out] hint The hint for reuse display
+ * @return @c 0 on success, otherwise a negative error value
+ * @retval #CAMERA_ERROR_NONE Successful
+ * @retval #CAMERA_ERROR_INVALID_PARAMETER Invalid parameter
+ * @retval #CAMERA_ERROR_NOT_SUPPORTED The feature is not supported
+ * @see legacy_camera_get_display_reuse_hint()
+ * @see legacy_camera_change_device()
+ */
 int legacy_camera_get_display_reuse_hint(camera_h camera, int *hint);
 
 /**
@@ -1322,8 +1374,8 @@ int legacy_camera_get_display_reuse_hint(camera_h camera, int *hint);
  * @retval #CAMERA_ERROR_NOT_SUPPORTED The feature is not supported
  * @pre The camera state must be set to #CAMERA_STATE_CREATED or #CAMERA_STATE_PREVIEW.
  * @see legacy_camera_start_capture()
- * @see	camera_get_capture_resolution()
- * @see	camera_foreach_supported_capture_resolution()
+ * @see legacy_camera_get_capture_resolution()
+ * @see legacy_camera_foreach_supported_capture_resolution()
  */
 int legacy_camera_set_capture_resolution(camera_h camera, int width, int height);
 
@@ -1367,7 +1419,7 @@ int legacy_camera_get_capture_resolution(camera_h camera, int *width, int *heigh
  * @post This function invokes legacy_camera_supported_capture_resolution_cb() repeatedly to retrieve each supported capture resolution.
  * @see legacy_camera_set_capture_resolution()
  * @see legacy_camera_get_capture_resolution()
- * @see	camera_supported_capture_resolution_cb()
+ * @see legacy_camera_supported_capture_resolution_cb()
  */
 int legacy_camera_foreach_supported_capture_resolution(camera_h camera,
 	camera_supported_capture_resolution_cb callback, void *user_data);
@@ -1394,10 +1446,10 @@ int legacy_camera_foreach_supported_capture_resolution(camera_h camera,
  * @retval #CAMERA_ERROR_INVALID_STATE Invalid state
  * @retval #CAMERA_ERROR_PERMISSION_DENIED The access to the resources can not be granted
  * @retval #CAMERA_ERROR_NOT_SUPPORTED The feature is not supported
- * @pre	The camera state must be set to #CAMERA_STATE_CREATED or #CAMERA_STATE_PREVIEW.
+ * @pre The camera state must be set to #CAMERA_STATE_CREATED or #CAMERA_STATE_PREVIEW.
  * @see legacy_camera_start_capture()
- * @see	camera_get_capture_format()
- * @see	camera_foreach_supported_capture_format()
+ * @see legacy_camera_get_capture_format()
+ * @see legacy_camera_foreach_supported_capture_format()
  */
 int legacy_camera_set_capture_format(camera_h camera, camera_pixel_format_e format);
 
@@ -1412,8 +1464,8 @@ int legacy_camera_set_capture_format(camera_h camera, camera_pixel_format_e form
  * @retval #CAMERA_ERROR_INVALID_PARAMETER Invalid parameter
  * @retval #CAMERA_ERROR_PERMISSION_DENIED The access to the resources can not be granted
  * @retval #CAMERA_ERROR_NOT_SUPPORTED The feature is not supported
- * @see	camera_set_capture_format()
- * @see	camera_foreach_supported_capture_format()
+ * @see legacy_camera_set_capture_format()
+ * @see legacy_camera_foreach_supported_capture_format()
  */
 int legacy_camera_get_capture_format(camera_h camera, camera_pixel_format_e *format);
 
@@ -1439,9 +1491,9 @@ int legacy_camera_get_capture_format(camera_h camera, camera_pixel_format_e *for
  * @retval #CAMERA_ERROR_PERMISSION_DENIED The access to the resources can not be granted
  * @retval #CAMERA_ERROR_NOT_SUPPORTED The feature is not supported
  * @post This function invokes legacy_camera_supported_capture_format_cb() repeatedly to retrieve each supported capture format.
- * @see	camera_set_capture_format()
- * @see	camera_get_capture_format()
- * @see	camera_supported_capture_format_cb()
+ * @see legacy_camera_set_capture_format()
+ * @see legacy_camera_get_capture_format()
+ * @see legacy_camera_supported_capture_format_cb()
  */
 int legacy_camera_foreach_supported_capture_format(camera_h camera,
 	camera_supported_capture_format_cb callback, void *user_data);
@@ -1469,8 +1521,8 @@ int legacy_camera_foreach_supported_capture_format(camera_h camera,
  * @retval #CAMERA_ERROR_NOT_SUPPORTED The feature is not supported
  * @pre The camera state must be set to #CAMERA_STATE_CREATED.
  * @see legacy_camera_start_preview()
- * @see	camera_get_preview_format()
- * @see	camera_foreach_supported_preview_format()
+ * @see legacy_camera_get_preview_format()
+ * @see legacy_camera_foreach_supported_preview_format()
  */
 int legacy_camera_set_preview_format(camera_h camera, camera_pixel_format_e format);
 
@@ -1484,8 +1536,8 @@ int legacy_camera_set_preview_format(camera_h camera, camera_pixel_format_e form
  * @retval #CAMERA_ERROR_INVALID_PARAMETER Invalid parameter
  * @retval #CAMERA_ERROR_PERMISSION_DENIED The access to the resources can not be granted
  * @retval #CAMERA_ERROR_NOT_SUPPORTED The feature is not supported
- * @see	camera_set_preview_format()
- * @see	camera_foreach_supported_preview_format()
+ * @see legacy_camera_set_preview_format()
+ * @see legacy_camera_foreach_supported_preview_format()
  */
 int legacy_camera_get_preview_format(camera_h camera, camera_pixel_format_e *format);
 
@@ -1523,9 +1575,9 @@ int legacy_camera_get_facing_direction(camera_h camera, camera_facing_direction_
  * @retval #CAMERA_ERROR_PERMISSION_DENIED The access to the resources can not be granted
  * @retval #CAMERA_ERROR_NOT_SUPPORTED The feature is not supported
  * @post This function invokes legacy_camera_supported_preview_format_cb() repeatly to retrieve each supported preview format.
- * @see	camera_set_preview_format()
- * @see	camera_get_preview_format()
- * @see	camera_supported_preview_format_cb()
+ * @see legacy_camera_set_preview_format()
+ * @see legacy_camera_get_preview_format()
+ * @see legacy_camera_supported_preview_format_cb()
  */
 int legacy_camera_foreach_supported_preview_format(camera_h camera,
 	camera_supported_preview_format_cb callback, void *user_data);
@@ -1620,10 +1672,10 @@ bool legacy_camera_is_supported_media_packet_preview_cb(camera_h camera);
  * @retval #CAMERA_ERROR_INVALID_PARAMETER Invalid parameter
  * @retval #CAMERA_ERROR_PERMISSION_DENIED The access to the resources can not be granted
  * @retval #CAMERA_ERROR_NOT_SUPPORTED The feature is not supported
- * @pre	The camera's state must be set to #CAMERA_STATE_CREATED.
- * @see	camera_start_preview()
+ * @pre The camera's state must be set to #CAMERA_STATE_CREATED.
+ * @see legacy_camera_start_preview()
  * @see legacy_camera_unset_preview_cb()
- * @see	camera_preview_cb()
+ * @see legacy_camera_preview_cb()
  */
 int legacy_camera_set_preview_cb(camera_h camera, camera_preview_cb callback, void *user_data);
 
@@ -1658,10 +1710,10 @@ int legacy_camera_unset_preview_cb(camera_h camera);
  * @retval #CAMERA_ERROR_INVALID_PARAMETER Invalid parameter
  * @retval #CAMERA_ERROR_PERMISSION_DENIED The access to the resources can not be granted
  * @retval #CAMERA_ERROR_NOT_SUPPORTED The feature is not supported
- * @pre	The camera's state should be #CAMERA_STATE_CREATED.
- * @see	camera_start_preview()
- * @see	camera_unset_media_packet_preview_cb()
- * @see	camera_media_packet_preview_cb()
+ * @pre The camera's state should be #CAMERA_STATE_CREATED.
+ * @see legacy_camera_start_preview()
+ * @see legacy_camera_unset_media_packet_preview_cb()
+ * @see legacy_camera_media_packet_preview_cb()
  */
 int legacy_camera_set_media_packet_preview_cb(camera_h camera, camera_preview_cb callback, void *user_data);
 
@@ -1674,7 +1726,7 @@ int legacy_camera_set_media_packet_preview_cb(camera_h camera, camera_preview_cb
  * @retval #CAMERA_ERROR_INVALID_PARAMETER Invalid parameter
  * @retval #CAMERA_ERROR_PERMISSION_DENIED The access to the resources can not be granted
  * @retval #CAMERA_ERROR_NOT_SUPPORTED The feature is not supported
- * @see	camera_set_media_packet_preview_cb()
+ * @see legacy_camera_set_media_packet_preview_cb()
  */
 int legacy_camera_unset_media_packet_preview_cb(camera_h camera);
 
@@ -1691,7 +1743,7 @@ int legacy_camera_unset_media_packet_preview_cb(camera_h camera);
  * @retval #CAMERA_ERROR_NOT_SUPPORTED The feature is not supported
  * @post This function will invoke legacy_camera_state_changed_cb() when the camera state changes.
  * @see legacy_camera_unset_state_changed_cb()
- * @see	camera_state_changed_cb()
+ * @see legacy_camera_state_changed_cb()
  */
 int legacy_camera_set_state_changed_cb(camera_h camera, camera_state_changed_cb callback, void *user_data);
 
@@ -1720,7 +1772,7 @@ int legacy_camera_unset_state_changed_cb(camera_h camera);
  * @retval #CAMERA_ERROR_PERMISSION_DENIED The access to the resources can not be granted
  * @retval #CAMERA_ERROR_NOT_SUPPORTED The feature is not supported
  * @see legacy_camera_unset_interrupted_cb()
- * @see	camera_interrupted_cb()
+ * @see legacy_camera_interrupted_cb()
  */
 int legacy_camera_set_interrupted_cb(camera_h camera, camera_interrupted_cb callback, void *user_data);
 
@@ -1749,10 +1801,10 @@ int legacy_camera_unset_interrupted_cb(camera_h camera);
  * @retval #CAMERA_ERROR_PERMISSION_DENIED The access to the resources can not be granted
  * @retval #CAMERA_ERROR_NOT_SUPPORTED The feature is not supported
  * @post This function will invoke legacy_camera_focus_changed_cb() when the auto-focus state changes.
- * @see	camera_start_focusing()
- * @see	camera_cancel_focusing()
- * @see	camera_unset_focus_changed_cb()
- * @see	camera_focus_changed_cb()
+ * @see legacy_camera_start_focusing()
+ * @see legacy_camera_cancel_focusing()
+ * @see legacy_camera_unset_focus_changed_cb()
+ * @see legacy_camera_focus_changed_cb()
  */
 int legacy_camera_set_focus_changed_cb(camera_h camera, camera_focus_changed_cb callback, void *user_data);
 
@@ -1789,7 +1841,7 @@ int legacy_camera_unset_focus_changed_cb(camera_h camera);
  * @post This function will invoke legacy_camera_error_cb() when an asynchronous operation error occurs.
 
  * @see legacy_camera_unset_error_cb()
- * @see	camera_error_cb()
+ * @see legacy_camera_error_cb()
  */
 int legacy_camera_set_error_cb(camera_h camera, camera_error_cb callback, void *user_data);
 
@@ -1821,8 +1873,8 @@ int legacy_camera_unset_error_cb(camera_h camera);
  * @param[in] mode The supported auto-focus mode
  * @param[in] user_data The user data passed from the foreach function
  * @return @c true to continue with the next iteration of the loop, \n otherwise @c false to break out of the loop
- * @pre	camera_attr_foreach_supported_af_mode() will invoke this callback.
- * @see	camera_attr_foreach_supported_af_mode()
+ * @pre legacy_camera_attr_foreach_supported_af_mode() will invoke this callback.
+ * @see legacy_camera_attr_foreach_supported_af_mode()
  */
 typedef bool (*camera_attr_supported_af_mode_cb)(camera_attr_af_mode_e mode, void *user_data);
 
@@ -1832,9 +1884,9 @@ typedef bool (*camera_attr_supported_af_mode_cb)(camera_attr_af_mode_e mode, voi
  * @param[in] mode The supported exposure mode
  * @param[in] user_data The user data passed from the foreach function
  * @return @c true to continue with the next iteration of the loop, \n otherwise @c false to break out of the loop
- * @pre	camera_attr_foreach_supported_exposure_mode() will invoke this callback.
- * @see	camera_attr_foreach_supported_exposure_mode()
- * @see	#camera_attr_exposure_mode_e
+ * @pre legacy_camera_attr_foreach_supported_exposure_mode() will invoke this callback.
+ * @see legacy_camera_attr_foreach_supported_exposure_mode()
+ * @see #camera_attr_exposure_mode_e
  */
 typedef bool (*camera_attr_supported_exposure_mode_cb)(camera_attr_exposure_mode_e mode, void *user_data);
 
@@ -1844,8 +1896,8 @@ typedef bool (*camera_attr_supported_exposure_mode_cb)(camera_attr_exposure_mode
  * @param[in] iso The supported ISO mode
  * @param[in] user_data The user data passed from the foreach function
  * @return @c true to continue with the next iteration of the loop, \n otherwise @c false to break out of the loop
- * @pre	camera_attr_foreach_supported_iso() will invoke this callback.
- * @see	camera_attr_foreach_supported_iso()
+ * @pre legacy_camera_attr_foreach_supported_iso() will invoke this callback.
+ * @see legacy_camera_attr_foreach_supported_iso()
  */
 typedef bool (*camera_attr_supported_iso_cb)(camera_attr_iso_e iso, void *user_data);
 
@@ -1855,9 +1907,9 @@ typedef bool (*camera_attr_supported_iso_cb)(camera_attr_iso_e iso, void *user_d
  * @param[in] wb The supported white balance mode
  * @param[in] user_data The user data passed from the foreach function
  * @return @c true to continue with the next iteration of the loop, \n otherwise @c false to break out of the loop
- * @pre	camera_attr_foreach_supported_whitebalance() will invoke this callback.
- * @see	camera_attr_foreach_supported_whitebalance()
- * @see	#camera_attr_whitebalance_e
+ * @pre legacy_camera_attr_foreach_supported_whitebalance() will invoke this callback.
+ * @see legacy_camera_attr_foreach_supported_whitebalance()
+ * @see #camera_attr_whitebalance_e
  */
 typedef bool (*camera_attr_supported_whitebalance_cb)(camera_attr_whitebalance_e wb, void *user_data);
 
@@ -1867,8 +1919,8 @@ typedef bool (*camera_attr_supported_whitebalance_cb)(camera_attr_whitebalance_e
  * @param[in] effect The supported effect mode
  * @param[in] user_data The user data passed from the foreach function
  * @return @c true to continue with the next iteration of the loop, \n otherwise @c false to break out of the loop
- * @pre	camera_attr_foreach_supported_effect() will invoke this callback.
- * @see	camera_attr_foreach_supported_effect()
+ * @pre legacy_camera_attr_foreach_supported_effect() will invoke this callback.
+ * @see legacy_camera_attr_foreach_supported_effect()
  */
 typedef bool (*camera_attr_supported_effect_cb)(camera_attr_effect_mode_e effect, void *user_data);
 
@@ -1878,9 +1930,9 @@ typedef bool (*camera_attr_supported_effect_cb)(camera_attr_effect_mode_e effect
  * @param[in] mode The supported scene mode
  * @param[in] user_data The user data passed from the foreach function
  * @return @c true to continue with the next iteration of the loop, \n otherwise @c false to break out of the loop
- * @pre	camera_attr_foreach_supported_scene_mode() will invoke this callback.
- * @see	camera_attr_foreach_supported_scene_mode()
- * @see	#camera_attr_scene_mode_e
+ * @pre legacy_camera_attr_foreach_supported_scene_mode() will invoke this callback.
+ * @see legacy_camera_attr_foreach_supported_scene_mode()
+ * @see #camera_attr_scene_mode_e
  */
 typedef bool (*camera_attr_supported_scene_mode_cb)(camera_attr_scene_mode_e mode, void *user_data);
 
@@ -1890,8 +1942,8 @@ typedef bool (*camera_attr_supported_scene_mode_cb)(camera_attr_scene_mode_e mod
  * @param[in] mode The supported flash mode
  * @param[in] user_data The user data passed from the foreach function
  * @return @c true to continue with the next iteration of the loop, \n otherwise @c false to break out of the loop
- * @pre	camera_attr_foreach_supported_flash_mode() will invoke this callback.
- * @see	camera_attr_foreach_supported_flash_mode()
+ * @pre legacy_camera_attr_foreach_supported_flash_mode() will invoke this callback.
+ * @see legacy_camera_attr_foreach_supported_flash_mode()
  */
 typedef bool (*camera_attr_supported_flash_mode_cb)(camera_attr_flash_mode_e mode, void *user_data);
 
@@ -1901,8 +1953,8 @@ typedef bool (*camera_attr_supported_flash_mode_cb)(camera_attr_flash_mode_e mod
  * @param[in] mode The supported FPS mode
  * @param[in] user_data The user data passed from the foreach function
  * @return @c true to continue with the next iteration of the loop, \n otherwise @c false to break out of the loop
- * @pre	camera_attr_foreach_supported_fps() will invoke this callback.
- * @see	camera_attr_foreach_supported_fps()
+ * @pre legacy_camera_attr_foreach_supported_fps() will invoke this callback.
+ * @see legacy_camera_attr_foreach_supported_fps()
  */
 typedef bool (*camera_attr_supported_fps_cb)(camera_attr_fps_e fps, void *user_data);
 
@@ -1912,8 +1964,8 @@ typedef bool (*camera_attr_supported_fps_cb)(camera_attr_fps_e fps, void *user_d
  * @param[in] mode The supported stream flip mode
  * @param[in] user_data The user data passed from the foreach function
  * @return @c true to continue with the next iteration of the loop, \n @c false to break out of the loop
- * @pre	camera_attr_foreach_supported_stream_flip() will invoke this callback.
- * @see	camera_attr_foreach_supported_stream_flip()
+ * @pre legacy_camera_attr_foreach_supported_stream_flip() will invoke this callback.
+ * @see legacy_camera_attr_foreach_supported_stream_flip()
  */
 typedef bool (*camera_attr_supported_stream_flip_cb)(camera_flip_e flip, void *user_data);
 
@@ -1923,8 +1975,8 @@ typedef bool (*camera_attr_supported_stream_flip_cb)(camera_flip_e flip, void *u
  * @param[in] mode The supported stream rotation mode
  * @param[in] user_data The user data passed from the foreach function
  * @return @c true to continue with the next iteration of the loop, \n @c false to break out of the loop
- * @pre	camera_attr_foreach_supported_stream_rotation() will invoke this callback.
- * @see	camera_attr_foreach_supported_stream_rotation()
+ * @pre legacy_camera_attr_foreach_supported_stream_rotation() will invoke this callback.
+ * @see legacy_camera_attr_foreach_supported_stream_rotation()
  */
 typedef bool (*camera_attr_supported_stream_rotation_cb)(camera_rotation_e rotation, void *user_data);
 
@@ -1934,8 +1986,8 @@ typedef bool (*camera_attr_supported_stream_rotation_cb)(camera_rotation_e rotat
  * @param[in] mode The supported theater mode
  * @param[in] user_data The user data passed from the foreach function
  * @return @c true to continue with the next iteration of the loop, \n @c false to break out of the loop
- * @pre	camera_attr_foreach_supported_theater_mode() will invoke this callback.
- * @see	camera_attr_foreach_supported_theater_mode()
+ * @pre legacy_camera_attr_foreach_supported_theater_mode() will invoke this callback.
+ * @see legacy_camera_attr_foreach_supported_theater_mode()
  */
 typedef bool (*camera_attr_supported_theater_mode_cb)(camera_attr_theater_mode_e mode, void *user_data);
 
@@ -1945,8 +1997,8 @@ typedef bool (*camera_attr_supported_theater_mode_cb)(camera_attr_theater_mode_e
  * @param[in] type The supported ptz type
  * @param[in] user_data The user data passed from the foreach function
  * @return @c true to continue with the next iteration of the loop, \n @c false to break out of the loop
- * @pre	camera_attr_foreach_supported_ptz_type() will invoke this callback.
- * @see	camera_attr_foreach_supported_ptz_type()
+ * @pre legacy_camera_attr_foreach_supported_ptz_type() will invoke this callback.
+ * @see legacy_camera_attr_foreach_supported_ptz_type()
  */
 typedef bool (*camera_attr_supported_ptz_type_cb)(camera_attr_ptz_type_e type, void *user_data);
 
@@ -1972,8 +2024,8 @@ typedef bool (*camera_attr_supported_ptz_type_cb)(camera_attr_ptz_type_e type, v
  * @retval #CAMERA_ERROR_PERMISSION_DENIED The access to the resources can not be granted
  * @retval #CAMERA_ERROR_NOT_SUPPORTED The feature is not supported
  * @see legacy_camera_start_preview()
- * @see	camera_attr_get_preview_fps()
- * @see	camera_attr_foreach_supported_fps()
+ * @see legacy_camera_attr_get_preview_fps()
+ * @see legacy_camera_attr_foreach_supported_fps()
  */
 int legacy_camera_attr_set_preview_fps(camera_h camera, camera_attr_fps_e fps);
 
@@ -1987,8 +2039,8 @@ int legacy_camera_attr_set_preview_fps(camera_h camera, camera_attr_fps_e fps);
  * @retval #CAMERA_ERROR_INVALID_PARAMETER Invalid parameter
  * @retval #CAMERA_ERROR_PERMISSION_DENIED The access to the resources can not be granted
  * @retval #CAMERA_ERROR_NOT_SUPPORTED The feature is not supported
- * @see	camera_attr_set_preview_fps()
- * @see	camera_attr_foreach_supported_fps()
+ * @see legacy_camera_attr_set_preview_fps()
+ * @see legacy_camera_attr_foreach_supported_fps()
  */
 int legacy_camera_attr_get_preview_fps(camera_h camera, camera_attr_fps_e *fps);
 
@@ -2013,9 +2065,9 @@ int legacy_camera_attr_get_preview_fps(camera_h camera, camera_attr_fps_e *fps);
  * @retval #CAMERA_ERROR_PERMISSION_DENIED The access to the resources can not be granted
  * @retval #CAMERA_ERROR_NOT_SUPPORTED The feature is not supported
  * @post This function invokes legacy_camera_attr_supported_fps_cb() repeatly to get each supported FPS mode.
- * @see	camera_attr_set_preview_fps()
- * @see	camera_attr_get_preview_fps()
- * @see	camera_attr_supported_fps_cb()
+ * @see legacy_camera_attr_set_preview_fps()
+ * @see legacy_camera_attr_get_preview_fps()
+ * @see legacy_camera_attr_supported_fps_cb()
  */
 int legacy_camera_attr_foreach_supported_fps(camera_h camera, camera_attr_supported_fps_cb callback, void *user_data);
 
@@ -2035,9 +2087,9 @@ int legacy_camera_attr_foreach_supported_fps(camera_h camera, camera_attr_suppor
  * @retval #CAMERA_ERROR_PERMISSION_DENIED The access to the resources can not be granted
  * @retval #CAMERA_ERROR_NOT_SUPPORTED The feature is not supported
  * @post This function invokes legacy_camera_attr_supported_fps_cb() repeatly to get each supported FPS mode.
- * @see	camera_attr_set_preview_fps()
- * @see	camera_attr_get_preview_fps()
- * @see	camera_attr_supported_fps_cb()
+ * @see legacy_camera_attr_set_preview_fps()
+ * @see legacy_camera_attr_get_preview_fps()
+ * @see legacy_camera_attr_supported_fps_cb()
  */
 int legacy_camera_attr_foreach_supported_fps_by_resolution(camera_h camera, int width, int height,
 	camera_attr_supported_fps_cb callback, void *user_data);
@@ -2067,7 +2119,7 @@ int legacy_camera_attr_foreach_supported_fps_by_resolution(camera_h camera, int 
  * @retval #CAMERA_ERROR_NOT_SUPPORTED The feature is not supported
  * @pre The camera state must be set to #CAMERA_STATE_CREATED or #CAMERA_STATE_PREVIEW.
  * @see legacy_camera_start_preview()
- * @see	camera_attr_get_image_quality()
+ * @see legacy_camera_attr_get_image_quality()
  */
 int legacy_camera_attr_set_image_quality(camera_h camera, int quality);
 
@@ -2148,9 +2200,9 @@ int legacy_camera_attr_get_zoom_range(camera_h camera , int *min , int *max);
  * @retval #CAMERA_ERROR_INVALID_PARAMETER Invalid parameter
  * @retval #CAMERA_ERROR_PERMISSION_DENIED The access to the resources can not be granted
  * @retval #CAMERA_ERROR_NOT_SUPPORTED The feature is not supported
- * @see	camera_attr_get_af_mode()
- * @see	camera_attr_foreach_supported_af_mode()
- * @see	#camera_attr_af_mode_e
+ * @see legacy_camera_attr_get_af_mode()
+ * @see legacy_camera_attr_foreach_supported_af_mode()
+ * @see #camera_attr_af_mode_e
  */
 int legacy_camera_attr_set_af_mode(camera_h camera, camera_attr_af_mode_e mode);
 
@@ -2168,7 +2220,7 @@ int legacy_camera_attr_set_af_mode(camera_h camera, camera_attr_af_mode_e mode);
  * @retval #CAMERA_ERROR_NOT_SUPPORTED The feature is not supported
  * @see legacy_camera_attr_foreach_supported_af_mode()
  * @see legacy_camera_attr_set_af_mode()
- * @see	#camera_attr_af_mode_e
+ * @see #camera_attr_af_mode_e
  */
 int legacy_camera_attr_get_af_mode(camera_h camera, camera_attr_af_mode_e *mode);
 
@@ -2234,7 +2286,7 @@ int legacy_camera_attr_clear_af_area(camera_h camera);
  * @post This function invokes legacy_camera_attr_supported_af_mode_cb() to get all the supported auto focus modes.
  * @see legacy_camera_attr_set_af_mode()
  * @see legacy_camera_attr_get_af_mode()
- * @see	camera_attr_supported_af_mode_cb()
+ * @see legacy_camera_attr_supported_af_mode_cb()
  */
 int legacy_camera_attr_foreach_supported_af_mode(camera_h camera, camera_attr_supported_af_mode_cb callback, void *user_data);
 
@@ -2302,7 +2354,7 @@ int legacy_camera_attr_get_exposure_mode(camera_h camera, camera_attr_exposure_m
  * @post This function invokes legacy_camera_attr_supported_exposure_mode_cb() to get all the supported exposure modes.
  * @see legacy_camera_attr_set_exposure_mode()
  * @see legacy_camera_attr_get_exposure_mode()
- * @see	camera_attr_supported_exposure_mode_cb()
+ * @see legacy_camera_attr_supported_exposure_mode_cb()
  */
 int legacy_camera_attr_foreach_supported_exposure_mode(camera_h camera, camera_attr_supported_exposure_mode_cb callback, void *user_data);
 
@@ -2327,7 +2379,7 @@ int legacy_camera_attr_foreach_supported_exposure_mode(camera_h camera, camera_a
  * @retval #CAMERA_ERROR_INVALID_PARAMETER Invalid parameter
  * @retval #CAMERA_ERROR_PERMISSION_DENIED The access to the resources can not be granted
  * @retval #CAMERA_ERROR_NOT_SUPPORTED The feature is not supported
- * @see	camera_attr_get_exposure()
+ * @see legacy_camera_attr_get_exposure()
  */
 int legacy_camera_attr_set_exposure(camera_h camera, int value);
 
@@ -2341,7 +2393,7 @@ int legacy_camera_attr_set_exposure(camera_h camera, int value);
  * @retval #CAMERA_ERROR_INVALID_PARAMETER Invalid parameter
  * @retval #CAMERA_ERROR_PERMISSION_DENIED The access to the resources can not be granted
  * @retval #CAMERA_ERROR_NOT_SUPPORTED The feature is not supported
- * @see	camera_attr_set_exposure()
+ * @see legacy_camera_attr_set_exposure()
  */
 int legacy_camera_attr_get_exposure(camera_h camera, int *value);
 
@@ -2357,7 +2409,7 @@ int legacy_camera_attr_get_exposure(camera_h camera, int *value);
  * @retval #CAMERA_ERROR_INVALID_PARAMETER Invalid parameter
  * @retval #CAMERA_ERROR_PERMISSION_DENIED The access to the resources can not be granted
  * @retval #CAMERA_ERROR_NOT_SUPPORTED The feature is not supported
- * @see	camera_attr_set_exposure()
+ * @see legacy_camera_attr_set_exposure()
  */
 int legacy_camera_attr_get_exposure_range(camera_h camera, int *min, int *max);
 
@@ -2373,7 +2425,7 @@ int legacy_camera_attr_get_exposure_range(camera_h camera, int *min, int *max);
  * @retval #CAMERA_ERROR_INVALID_PARAMETER Invalid parameter
  * @retval #CAMERA_ERROR_PERMISSION_DENIED The access to the resources can not be granted
  * @retval #CAMERA_ERROR_NOT_SUPPORTED The feature is not supported
- * @see	camera_attr_get_iso()
+ * @see legacy_camera_attr_get_iso()
  * @see legacy_camera_attr_foreach_supported_iso()
  */
 int legacy_camera_attr_set_iso(camera_h camera, camera_attr_iso_e iso);
@@ -2388,7 +2440,7 @@ int legacy_camera_attr_set_iso(camera_h camera, camera_attr_iso_e iso);
  * @retval #CAMERA_ERROR_INVALID_PARAMETER Invalid parameter
  * @retval #CAMERA_ERROR_PERMISSION_DENIED The access to the resources can not be granted
  * @retval #CAMERA_ERROR_NOT_SUPPORTED The feature is not supported
- * @see	camera_attr_set_iso()
+ * @see legacy_camera_attr_set_iso()
  * @see legacy_camera_attr_foreach_supported_iso()
  */
 int legacy_camera_attr_get_iso(camera_h camera, camera_attr_iso_e *iso);
@@ -2414,9 +2466,9 @@ int legacy_camera_attr_get_iso(camera_h camera, camera_attr_iso_e *iso);
  * @retval #CAMERA_ERROR_PERMISSION_DENIED The access to the resources can not be granted
  * @retval #CAMERA_ERROR_NOT_SUPPORTED The feature is not supported
  * @post This function invokes legacy_camera_attr_supported_iso_cb() to get all the supported ISO levels.
- * @see	camera_attr_set_iso()
+ * @see legacy_camera_attr_set_iso()
  * @see legacy_camera_attr_get_iso()
- * @see	camera_attr_supported_iso_cb()
+ * @see legacy_camera_attr_supported_iso_cb()
  */
 int legacy_camera_attr_foreach_supported_iso(camera_h camera, camera_attr_supported_iso_cb callback, void *user_data);
 
@@ -2442,8 +2494,8 @@ int legacy_camera_attr_foreach_supported_iso(camera_h camera, camera_attr_suppor
  * @retval #CAMERA_ERROR_INVALID_PARAMETER Invalid parameter
  * @retval #CAMERA_ERROR_PERMISSION_DENIED The access to the resources can not be granted
  * @retval #CAMERA_ERROR_NOT_SUPPORTED The feature is not supported
- * @pre	This function is valid only when the external display is connected.
- * @see	camera_attr_get_theater_mode()
+ * @pre This function is valid only when the external display is connected.
+ * @see legacy_camera_attr_get_theater_mode()
  */
 int legacy_camera_attr_set_theater_mode(camera_h camera, camera_attr_theater_mode_e mode);
 
@@ -2457,7 +2509,7 @@ int legacy_camera_attr_set_theater_mode(camera_h camera, camera_attr_theater_mod
  * @retval #CAMERA_ERROR_INVALID_PARAMETER Invalid parameter
  * @retval #CAMERA_ERROR_PERMISSION_DENIED The access to the resources can not be granted
  * @retval #CAMERA_ERROR_NOT_SUPPORTED The feature is not supported
- * @see	camera_attr_get_theater_mode()
+ * @see legacy_camera_attr_get_theater_mode()
  */
 int legacy_camera_attr_get_theater_mode(camera_h camera, camera_attr_theater_mode_e *mode);
 
@@ -2484,7 +2536,7 @@ int legacy_camera_attr_get_theater_mode(camera_h camera, camera_attr_theater_mod
  * @post This function invokes legacy_camera_attr_supported_theater_mode_cb() to get all supported theater modes.
  * @see legacy_camera_attr_set_theater_mode()
  * @see legacy_camera_attr_get_theater_mode()
- * @see	camera_attr_supported_theater_mode_cb()
+ * @see legacy_camera_attr_supported_theater_mode_cb()
  */
 int legacy_camera_attr_foreach_supported_theater_mode(camera_h camera, camera_attr_supported_theater_mode_cb callback, void *user_data);
 
@@ -2651,7 +2703,7 @@ int legacy_camera_attr_get_whitebalance(camera_h camera, camera_attr_whitebalanc
  * @post This function invokes legacy_camera_attr_supported_whitebalance_cb() to get all the supported white balances.
  * @see legacy_camera_attr_set_whitebalance()
  * @see legacy_camera_attr_get_whitebalance()
- * @see	camera_attr_supported_whitebalance_cb()
+ * @see legacy_camera_attr_supported_whitebalance_cb()
  */
 int legacy_camera_attr_foreach_supported_whitebalance(camera_h camera, camera_attr_supported_whitebalance_cb callback, void *user_data);
 
@@ -2720,7 +2772,7 @@ int legacy_camera_attr_get_effect(camera_h camera, camera_attr_effect_mode_e *ef
  * @post This function invokes legacy_camera_attr_supported_effect_cb() to get all the supported effect modes.
  * @see legacy_camera_attr_set_effect()
  * @see legacy_camera_attr_get_effect()
- * @see	camera_attr_supported_effect_cb()
+ * @see legacy_camera_attr_supported_effect_cb()
  */
 int legacy_camera_attr_foreach_supported_effect(camera_h camera, camera_attr_supported_effect_cb callback, void *user_data);
 
@@ -2760,7 +2812,7 @@ int legacy_camera_attr_set_scene_mode(camera_h camera, camera_attr_scene_mode_e 
  * @retval #CAMERA_ERROR_INVALID_PARAMETER Invalid parameter
  * @retval #CAMERA_ERROR_PERMISSION_DENIED The access to the resources can not be granted
  * @retval #CAMERA_ERROR_NOT_SUPPORTED The feature is not supported
- * @see	camera_attr_foreach_supported_scene_mode()
+ * @see legacy_camera_attr_foreach_supported_scene_mode()
  * @see legacy_camera_attr_set_scene_mode()
  */
 int legacy_camera_attr_get_scene_mode(camera_h camera, camera_attr_scene_mode_e *mode);
@@ -2786,7 +2838,7 @@ int legacy_camera_attr_get_scene_mode(camera_h camera, camera_attr_scene_mode_e 
  * @retval #CAMERA_ERROR_PERMISSION_DENIED The access to the resources can not be granted
  * @retval #CAMERA_ERROR_NOT_SUPPORTED The feature is not supported
  * @post This function invokes legacy_camera_attr_supported_scene_mode_cb() to get all the supported scene modes.
- * @see	camera_attr_set_scene_mode()
+ * @see legacy_camera_attr_set_scene_mode()
  * @see legacy_camera_attr_get_scene_mode()
  * @see legacy_camera_attr_supported_scene_mode_cb()
  */
@@ -2868,7 +2920,7 @@ int legacy_camera_attr_get_tag_image_description(camera_h camera, char **descrip
  * @retval #CAMERA_ERROR_INVALID_PARAMETER Invalid parameter
  * @retval #CAMERA_ERROR_PERMISSION_DENIED The access to the resources can not be granted
  * @retval #CAMERA_ERROR_NOT_SUPPORTED The feature is not supported
- * @see	camera_attr_get_tag_orientation()
+ * @see legacy_camera_attr_get_tag_orientation()
  */
 int legacy_camera_attr_set_tag_orientation(camera_h camera, camera_attr_tag_orientation_e orientation);
 
@@ -2882,7 +2934,7 @@ int legacy_camera_attr_set_tag_orientation(camera_h camera, camera_attr_tag_orie
  * @retval #CAMERA_ERROR_INVALID_PARAMETER Invalid parameter
  * @retval #CAMERA_ERROR_PERMISSION_DENIED The access to the resources can not be granted
  * @retval #CAMERA_ERROR_NOT_SUPPORTED The feature is not supported
- * @see	camera_attr_set_tag_orientation()
+ * @see legacy_camera_attr_set_tag_orientation()
  */
 int legacy_camera_attr_get_tag_orientation(camera_h camera, camera_attr_tag_orientation_e *orientation);
 
@@ -2978,7 +3030,7 @@ int legacy_camera_attr_remove_geotag(camera_h camera);
  * @retval #CAMERA_ERROR_PERMISSION_DENIED The access to the resources can not be granted
  * @retval #CAMERA_ERROR_NOT_SUPPORTED The feature is not supported
  * @retval #CAMERA_ERROR_DEVICE_BUSY The flash was preempted by other API
- * @see	camera_attr_foreach_supported_flash_mode()
+ * @see legacy_camera_attr_foreach_supported_flash_mode()
  * @see legacy_camera_attr_get_flash_mode()
  */
 int legacy_camera_attr_set_flash_mode(camera_h camera, camera_attr_flash_mode_e mode);
@@ -3019,9 +3071,9 @@ int legacy_camera_attr_get_flash_mode(camera_h camera, camera_attr_flash_mode_e 
  * @retval #CAMERA_ERROR_PERMISSION_DENIED The access to the resources can not be granted
  * @retval #CAMERA_ERROR_NOT_SUPPORTED The feature is not supported
  * @post This function invokes legacy_camera_attr_supported_flash_mode_cb() to get all supported flash modes.
- * @see	camera_attr_set_flash_mode()
+ * @see legacy_camera_attr_set_flash_mode()
  * @see legacy_camera_attr_get_flash_mode()
- * @see	camera_attr_supported_flash_mode_cb()
+ * @see legacy_camera_attr_supported_flash_mode_cb()
  */
 int legacy_camera_attr_foreach_supported_flash_mode(camera_h camera, camera_attr_supported_flash_mode_cb callback, void *user_data);
 
@@ -3058,7 +3110,7 @@ int legacy_camera_attr_get_lens_orientation(camera_h camera, int *angle);
  * @retval #CAMERA_ERROR_INVALID_PARAMETER Invalid parameter
  * @retval #CAMERA_ERROR_PERMISSION_DENIED The access to the resources can not be granted
  * @retval #CAMERA_ERROR_NOT_SUPPORTED The feature is not supported
- * @pre	The camera state must be set to #CAMERA_STATE_CREATED.
+ * @pre The camera state must be set to #CAMERA_STATE_CREATED.
  * @see legacy_camera_attr_get_stream_rotation()
  */
 int legacy_camera_attr_set_stream_rotation(camera_h camera , camera_rotation_e rotation);
@@ -3073,7 +3125,7 @@ int legacy_camera_attr_set_stream_rotation(camera_h camera , camera_rotation_e r
  * @retval #CAMERA_ERROR_INVALID_PARAMETER Invalid parameter
  * @retval #CAMERA_ERROR_PERMISSION_DENIED The access to the resources can not be granted
  * @retval #CAMERA_ERROR_NOT_SUPPORTED The feature is not supported
- * @pre	The camera state must be set to #CAMERA_STATE_CREATED.
+ * @pre The camera state must be set to #CAMERA_STATE_CREATED.
  * @see legacy_camera_attr_set_stream_rotation()
  */
 int legacy_camera_attr_get_stream_rotation(camera_h camera , camera_rotation_e *rotation);
@@ -3124,7 +3176,7 @@ int legacy_camera_attr_foreach_supported_stream_rotation(camera_h camera, camera
  * @retval #CAMERA_ERROR_INVALID_PARAMETER Invalid parameter
  * @retval #CAMERA_ERROR_PERMISSION_DENIED The access to the resources can not be granted
  * @retval #CAMERA_ERROR_NOT_SUPPORTED The feature is not supported
- * @pre	The camera state must be set to #CAMERA_STATE_CREATED.
+ * @pre The camera state must be set to #CAMERA_STATE_CREATED.
  * @see legacy_camera_attr_set_stream_rotation()
  */
 int legacy_camera_attr_set_stream_flip(camera_h camera , camera_flip_e flip);
@@ -3139,7 +3191,7 @@ int legacy_camera_attr_set_stream_flip(camera_h camera , camera_flip_e flip);
  * @retval #CAMERA_ERROR_INVALID_PARAMETER Invalid parameter
  * @retval #CAMERA_ERROR_PERMISSION_DENIED The access to the resources can not be granted
  * @retval #CAMERA_ERROR_NOT_SUPPORTED The feature is not supported
- * @pre	The camera state must be set to #CAMERA_STATE_CREATED.
+ * @pre The camera state must be set to #CAMERA_STATE_CREATED.
  * @see legacy_camera_attr_set_stream_rotation()
  */
 int legacy_camera_attr_get_stream_flip(camera_h camera , camera_flip_e *flip);
@@ -3636,7 +3688,7 @@ int legacy_camera_attr_set_ptz_type(camera_h camera, int ptz_type);
  * @retval #CAMERA_ERROR_PERMISSION_DENIED The access to the resources can not be granted
  * @retval #CAMERA_ERROR_NOT_SUPPORTED The feature is not supported
  * @post This function invokes camera_attr_supported_ptz_type_cb() to get all supported ptz type.
- * @see camera_attr_set_ptz_type()
+ * @see legacy_camera_attr_set_ptz_type()
  */
 int legacy_camera_attr_foreach_supported_ptz_type(camera_h camera, camera_attr_supported_ptz_type_cb foreach_cb, void *user_data);
 

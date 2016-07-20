@@ -52,15 +52,14 @@ typedef struct _camera_cb_data {
 typedef struct _camera_s {
 	MMHandleType mm_handle;
 
-	void* user_cb[_CAMERA_EVENT_TYPE_NUM];
-	void* user_data[_CAMERA_EVENT_TYPE_NUM];
-	void* display_handle;
-	MMCamWaylandInfo *wl_info;
+	void *user_cb[_CAMERA_EVENT_TYPE_NUM];
+	void *user_data[_CAMERA_EVENT_TYPE_NUM];
+	void *display_handle;
 	camera_display_type_e display_type;
 	unsigned int state;
 
 	MMMessageCallback relay_message_callback;
-	void* relay_user_data;
+	void *relay_user_data;
 	int capture_count;
 	int capture_width;
 	int capture_height;
@@ -78,11 +77,6 @@ typedef struct _camera_s {
 	int cached_focus_mode;
 	camera_device_e device_type;
 	camera_attr_ptz_type_e ptz_type;
-
-	GList *cb_data_list;
-	GMutex idle_cb_lock;
-
-	void *reuse_element;
 } camera_s;
 
 int _camera_get_mm_handle(camera_h camera , MMHandleType *handle);
@@ -90,7 +84,6 @@ int _camera_set_relay_mm_message_callback(camera_h camera, MMMessageCallback cal
 int __camera_start_continuous_focusing(camera_h camera);
 int _camera_set_use(camera_h camera, bool used);
 bool _camera_is_used(camera_h camera);
-void _camera_remove_cb_message(camera_s *handle);
 int __convert_camera_error_code(const char* func, int code);
 
 #ifdef __cplusplus
