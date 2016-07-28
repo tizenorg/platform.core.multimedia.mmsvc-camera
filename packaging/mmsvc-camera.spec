@@ -1,6 +1,6 @@
 Name:       mmsvc-camera
 Summary:    A Camera module for muse server
-Version:    0.2.43
+Version:    0.2.44
 Release:    0
 Group:      Multimedia/Libraries
 License:    Apache-2.0

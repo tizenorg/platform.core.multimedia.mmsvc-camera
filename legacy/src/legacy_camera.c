@@ -705,7 +705,7 @@ int legacy_camera_change_device(camera_h *camera, camera_device_e device)
 	}
 
 	/* set previous display */
-	ret = legacy_camera_set_display(new_handle, old_handle->display_type, old_handle->display_handle);
+	ret = legacy_camera_set_display((camera_h)new_handle, old_handle->display_type, old_handle->display_handle);
 	if (ret != MM_ERROR_NONE) {
 		LOGE("legacy_camera_set_display failed0x%x", ret);
 		goto _CHANGE_DEVICE_FAILED;
